@@ -1,0 +1,43 @@
+# Base image - Python va LibreOffice bilan
+FROM python:3.12-slim
+
+# LibreOffice va kerakli paketlarni o'rnatish
+RUN apt-get update && apt-get install -y \
+    libreoffice \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    fonts-liberation \
+    fonts-dejavu \
+    fonts-freefont-ttf \
+    fonts-noto \
+    fonts-noto-cjk \
+    fonts-noto-color-emoji \
+    fontconfig \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Shriftlarni yangilash
+RUN fc-cache -f -v
+
+# Working directory
+WORKDIR /app
+
+# Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
+
+# Static fayllarni yig'ish
+RUN python manage.py collectstatic --noinput
+
+# Media papkasini yaratish
+RUN mkdir -p /app/media/files /app/media/images
+
+# Port
+EXPOSE 8000
+
+# Gunicorn bilan ishga tushirish
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "mysite.wsgi:application"]

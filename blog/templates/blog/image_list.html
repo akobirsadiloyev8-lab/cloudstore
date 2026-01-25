@@ -1,0 +1,508 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Rasmlar galereyasi</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+        }
+        .nav-links a:hover {
+            background: linear-gradient(45deg, #5a6fd6, #6a4190);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        /* Rasm yuklash bo'limi */
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .upload-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .file-input-wrapper {
+            width: 100%;
+            max-width: 500px;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            border: 2px dashed #667eea;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+        .file-label:hover {
+            border-color: #764ba2;
+            background: #f0f0ff;
+            transform: scale(1.02);
+        }
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        .file-text {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        .form-control {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-upload {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Galereya */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .image-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        .image-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .image-item p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .image-item strong {
+            color: #333;
+        }
+        .image-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+        .image-wrapper {
+            position: relative;
+        }
+        
+        /* Tugmalar */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 90, 36, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        .empty-message i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 15px;
+                flex-wrap: wrap;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .nav-links {
+                gap: 8px;
+            }
+            
+            .nav-links a {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .container {
+                padding: 80px 10px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .upload-section {
+                padding: 25px 15px;
+                margin-bottom: 25px;
+            }
+            
+            .upload-section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .file-label {
+                padding: 25px 15px;
+            }
+            
+            .file-icon {
+                font-size: 2rem;
+            }
+            
+            .file-text {
+                font-size: 0.9rem;
+            }
+            
+            .form-control {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .btn-upload {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+            
+            .image-item {
+                padding: 10px;
+            }
+            
+            .image-item img {
+                height: 120px;
+            }
+            
+            .image-item p {
+                font-size: 0.75rem;
+            }
+            
+            .image-checkbox {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 8px 10px;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .nav-links a {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .container {
+                padding: 70px 8px 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .upload-section {
+                padding: 20px 10px;
+            }
+            
+            .upload-section h2 {
+                font-size: 1.1rem;
+            }
+            
+            .file-label {
+                padding: 20px 10px;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .image-item {
+                padding: 8px;
+            }
+            
+            .image-item img {
+                height: 100px;
+            }
+            
+            .image-item p {
+                font-size: 0.7rem;
+                margin: 3px 0;
+            }
+            
+            .empty-message {
+                padding: 40px 15px;
+            }
+            
+            .empty-message i {
+                font-size: 3rem;
+            }
+            
+            .empty-message h3 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Cloudstore</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'boshlash' %}"><i class="fas fa-home"></i> Bosh sahifa</a></li>
+            <li><a href="{% url 'preview' %}"><i class="fas fa-file"></i> Fayllar</a></li>
+        </ul>
+    </header>
+
+    <main class="container">
+        <h1><i class="fas fa-images"></i> Rasmlar galereyasi</h1>
+        
+        <!-- Rasm yuklash bo'limi -->
+        <div class="upload-section">
+            <h2><i class="fas fa-cloud-upload-alt"></i> Yangi rasm yuklash</h2>
+            <form method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+                <div class="file-input-wrapper">
+                    <input type="file" name="image" id="image-input" class="file-input" accept="image/*" required>
+                    <label for="image-input" class="file-label">
+                        <i class="fas fa-image file-icon"></i>
+                        <span class="file-text">Rasm tanlash uchun bosing</span>
+                    </label>
+                </div>
+                <input type="text" name="title" placeholder="Rasm nomi (ixtiyoriy)" class="form-control">
+                <button type="submit" name="upload_image" class="btn-upload">
+                    <i class="fas fa-upload"></i> Yuklash
+                </button>
+            </form>
+        </div>
+        
+        <!-- Rasmlar ro'yxati -->
+        <form method="post">
+            {% csrf_token %}
+            {% if images %}
+            <div class="image-gallery">
+                {% for image in images %}
+                    <div class="image-item">
+                        <div class="image-wrapper">
+                            <input type="checkbox" name="selected_images" value="{{ image.id }}" class="image-checkbox">
+                            <img src="{{ image.image.url }}" alt="{{ image.title }}">
+                        </div>
+                        <p><strong>Nomi:</strong> {{ image.title|default:"Noma'lum" }}</p>
+                        <p><strong>Format:</strong> {{ image.extension }}</p>
+                        <p><strong>Hajmi:</strong> {{ image.image.size|filesizeformat }}</p>
+                        <p><strong>Sana:</strong> {{ image.uploaded_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="action-buttons">
+                <button type="submit" name="delete" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> O'chirish
+                </button>
+                <button type="submit" name="convert" value="png" class="btn btn-primary">
+                    <i class="fas fa-exchange-alt"></i> PNG ga
+                </button>
+                <button type="submit" name="convert" value="jpeg" class="btn btn-primary">
+                    <i class="fas fa-exchange-alt"></i> JPEG ga
+                </button>
+                <button type="submit" name="convert" value="pdf" class="btn btn-success">
+                    <i class="fas fa-file-pdf"></i> PDF ga
+                </button>
+            </div>
+            {% else %}
+            <div class="empty-message">
+                <i class="fas fa-images"></i>
+                <h3>Hozircha rasmlar yo'q</h3>
+                <p>Yuqoridagi formadan yangi rasm yuklang</p>
+            </div>
+            {% endif %}
+        </form>
+    </main>
+    
+    <script>
+        document.getElementById('image-input').addEventListener('change', function() {
+            const file = this.files[0];
+            const label = document.querySelector('.file-text');
+            if (file) {
+                label.textContent = file.name;
+            } else {
+                label.textContent = 'Rasm tanlash uchun bosing';
+            }
+        });
+    </script>
+</body>
+</html>

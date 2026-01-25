@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Fikrlar - Cloudstore</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .feedback-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+        .feedback-name {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .feedback-date {
+            color: #999;
+            font-size: 0.9em;
+        }
+        .feedback-message {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-link:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fikrlar</h1>
+        {% for feedback in feedbacks %}
+            <div class="feedback-item">
+                <div class="feedback-name">{{ feedback.name|default:"Anonim" }}</div>
+                <div class="feedback-date">{{ feedback.created_at|date:"d.m.Y H:i" }}</div>
+                <div class="feedback-message">{{ feedback.message }}</div>
+            </div>
+        {% empty %}
+            <p>Hozircha fikrlar yo'q.</p>
+        {% endfor %}
+        <a href="{% url 'boshlash' %}" class="back-link">Orqaga qaytish</a>
+    </div>
+</body>
+</html>

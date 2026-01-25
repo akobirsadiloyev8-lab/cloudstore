@@ -1,0 +1,522 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Yordamchi - Cloudstore</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .nav-links a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 100px 20px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .chat-header h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .chat-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        /* Fayl tanlash */
+        .file-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .file-selector h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .file-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .file-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Chat messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.ai .message-content {
+            background: #f0f2f5;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-size: 1rem;
+        }
+        
+        .message.user .message-avatar {
+            background: #667eea;
+            color: white;
+            order: 1;
+        }
+        
+        .message.ai .message-avatar {
+            background: #10a37f;
+            color: white;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 15px 20px;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        
+        /* Chat input */
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+        
+        .send-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Welcome message */
+        .welcome-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .welcome-message i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-message h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 15px;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .chat-container {
+                padding: 80px 10px 10px;
+            }
+            
+            .chat-header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .message-content {
+                max-width: 85%;
+                padding: 10px 14px;
+            }
+            
+            .chat-input {
+                padding: 12px 15px;
+            }
+            
+            .send-btn {
+                padding: 12px 18px;
+            }
+            
+            .send-btn span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chat-header {
+                margin-bottom: 10px;
+            }
+            
+            .file-selector {
+                padding: 15px;
+            }
+            
+            .chat-messages {
+                padding: 15px;
+            }
+            
+            .message-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Cloudstore AI</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'boshlash' %}"><i class="fas fa-home"></i> Bosh sahifa</a></li>
+            <li><a href="{% url 'preview' %}"><i class="fas fa-file"></i> Fayllar</a></li>
+        </ul>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1><i class="fas fa-robot"></i> AI Yordamchi</h1>
+            <p>Fayl tanlang va uning mazmuni haqida savol bering</p>
+        </div>
+        
+        <!-- Fayl tanlash -->
+        <div class="file-selector">
+            <h3><i class="fas fa-file-alt"></i> Fayl tanlang:</h3>
+            <select id="file-select" class="file-select">
+                <option value="">-- Fayl tanlang --</option>
+                {% for file in files %}
+                <option value="{{ file.id }}" data-path="{{ file.path }}">{{ file.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Chat xabarlari -->
+        <div class="chat-messages" id="chat-messages">
+            <div class="welcome-message">
+                <i class="fas fa-comments"></i>
+                <h2>Salom! Men AI yordamchiman</h2>
+                <p>Avval fayl tanlang, keyin uning mazmuni haqida savol bering</p>
+            </div>
+        </div>
+        
+        <!-- Chat input -->
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Savolingizni yozing..." disabled>
+            <button id="send-btn" class="send-btn" disabled>
+                <i class="fas fa-paper-plane"></i>
+                <span>Yuborish</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const fileSelect = document.getElementById('file-select');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        
+        let selectedFileId = null;
+        let fileContent = null;
+        
+        // Fayl tanlanganda
+        fileSelect.addEventListener('change', async function() {
+            selectedFileId = this.value;
+            
+            if (selectedFileId) {
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                
+                // Fayl kontentini olish
+                try {
+                    const response = await fetch('{% url "get_file_content" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ file_id: selectedFileId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        fileContent = data.content;
+                        // Welcome xabarini o'chirish
+                        const welcome = chatMessages.querySelector('.welcome-message');
+                        if (welcome) welcome.remove();
+                        
+                        addMessage('ai', `Fayl yuklandi: "${data.filename}". Endi bu fayl haqida savol berishingiz mumkin.`);
+                    } else {
+                        addMessage('ai', 'Faylni o\'qishda xatolik: ' + data.error);
+                    }
+                } catch (error) {
+                    addMessage('ai', 'Xatolik yuz berdi: ' + error.message);
+                }
+            } else {
+                chatInput.disabled = true;
+                sendBtn.disabled = true;
+            }
+        });
+        
+        // Xabar qo'shish
+        function addMessage(type, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = type === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+            
+            if (type === 'ai') {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(content);
+            } else {
+                messageDiv.appendChild(content);
+                messageDiv.appendChild(avatar);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Typing indicator
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+        
+        // Xabar yuborish
+        async function sendMessage() {
+            const question = chatInput.value.trim();
+            if (!question || !selectedFileId) return;
+            
+            addMessage('user', question);
+            chatInput.value = '';
+            sendBtn.disabled = true;
+            showTyping();
+            
+            try {
+                const response = await fetch('{% url "ai_ask" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        file_id: selectedFileId,
+                        question: question,
+                        content: fileContent
+                    })
+                });
+                
+                const data = await response.json();
+                hideTyping();
+                
+                if (data.success) {
+                    addMessage('ai', data.answer);
+                } else {
+                    addMessage('ai', 'Xatolik: ' + data.error);
+                }
+            } catch (error) {
+                hideTyping();
+                addMessage('ai', 'Xatolik yuz berdi: ' + error.message);
+            }
+            
+            sendBtn.disabled = false;
+        }
+        
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

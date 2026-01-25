@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fayl Tahrirlash - {{ filename }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo i { font-size: 2rem; }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover { color: white; }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h1 i { color: #667eea; }
+        .filename { color: #666; font-size: 1rem; }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-card .stat-label { font-size: 0.9rem; opacity: 0.9; }
+
+        .search-results {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .search-results.active { display: block; }
+
+        .search-results h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item .position { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; }
+        .result-item .context { color: #333; line-height: 1.6; }
+        .result-item mark { background: #ffeb3b; padding: 2px 4px; border-radius: 3px; }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .content-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-section h3 i { color: #667eea; }
+
+        .file-content {
+            background: #ffffff;
+            color: #333;
+            padding: 2rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            max-height: 700px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+
+        .file-content.code-view {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .file-content mark { background: #ffeb3b; color: #333; padding: 2px 4px; border-radius: 3px; }
+
+        .loading { text-align: center; padding: 3rem; color: #666; }
+        .loading i { font-size: 3rem; animation: spin 1s linear infinite; color: #667eea; }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 1rem 2rem;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #333; }
+        .toast.error { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+
+        @media (max-width: 768px) {
+            .search-box { flex-direction: column; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-file-pdf"></i>
+            <span>FileConverter</span>
+        </a>
+        <div class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> Bosh sahifa</a>
+            <a href="/preview/"><i class="fas fa-folder"></i> Fayllar</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-edit"></i> Fayl Tahrirlash</h1>
+            <p class="filename"><i class="fas fa-file"></i> {{ filename }}</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="So'z yoki gap qidirish...">
+                <button class="search-btn" onclick="searchInFile()">
+                    <i class="fas fa-search"></i> Qidirish
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="wordCount">-</div>
+                    <div class="stat-label">So'zlar soni</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="sentenceCount">-</div>
+                    <div class="stat-label">Gaplar soni</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="paragraphCount">-</div>
+                    <div class="stat-label">Paragraflar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="charCount">-</div>
+                    <div class="stat-label">Belgilar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="searchCount">0</div>
+                    <div class="stat-label">Topildi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-results" id="searchResults">
+            <h3><i class="fas fa-list"></i> Qidiruv natijalari</h3>
+            <div id="resultsList"></div>
+        </div>
+
+        <div class="content-section">
+            <h3><i class="fas fa-file-alt"></i> Fayl tarkibi</h3>
+            <div class="file-content" id="fileContent">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Yuklanmoqda...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const filepath = "{{ filepath|escapejs }}";
+        const filename = "{{ filename|escapejs }}";
+        let fileContent = '';
+        let htmlContent = '';
+        let contentType = '';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFileContent();
+        });
+
+        async function loadFileContent() {
+            try {
+                const response = await fetch('/file-stats/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filepath: filepath })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    fileContent = data.content || '';
+                    htmlContent = data.html_content || '';
+                    contentType = data.content_type || '';
+                    
+                    document.getElementById('wordCount').textContent = data.stats.word_count.toLocaleString();
+                    document.getElementById('sentenceCount').textContent = data.stats.sentence_count.toLocaleString();
+                    document.getElementById('paragraphCount').textContent = data.stats.paragraph_count.toLocaleString();
+                    document.getElementById('charCount').textContent = data.stats.char_count.toLocaleString();
+                    
+                    const contentElement = document.getElementById('fileContent');
+                    
+                    // Agar HTML ko'rinishi mavjud bo'lsa - uni ko'rsatamiz
+                    if (htmlContent && contentType === 'html') {
+                        contentElement.classList.remove('code-view');
+                        contentElement.innerHTML = htmlContent;
+                    } else if (fileContent) {
+                        // Oddiy matn ko'rinishi
+                        contentElement.classList.add('code-view');
+                        contentElement.textContent = fileContent;
+                    } else {
+                        contentElement.innerHTML = '<p style="color: #ff6b6b;">Fayl matnini o\'qib bo\'lmadi</p>';
+                    }
+                } else {
+                    showToast('Xatolik: ' + data.error, 'error');
+                    document.getElementById('fileContent').innerHTML = '<p style="color: #ff6b6b;">Fayl matnini o\'qib bo\'lmadi</p>';
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi!', 'error');
+                document.getElementById('fileContent').innerHTML = '<p style="color: #ff6b6b;">Xatolik yuz berdi</p>';
+            }
+        }
+
+        async function searchInFile() {
+            const searchText = document.getElementById('searchInput').value.trim();
+            if (!searchText) {
+                showToast('Qidiruv so\'zini kiriting!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/file-stats/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filepath: filepath, search: searchText })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('searchCount').textContent = data.search_count;
+                    const resultsContainer = document.getElementById('searchResults');
+                    const resultsList = document.getElementById('resultsList');
+                    
+                    if (data.search_count > 0) {
+                        resultsContainer.classList.add('active');
+                        resultsList.innerHTML = data.search_results.map((result, index) => `
+                            <div class="result-item">
+                                <div class="position">#${index + 1} - Pozitsiya: ${result.position}</div>
+                                <div class="context">...${result.context}...</div>
+                            </div>
+                        `).join('');
+                        
+                        const highlightedContent = fileContent.replace(
+                            new RegExp(escapeRegex(searchText), 'gi'),
+                            '<mark>$&</mark>'
+                        );
+                        document.getElementById('fileContent').innerHTML = highlightedContent;
+                        showToast(`${data.search_count} ta natija topildi!`, 'success');
+                    } else {
+                        resultsContainer.classList.remove('active');
+                        resultsList.innerHTML = '';
+                        document.getElementById('fileContent').textContent = fileContent;
+                        showToast('Hech narsa topilmadi', 'error');
+                    }
+                } else {
+                    showToast('Xatolik: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi!', 'error');
+            }
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') { searchInFile(); }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* Edit.html uchun alohida uslublar */
+
+/* Site header */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e3c72;
+    color: #fff;
+    padding: 15px 30px;
+}
+
+.brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+}
+
+.actions {
+    display: flex;
+    gap: 15px;
+}
+
+.actions a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.actions a:hover {
+    background: #ffd700;
+    color: #1e3c72;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.main-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 20px;
+}
+
+/* Meta */
+.meta h1 {
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
+
+/* Textarea */
+textarea {
+    width: 100%;
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #1e3c72;
+    color: #fff;
+    margin-top: 50px;
+}

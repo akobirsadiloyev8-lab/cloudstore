@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-production-key-change-me}
+      - ALLOWED_HOSTS=*
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    restart: unless-stopped
+
+volumes:
+  media_data:
+  static_data:

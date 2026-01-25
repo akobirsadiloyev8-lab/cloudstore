@@ -1,0 +1,21 @@
+# Render.com Docker deployment uchun sozlamalar
+services:
+  - type: web
+    name: file-converter
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CLOUDCONVERT_API_KEY
+        sync: false
+    disk:
+      name: media-storage
+      mountPath: /app/media
+      sizeGB: 1

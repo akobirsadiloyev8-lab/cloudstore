@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ro'yxatdan o'tish - Cloudstore</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .register-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .checkbox-container {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .checkbox-container label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            .register-container {
+                padding: 25px 20px;
+                border-radius: 12px;
+            }
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            input[type="text"], input[type="password"] {
+                padding: 12px;
+                font-size: 16px;
+            }
+            button {
+                padding: 14px;
+                font-size: 1rem;
+            }
+            label {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Ro'yxatdan o'tish</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if errors %}
+                <div style="color: red; margin-bottom: 20px; background: #ffe0e0; padding: 10px; border-radius: 5px;">
+                    {% for error in errors %}
+                        <p style="margin: 5px 0;">⚠️ {{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="username">Foydalanuvchi nomi</label>
+                <input type="text" name="username" id="username" value="{{ username|default:'' }}" placeholder="Foydalanuvchi nomini kiriting" required>
+            </div>
+            <div class="form-group">
+                <label for="password1">Parol</label>
+                <input type="password" name="password1" id="password1" placeholder="Parolni kiriting" required>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="toggle-password1" onchange="togglePassword('password1', this)">
+                    <label for="toggle-password1">Parolni ko'rsatish</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password2">Parolni tasdiqlang</label>
+                <input type="password" name="password2" id="password2" placeholder="Parolni qayta kiriting" required>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="toggle-password2" onchange="togglePassword('password2', this)">
+                    <label for="toggle-password2">Parolni ko'rsatish</label>
+                </div>
+            </div>
+            <button type="submit">Ro'yxatdan o'tish</button>
+        </form>
+        <div class="links">
+            <a href="{% url 'login' %}">Kirish</a>
+        </div>
+    </div>
+    <script>
+        function togglePassword(fieldId, checkbox) {
+            const input = document.getElementById(fieldId);
+            if (checkbox.checked) {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>
