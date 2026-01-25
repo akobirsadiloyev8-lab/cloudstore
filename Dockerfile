@@ -39,5 +39,8 @@ RUN mkdir -p /app/media/files /app/media/images
 # Port
 EXPOSE 8000
 
-# Gunicorn bilan ishga tushirish
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "mysite.wsgi:application"]
+# Start script yaratish - migrate va gunicorn
+RUN echo '#!/bin/bash\npython manage.py migrate --noinput\ngunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 mysite.wsgi:application' > /app/start.sh && chmod +x /app/start.sh
+
+# Gunicorn bilan ishga tushirish (migrate bilan)
+CMD ["/app/start.sh"]
