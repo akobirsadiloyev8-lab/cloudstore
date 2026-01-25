@@ -1,6 +1,14 @@
 ﻿import os
 import sys
 import tempfile
+import traceback
+import json
+import re
+import time
+import shutil
+import subprocess
+import base64
+import html as html_module
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, JsonResponse
 from django.core.files.storage import FileSystemStorage
@@ -13,11 +21,22 @@ from .forms import ImageForm
 from .models import Image, Feedback, File
 
 # LibreOffice konverter - Word, Excel, PowerPoint uchun
-from libreoffice_converter import (
-    convert_to_pdf_with_libreoffice,
-    convert_libreoffice_format,
-    is_libreoffice_available
-)
+try:
+    # Asosiy papkadan import qilish
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from libreoffice_converter import (
+        convert_to_pdf_with_libreoffice,
+        convert_libreoffice_format,
+        is_libreoffice_available
+    )
+except ImportError as e:
+    print(f"LibreOffice converter import xatosi: {e}")
+    # Agar import qilib bo'lmasa, None qilib qo'yamiz
+    convert_to_pdf_with_libreoffice = None
+    convert_libreoffice_format = None
+    is_libreoffice_available = lambda: False
 
 # agar docx/pdf ishlatmoqchi bo'lsangiz, quyidagilarni import qiling:
 import docx
