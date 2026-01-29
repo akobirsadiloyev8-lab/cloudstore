@@ -37,6 +37,15 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
+# CSRF sozlamalari (production uchun)
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+
 
 
 # Application definition
@@ -48,9 +57,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'blog', 
 ]
+
+# django_extensions faqat local uchun
+try:
+    import django_extensions
+    INSTALLED_APPS.append('django_extensions')
+except ImportError:
+    pass
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
