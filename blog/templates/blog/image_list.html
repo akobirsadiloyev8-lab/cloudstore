@@ -15,15 +15,38 @@
             padding: 0;
             box-sizing: border-box;
         }
+        
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-color: #e1e5e9;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --text-primary: #e4e4e4;
+            --text-secondary: #aaa;
+            --border-color: #2a2a4e;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --navbar-bg: rgba(22, 33, 62, 0.95);
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--navbar-bg);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 20px var(--shadow-color);
             position: fixed;
             top: 0;
             width: 100%;
@@ -45,6 +68,7 @@
             display: flex;
             gap: 15px;
             list-style: none;
+            align-items: center;
         }
         .nav-links a {
             text-decoration: none;
@@ -62,29 +86,69 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+        
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Orqaga tugmasi */
+        .back-btn {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 999;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 100px 20px 40px;
+            padding: 130px 20px 40px;
         }
         h1 {
             text-align: center;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 30px;
             font-size: 2.5rem;
         }
         
         /* Rasm yuklash bo'limi */
         .upload-section {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 40px var(--shadow-color);
             text-align: center;
         }
         .upload-section h2 {
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 20px;
         }
         .upload-form {
@@ -109,11 +173,11 @@
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #f8f9ff;
+            background: var(--bg-primary);
         }
         .file-label:hover {
             border-color: #764ba2;
-            background: #f0f0ff;
+            background: var(--bg-secondary);
             transform: scale(1.02);
         }
         .file-icon {
@@ -123,15 +187,17 @@
         }
         .file-text {
             font-size: 1.1rem;
-            color: #666;
+            color: var(--text-secondary);
         }
         .form-control {
             width: 100%;
             max-width: 500px;
             padding: 15px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
         .form-control:focus {
             outline: none;
@@ -160,15 +226,15 @@
             gap: 25px;
         }
         .image-item {
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 15px;
             padding: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px var(--shadow-color);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .image-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 40px var(--shadow-color);
         }
         .image-item img {
             width: 100%;
@@ -179,11 +245,11 @@
         }
         .image-item p {
             margin: 5px 0;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 0.9rem;
         }
         .image-item strong {
-            color: #333;
+            color: var(--text-primary);
         }
         .image-checkbox {
             position: absolute;
@@ -205,9 +271,9 @@
             gap: 15px;
             margin-top: 30px;
             padding: 20px;
-            background: white;
+            background: var(--bg-secondary);
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px var(--shadow-color);
         }
         .btn {
             padding: 12px 25px;
@@ -250,11 +316,11 @@
         .empty-message {
             text-align: center;
             padding: 60px;
-            color: #666;
+            color: var(--text-secondary);
         }
         .empty-message i {
             font-size: 4rem;
-            color: #ddd;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
         
@@ -425,8 +491,18 @@
         <ul class="nav-links">
             <li><a href="{% url 'boshlash' %}"><i class="fas fa-home"></i> Bosh sahifa</a></li>
             <li><a href="{% url 'preview' %}"><i class="fas fa-file"></i> Fayllar</a></li>
+            <li>
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </li>
         </ul>
     </header>
+    
+    <!-- Orqaga tugmasi -->
+    <a href="{% url 'boshlash' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
 
     <main class="container">
         <h1><i class="fas fa-images"></i> Rasmlar galereyasi</h1>
@@ -503,6 +579,30 @@
                 label.textContent = 'Rasm tanlash uchun bosing';
             }
         });
+        
+        // Dark mode toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            updateDarkModeIcon();
+        }
+        
+        function updateDarkModeIcon() {
+            const icon = document.querySelector('.dark-mode-toggle i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+        
+        // Dark mode ni yuklash
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            updateDarkModeIcon();
+        }
     </script>
 </body>
 </html>

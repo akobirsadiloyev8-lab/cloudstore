@@ -1,0 +1,824 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - Kitob{% endblock %}
+
+{% block head %}
+<style>
+    .book-detail-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    
+    .book-header {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 40px;
+        background: var(--card-bg, #fff);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .book-cover {
+        flex-shrink: 0;
+        width: 250px;
+    }
+    
+    .book-cover img {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .no-cover {
+        width: 100%;
+        height: 350px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        color: white;
+    }
+    
+    .book-info {
+        flex: 1;
+    }
+    
+    .book-info h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: var(--text-color, #333);
+    }
+    
+    .author-name {
+        font-size: 1.2rem;
+        color: #6366f1;
+        margin-bottom: 20px;
+    }
+    
+    .author-name img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    
+    .book-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+    
+    .meta-item i {
+        color: #6366f1;
+    }
+    
+    .rating-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .stars {
+        color: #fbbf24;
+        font-size: 1.3rem;
+    }
+    
+    .rating-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-read {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+    }
+    
+    .btn-read:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    }
+    
+    .btn-favorite {
+        background: #fff;
+        border: 2px solid #ef4444 !important;
+        color: #ef4444;
+    }
+    
+    .btn-favorite.active {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-summary {
+        background: #10b981;
+        color: white;
+    }
+    
+    /* Tabs */
+    .tabs-container {
+        background: var(--card-bg, #fff);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .tabs {
+        display: flex;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 20px;
+    }
+    
+    .tab {
+        padding: 15px 25px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        color: #666;
+        position: relative;
+    }
+    
+    .tab.active {
+        color: #6366f1;
+        font-weight: 600;
+    }
+    
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #6366f1;
+        border-radius: 3px 3px 0 0;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    /* Description */
+    .description {
+        line-height: 1.8;
+        color: var(--text-color, #444);
+    }
+    
+    /* Rating Form */
+    .rating-form {
+        background: #f8fafc;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .rating-form h3 {
+        margin-bottom: 15px;
+    }
+    
+    .star-rating {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .star-rating i {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .star-rating i:hover,
+    .star-rating i.active {
+        color: #fbbf24;
+    }
+    
+    .rating-form textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .rating-form input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    /* Reviews */
+    .review-item {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+    }
+    
+    .review-stars {
+        color: #fbbf24;
+    }
+    
+    .review-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    /* Q&A */
+    .qa-form {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .qa-form input {
+        flex: 1;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+    
+    .qa-form button {
+        padding: 15px 25px;
+        background: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    .qa-answer {
+        background: #f0fdf4;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #10b981;
+        display: none;
+    }
+    
+    /* Summary */
+    .summary-box {
+        background: #fef3c7;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #f59e0b;
+        display: none;
+    }
+    
+    /* Similar Books */
+    .similar-books {
+        margin-top: 30px;
+    }
+    
+    .similar-books h2 {
+        margin-bottom: 20px;
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .book-card {
+        background: var(--card-bg, #fff);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .book-card-cover {
+        height: 200px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 50px;
+    }
+    
+    .book-card-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .book-card-info {
+        padding: 15px;
+    }
+    
+    .book-card-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-color, #333);
+    }
+    
+    .book-card-author {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Loading */
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #eee;
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Dark Mode */
+    body.dark-mode .book-header,
+    body.dark-mode .tabs-container,
+    body.dark-mode .book-card {
+        background: #1e1e1e;
+    }
+    
+    body.dark-mode .rating-form {
+        background: #2d2d2d;
+    }
+    
+    body.dark-mode .rating-form input,
+    body.dark-mode .rating-form textarea,
+    body.dark-mode .qa-form input {
+        background: #333;
+        border-color: #444;
+        color: #fff;
+    }
+    
+    @media (max-width: 768px) {
+        .book-header {
+            flex-direction: column;
+        }
+        
+        .book-cover {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+        
+        .action-buttons {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Orqaga tugmasi -->
+<a href="{% url 'all_books' %}" class="back-btn" style="position:fixed; top:80px; left:20px; background:linear-gradient(45deg,#667eea,#764ba2); color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:600; z-index:999; display:flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(102,126,234,0.3);">
+    <i class="fas fa-arrow-left"></i> Orqaga
+</a>
+
+<div class="book-detail-container" style="position:relative; z-index:1; padding-top:30px;">
+    <!-- Book Header -->
+    <div class="book-header">
+        <div class="book-cover">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+            {% else %}
+                <div class="no-cover"><i class="fas fa-book"></i></div>
+            {% endif %}
+        </div>
+        
+        <div class="book-info">
+            <h1>{{ book.title }}</h1>
+            <p class="author-name">
+                {% if book.author.image %}
+                    <img src="{{ book.author.image.url }}" alt="{{ book.author.name }}">
+                {% endif %}
+                {{ book.author.name }}
+            </p>
+            
+            <div class="book-meta">
+                {% if book.year_written %}
+                <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ book.year_written }} yil</span>
+                </div>
+                {% endif %}
+                <div class="meta-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>{{ total_pages }} sahifa</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-eye"></i>
+                    <span>{{ book.views_count }} ko'rilgan</span>
+                </div>
+                {% if book.category %}
+                <div class="meta-item">
+                    <i class="fas fa-folder"></i>
+                    <span>{{ book.category.name }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="rating-display">
+                <div class="stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= book.average_rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="rating-number">{{ book.average_rating|floatformat:1 }}</span>
+                <span style="color:#666">({{ book.total_ratings }} baho)</span>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'read_book' book.id %}" class="btn-action btn-read">
+                    <i class="fas fa-book-reader"></i> O'qish
+                </a>
+                <button class="btn-action btn-favorite {% if is_favorite %}active{% endif %}" 
+                        onclick="toggleFavorite({{ book.id }})" id="favoriteBtn">
+                    <i class="fas fa-heart"></i> 
+                    <span>{% if is_favorite %}Sevimlilardan o'chirish{% else %}Sevimlilarga qo'shish{% endif %}</span>
+                </button>
+                <button class="btn-action btn-summary" onclick="getSummary({{ book.id }})">
+                    <i class="fas fa-magic"></i> AI Xulosa
+                </button>
+            </div>
+            
+            {% if reading_progress %}
+            <div style="margin-top:20px; padding:15px; background:#f0fdf4; border-radius:8px;">
+                <strong>O'qish jarayoni:</strong> {{ reading_progress.progress_percent }}% 
+                ({{ reading_progress.current_page }}/{{ reading_progress.total_pages }} sahifa)
+                <div style="margin-top:10px; background:#ddd; height:8px; border-radius:4px;">
+                    <div style="width:{{ reading_progress.progress_percent }}%; background:#10b981; height:100%; border-radius:4px;"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Summary Box -->
+    <div class="summary-box" id="summaryBox">
+        <h3><i class="fas fa-magic"></i> AI Xulosa</h3>
+        <p id="summaryText"></p>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('description')">Tavsif</button>
+            <button class="tab" onclick="showTab('reviews')">Baholar ({{ book.total_ratings }})</button>
+            <button class="tab" onclick="showTab('qa')">Savol-Javob</button>
+        </div>
+        
+        <!-- Description Tab -->
+        <div class="tab-content active" id="description-tab">
+            <div class="description">
+                {% if book.description %}
+                    {{ book.description|linebreaks }}
+                {% else %}
+                    <p style="color:#999">Tavsif mavjud emas</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Reviews Tab -->
+        <div class="tab-content" id="reviews-tab">
+            <div class="rating-form">
+                <h3>Baho qo'yish</h3>
+                <div class="star-rating" id="starRating">
+                    <i class="far fa-star" data-rating="1"></i>
+                    <i class="far fa-star" data-rating="2"></i>
+                    <i class="far fa-star" data-rating="3"></i>
+                    <i class="far fa-star" data-rating="4"></i>
+                    <i class="far fa-star" data-rating="5"></i>
+                </div>
+                {% if not user.is_authenticated %}
+                <input type="text" id="reviewerName" placeholder="Ismingiz" required>
+                {% endif %}
+                <textarea id="reviewComment" placeholder="Fikringizni yozing..."></textarea>
+                <button class="btn-action btn-read" style="margin-top:15px" onclick="submitRating({{ book.id }})">
+                    <i class="fas fa-paper-plane"></i> Yuborish
+                </button>
+            </div>
+            
+            <div id="reviewsList">
+                {% for rating in ratings %}
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="reviewer-name">
+                            {% if rating.user %}{{ rating.user.username }}{% else %}{{ rating.name|default:"Anonim" }}{% endif %}
+                        </span>
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rating.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="review-text">{{ rating.comment }}</p>
+                    <small style="color:#999">{{ rating.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                {% empty %}
+                <p style="text-align:center; color:#999; padding:30px">Hali baho yo'q</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Q&A Tab -->
+        <div class="tab-content" id="qa-tab">
+            <h3>Kitob haqida savol bering</h3>
+            <p style="color:#666; margin-bottom:20px">AI sizning savolingizga kitob mazmuni asosida javob beradi</p>
+            
+            <div class="qa-form">
+                <input type="text" id="questionInput" placeholder="Savolingizni yozing...">
+                <button onclick="askQuestion({{ book.id }})">
+                    <i class="fas fa-paper-plane"></i> So'rash
+                </button>
+            </div>
+            
+            <div class="loading" id="qaLoading">
+                <div class="spinner" style="margin:0 auto"></div>
+                <p>AI javob yozmoqda...</p>
+            </div>
+            
+            <div class="qa-answer" id="qaAnswer">
+                <h4><i class="fas fa-robot"></i> AI Javobi:</h4>
+                <p id="answerText"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Similar Books -->
+    {% if similar_books %}
+    <div class="similar-books">
+        <h2><i class="fas fa-book"></i> O'xshash Kitoblar</h2>
+        <div class="books-grid">
+            {% for similar in similar_books %}
+            <a href="{% url 'book_detail' similar.id %}" class="book-card" style="text-decoration:none">
+                <div class="book-card-cover">
+                    {% if similar.cover_image %}
+                        <img src="{{ similar.cover_image.url }}" alt="{{ similar.title }}">
+                    {% else %}
+                        <i class="fas fa-book"></i>
+                    {% endif %}
+                </div>
+                <div class="book-card-info">
+                    <div class="book-card-title">{{ similar.title }}</div>
+                    <div class="book-card-author">{{ similar.author.name }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// CSRF token olish
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+let selectedRating = 0;
+
+// Tab switching
+function showTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabName + '-tab').classList.add('active');
+}
+
+// Star rating
+document.querySelectorAll('#starRating i').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = this.dataset.rating;
+        document.querySelectorAll('#starRating i').forEach((s, idx) => {
+            s.className = idx < selectedRating ? 'fas fa-star active' : 'far fa-star';
+        });
+    });
+    
+    star.addEventListener('mouseover', function() {
+        const rating = this.dataset.rating;
+        document.querySelectorAll('#starRating i').forEach((s, idx) => {
+            s.className = idx < rating ? 'fas fa-star' : 'far fa-star';
+        });
+    });
+    
+    star.addEventListener('mouseout', function() {
+        document.querySelectorAll('#starRating i').forEach((s, idx) => {
+            s.className = idx < selectedRating ? 'fas fa-star active' : 'far fa-star';
+        });
+    });
+});
+
+// Submit rating
+async function submitRating(bookId) {
+    if (!selectedRating) {
+        alert("Iltimos, baho tanlang!");
+        return;
+    }
+    
+    const name = document.getElementById('reviewerName')?.value || '';
+    const comment = document.getElementById('reviewComment').value;
+    
+    try {
+        const response = await fetch('/rate-book/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                book_id: bookId,
+                rating: selectedRating,
+                comment: comment,
+                name: name
+            })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            alert("Rahmat! Bahoyingiz qabul qilindi.");
+            location.reload();
+        } else {
+            alert("Xatolik: " + data.error);
+        }
+    } catch (e) {
+        alert("Xatolik yuz berdi");
+    }
+}
+
+// Toggle favorite
+async function toggleFavorite(bookId) {
+    try {
+        const response = await fetch('/toggle-favorite/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({book_id: bookId})
+        });
+        
+        const data = await response.json();
+        if (data.error === 'Tizimga kiring') {
+            alert("Sevimlilar uchun tizimga kiring");
+            return;
+        }
+        
+        const btn = document.getElementById('favoriteBtn');
+        if (data.is_favorite) {
+            btn.classList.add('active');
+            btn.querySelector('span').textContent = "Sevimlilardan o'chirish";
+        } else {
+            btn.classList.remove('active');
+            btn.querySelector('span').textContent = "Sevimlilarga qo'shish";
+        }
+    } catch (e) {
+        alert("Xatolik yuz berdi");
+    }
+}
+
+// Get AI summary
+async function getSummary(bookId) {
+    const box = document.getElementById('summaryBox');
+    const text = document.getElementById('summaryText');
+    
+    text.textContent = "Yuklanmoqda...";
+    box.style.display = "block";
+    
+    try {
+        const response = await fetch('/get-summary/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({book_id: bookId})
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            text.textContent = data.summary;
+        } else {
+            text.textContent = "Xatolik: " + data.error;
+        }
+    } catch (e) {
+        text.textContent = "Xatolik yuz berdi";
+    }
+}
+
+// Ask question
+async function askQuestion(bookId) {
+    const question = document.getElementById('questionInput').value.trim();
+    if (!question) {
+        alert("Savolingizni yozing!");
+        return;
+    }
+    
+    document.getElementById('qaLoading').style.display = 'block';
+    document.getElementById('qaAnswer').style.display = 'none';
+    
+    try {
+        const response = await fetch('/ask-book/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                book_id: bookId,
+                question: question
+            })
+        });
+        
+        const data = await response.json();
+        document.getElementById('qaLoading').style.display = 'none';
+        
+        if (data.success) {
+            document.getElementById('answerText').textContent = data.answer;
+            document.getElementById('qaAnswer').style.display = 'block';
+        } else {
+            alert("Xatolik: " + data.error);
+        }
+    } catch (e) {
+        document.getElementById('qaLoading').style.display = 'none';
+        alert("Xatolik yuz berdi");
+    }
+}
+</script>
+{% endblock %}

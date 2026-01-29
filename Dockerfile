@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
     fontconfig \
+    libpq-dev \
+    gcc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,13 +36,13 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Media papkasini yaratish
-RUN mkdir -p /app/media/files /app/media/images
+RUN mkdir -p /app/media/files /app/media/images /app/media/books /app/media/authors /app/media/book_covers
 
 # Port
 EXPOSE 8000
 
 # Start script yaratish - migrate va gunicorn
-RUN echo '#!/bin/bash\npython manage.py migrate --noinput\ngunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 mysite.wsgi:application' > /app/start.sh && chmod +x /app/start.sh
+RUN echo '#!/bin/bash\necho "Running migrations..."\npython manage.py migrate --noinput\necho "Starting server..."\ngunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 mysite.wsgi:application' > /app/start.sh && chmod +x /app/start.sh
 
 # Gunicorn bilan ishga tushirish (migrate bilan)
 CMD ["/app/start.sh"]

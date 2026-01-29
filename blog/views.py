@@ -1,4 +1,239 @@
-﻿import os
+﻿from django.shortcuts import render, get_object_or_404
+from django.db import models
+
+def adabiyotlar(request):
+    from .models import Author
+    authors = Author.objects.all()
+    return render(request, 'blog/adabiyotlar.html', {'authors': authors})
+
+def all_books(request):
+    """Barcha kitoblarni ko'rsatish"""
+    from .models import Book, Category, Author
+    
+    books = Book.objects.all().select_related('author').prefetch_related('categories').order_by('-created_at')
+    categories = Category.objects.all()
+    authors = Author.objects.all()
+    
+    # Filter by category
+    category_slug = request.GET.get('category')
+    if category_slug:
+        books = books.filter(categories__slug=category_slug)
+    
+    # Filter by author
+    author_id = request.GET.get('author')
+    if author_id:
+        books = books.filter(author_id=author_id)
+    
+    # Search
+    search = request.GET.get('q')
+    if search:
+        books = books.filter(
+            models.Q(title__icontains=search) | 
+            models.Q(author__name__icontains=search)
+        )
+    
+    return render(request, 'blog/all_books.html', {
+        'books': books,
+        'categories': categories,
+        'authors': authors,
+        'current_category': category_slug,
+        'current_author': int(author_id) if author_id else None,
+        'search_query': search
+    })
+
+def book_list(request, author_id):
+    from .models import Author, Book
+    
+    author = get_object_or_404(Author, id=author_id)
+    books = Book.objects.filter(author=author)
+    return render(request, 'blog/book_list.html', {'author': author, 'books': books})
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import os
+from groq import Groq
+
+# Groq AI sozlash
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+
+@csrf_exempt
+def ai_search_books(request):
+    """Kitoblar ichidan AI bilan aqlli qidiruv"""
+    from .models import Book, Author, BookPage
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST so\'rov qabul qilinadi'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        original_query = data.get('query', '').strip()
+        author_id = data.get('author_id')
+        
+        if not original_query:
+            return JsonResponse({'error': 'Qidiruv so\'rovi bo\'sh'}, status=400)
+        
+        # Kitoblarni olish
+        if author_id:
+            books = Book.objects.filter(author_id=author_id)
+        else:
+            books = Book.objects.all()
+        
+        if not books.exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Kitoblar topilmadi'
+            })
+        
+        # 1-BOSQICH: AI so'rovni tahlil qilsin
+        search_terms = [original_query.lower()]  # Asosiy so'rov
+        ai_analysis = None
+        
+        if groq_client:
+            try:
+                analysis_prompt = f"""Foydalanuvchi qidiruv so'rovi: "{original_query}"
+
+Vazifang:
+1. Imloviy xatolarni tuzat (masalan: "muhabbat" -> "muhabbat", "kitop" -> "kitob")
+2. Agar bu savol bo'lsa - qidirilishi kerak bo'lgan kalit so'zlarni ajrat
+3. Agar bu gap bo'lsa - asosiy iboralarni ajrat
+4. Sinonimlar yoki yaqin ma'noli so'zlarni qo'sh
+
+MUHIM: Faqat JSON formatda javob ber, boshqa hech narsa yozma:
+{{"corrected": "tuzatilgan so'rov", "keywords": ["kalit1", "kalit2", "kalit3"], "is_question": true/false}}"""
+
+                analysis_completion = groq_client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "Sen matn tahlilchisisisan. Faqat JSON formatda javob ber."},
+                        {"role": "user", "content": analysis_prompt}
+                    ],
+                    model="llama-3.1-8b-instant",
+                    temperature=0.1,
+                    max_tokens=200
+                )
+                
+                ai_result = analysis_completion.choices[0].message.content.strip()
+                # JSON ni parse qilish
+                import re
+                json_match = re.search(r'\{[^{}]*\}', ai_result)
+                if json_match:
+                    ai_analysis = json.loads(json_match.group())
+                    # Tuzatilgan so'rovni qo'shish
+                    if ai_analysis.get('corrected'):
+                        corrected = ai_analysis['corrected'].lower()
+                        if corrected != original_query.lower() and corrected not in search_terms:
+                            search_terms.insert(0, corrected)
+                    # Kalit so'zlarni qo'shish
+                    if ai_analysis.get('keywords'):
+                        for kw in ai_analysis['keywords']:
+                            kw_lower = kw.lower().strip()
+                            if kw_lower and kw_lower not in search_terms and len(kw_lower) > 2:
+                                search_terms.append(kw_lower)
+            except Exception as e:
+                pass
+        
+        # 2-BOSQICH: Barcha kalit so'zlar bo'yicha qidirish
+        all_found_snippets = []
+        found_positions = set()  # Takrorlanishni oldini olish
+        relevant_texts = []
+        
+        for search_term in search_terms[:5]:  # Maksimum 5 ta term
+            for book in books:
+                pages = book.pages.all()
+                for page in pages:
+                    text_lower = (page.text or '').lower()
+                    start_pos = 0
+                    while True:
+                        idx = text_lower.find(search_term, start_pos)
+                        if idx == -1:
+                            break
+                        
+                        # Takrorlanishni tekshirish
+                        position_key = f"{book.id}-{page.page_number}-{idx}"
+                        if position_key in found_positions:
+                            start_pos = idx + 1
+                            continue
+                        found_positions.add(position_key)
+                        
+                        snippet_start = max(0, idx - 150)
+                        snippet_end = min(len(page.text), idx + len(search_term) + 150)
+                        snippet = page.text[snippet_start:snippet_end]
+                        highlight_start = idx - snippet_start
+                        highlight_end = highlight_start + len(search_term)
+                        highlighted_snippet = (
+                            snippet[:highlight_start] +
+                            f'<mark>{snippet[highlight_start:highlight_end]}</mark>' +
+                            snippet[highlight_end:]
+                        )
+                        all_found_snippets.append({
+                            'book_id': book.id,
+                            'book_title': book.title,
+                            'author_name': book.author.name,
+                            'snippet': f"...{highlighted_snippet}...",
+                            'page_number': page.page_number,
+                            'position': idx,
+                            'search_term': search_term
+                        })
+                        if len(relevant_texts) < 5:
+                            relevant_texts.append(f"[{book.title}, {page.page_number}-sahifa]: {snippet}")
+                        start_pos = idx + 1
+        
+        # 3-BOSQICH: Agar savol bo'lsa, AI javob bersin
+        ai_response = None
+        is_question = (ai_analysis and ai_analysis.get('is_question')) or original_query.endswith('?') or original_query.lower().startswith(('nima', 'kim', 'qanday', 'qachon', 'nega', 'qaysi', 'qayer', 'necha', 'qancha', 'nimaga'))
+        
+        if groq_client and is_question and relevant_texts:
+            try:
+                context = "\n\n".join(relevant_texts)
+                answer_prompt = f"""Savol: "{original_query}"
+
+Kitoblardan topilgan ma'lumotlar:
+{context}
+
+Vazifa: Shu ma'lumotlar asosida savolga qisqa javob ber (2-3 gap). O'zbek tilida."""
+
+                answer_completion = groq_client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "Sen yordamchi assistantsan. Savolga qisqa javob ber."},
+                        {"role": "user", "content": answer_prompt}
+                    ],
+                    model="llama-3.1-8b-instant",
+                    temperature=0.3,
+                    max_tokens=300
+                )
+                ai_response = answer_completion.choices[0].message.content
+            except:
+                pass
+        
+        # Natijalarni tartiblash
+        all_found_snippets.sort(key=lambda x: (x['book_title'], x['page_number'], x['position']))
+        total_occurrences = len(all_found_snippets)
+        unique_books = len(set(s['book_id'] for s in all_found_snippets))
+        
+        # Qidirilgan so'zlar haqida ma'lumot
+        search_info = None
+        if ai_analysis and ai_analysis.get('corrected') and ai_analysis['corrected'].lower() != original_query.lower():
+            search_info = f"Tuzatildi: \"{ai_analysis['corrected']}\""
+        if len(search_terms) > 1:
+            search_info = (search_info + " | " if search_info else "") + f"Qidirildi: {', '.join(search_terms[:3])}"
+        
+        return JsonResponse({
+            'success': True,
+            'results': all_found_snippets[:20],
+            'ai_response': ai_response,
+            'search_info': search_info,
+            'message': f"'{original_query}' bo'yicha {total_occurrences} ta natija topildi ({unique_books} ta kitobda)" if total_occurrences > 0 else f"'{original_query}' kitoblardan topilmadi",
+            'total_occurrences': total_occurrences,
+            'unique_books': unique_books
+        })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Noto\'g\'ri JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+import os
 import sys
 import tempfile
 import traceback
@@ -37,6 +272,19 @@ except ImportError as e:
     convert_to_pdf_with_libreoffice = None
     convert_libreoffice_format = None
     is_libreoffice_available = lambda: False
+
+# Universal PDF converter (zaxira usul)
+try:
+    # Root papkadan import qilish
+    import sys
+    from pathlib import Path
+    root_path = str(Path(__file__).resolve().parent.parent.parent)
+    if root_path not in sys.path:
+        sys.path.insert(0, root_path)
+    from universal_pdf_converter import convert_any_to_pdf
+except Exception as e:
+    print(f"universal_pdf_converter import xatosi: {e}")
+    convert_any_to_pdf = None
 
 # agar docx/pdf ishlatmoqchi bo'lsangiz, quyidagilarni import qiling:
 import docx
@@ -167,10 +415,17 @@ def preview_file_content(request):
                 result['content'] = f'data:{mime};base64,{image_data}'
             elif ext in pdf_extensions:
                 result['file_type'] = 'pdf'
-                import base64
-                with open(filepath, 'rb') as f:
-                    pdf_data = base64.b64encode(f.read()).decode('utf-8')
-                result['content'] = f'data:application/pdf;base64,{pdf_data}'
+                # Faqat PyMuPDF (fitz) orqali PDF matnini o'qish
+                try:
+                    import fitz
+                    doc = fitz.open(filepath)
+                    text = "\n".join([page.get_text() for page in doc])
+                    if text and text.strip():
+                        result['content'] = text
+                    else:
+                        result['content'] = 'PDF faylidan matn o‘qib bo‘lmadi yoki fayl bo‘sh.'
+                except Exception as e:
+                    result['content'] = f'PDF matnini o‘qishda xatolik: {str(e)}'
             elif ext in ['.doc', '.docx']:
                 result['file_type'] = 'document'
                 content = None
@@ -1735,8 +1990,11 @@ def ai_ask(request):
 
 def simple_ai_answer(question, content):
     """Groq AI - fayl kontenti asosida javob berish"""
+    # Agar GROQ API kaliti sozlanmagan bo'lsa, foydalanuvchiga aniq xabar qaytaramiz
+    if not groq_client:
+        return "AI xizmati sozlanmagan: iltimos, GROQ_API_KEY muhit o'zgaruvchisini o'rnating."
+
     try:
-        # Groq dan javob olish
         response = groq_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
@@ -1758,10 +2016,780 @@ Savol: {question}"""
             temperature=0.7,
             max_tokens=1024
         )
-        
+
         return response.choices[0].message.content
         
     except Exception as e:
         # Xatolik bo'lsa
         return f"AI xatolik: {str(e)}. Iltimos, keyinroq urinib ko'ring."
 
+
+def kitob_yuklash(request):
+    """Kitob yuklash sahifasi - foydalanuvchilar kitob qo'sha oladi"""
+    from .models import Author, Book
+    from django.contrib import messages
+    
+    if request.method == 'POST':
+        # Formdan ma'lumotlarni olish
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        author_id = request.POST.get('author_id')
+        new_author_name = request.POST.get('new_author_name', '').strip()
+        published_year = request.POST.get('published_year', '').strip()
+        book_file = request.FILES.get('book_file')
+        
+        # Validatsiya
+        if not title:
+            messages.error(request, "Kitob nomi kiritilishi shart!")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        
+        if not book_file:
+            messages.error(request, "Kitob fayli yuklanishi shart!")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        
+        # Fayl formatini tekshirish
+        allowed_extensions = ['.pdf', '.docx', '.doc', '.txt']
+        file_ext = os.path.splitext(book_file.name)[1].lower()
+        if file_ext not in allowed_extensions:
+            messages.error(request, f"Faqat {', '.join(allowed_extensions)} formatdagi fayllar qabul qilinadi!")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        
+        # Muallif tanlash yoki yangi yaratish
+        author = None
+        if new_author_name:
+            # Yangi muallif yaratish
+            author, created = Author.objects.get_or_create(name=new_author_name)
+        elif author_id:
+            try:
+                author = Author.objects.get(id=author_id)
+            except Author.DoesNotExist:
+                messages.error(request, "Muallif topilmadi!")
+                return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        else:
+            messages.error(request, "Muallif tanlang yoki yangi muallif nomini kiriting!")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        
+        # Kitobni saqlash
+        try:
+            book = Book(
+                title=title,
+                description=description if description else '',
+                author=author,
+                file=book_file
+            )
+            
+            if published_year:
+                try:
+                    book.year_written = int(published_year)
+                except ValueError:
+                    pass
+            
+            book.save()
+            
+            # Sahifalarni ajratib saqlash
+            book.save_pages_from_file()
+            
+            messages.success(request, f"'{title}' kitobi muvaffaqiyatli yuklandi!")
+            return render(request, 'blog/kitob_yuklash.html', {
+                'authors': Author.objects.all(),
+                'success': True,
+                'book': book
+            })
+            
+        except Exception as e:
+            messages.error(request, f"Xatolik yuz berdi: {str(e)}")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+    
+    # GET so'rovi - forma ko'rsatish
+    authors = Author.objects.all().order_by('name')
+    return render(request, 'blog/kitob_yuklash.html', {'authors': authors})
+
+
+def get_authors(request):
+    """Mualliflar ro'yxatini JSON formatida qaytarish"""
+    from .models import Author
+    
+    authors = Author.objects.all().order_by('name')
+    authors_list = [{'id': a.id, 'name': a.name} for a in authors]
+    return JsonResponse({'authors': authors_list})
+
+
+def ai_extract_book_info(content, filename):
+    """AI yordamida kitob ma'lumotlarini aniqlash"""
+    if not groq_client:
+        return None
+    
+    try:
+        # Kontentni qisqartirish (token limitiga moslashtirish)
+        short_content = content[:3000] if content else ""
+        
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": """Kitob ma'lumotlarini JSON formatda ber:
+{"author": "Muallif ismi", "title": "Kitob nomi", "year": 2020, "description": "Qisqa tavsif"}
+Agar ma'lumot topilmasa null yoz."""
+                },
+                {
+                    "role": "user",
+                    "content": f"""Fayl: {filename}
+Matn: {short_content}
+
+JSON formatda javob ber."""
+                }
+            ],
+            temperature=0.3,
+            max_tokens=300
+        )
+        
+        result = response.choices[0].message.content.strip()
+        
+        # JSON ni ajratib olish
+        import json
+        import re
+        
+        # JSON qismini topish
+        json_match = re.search(r'\{[^{}]*\}', result)
+        if json_match:
+            return json.loads(json_match.group())
+        
+        return None
+        
+    except Exception as e:
+        print(f"AI xatolik: {e}")
+        return None
+
+
+@csrf_exempt
+def upload_zip_books(request):
+    """ZIP papkadan kitoblarni avtomatik yuklash"""
+    from .models import Author, Book
+    import zipfile
+    import tempfile
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST so\'rov qabul qilinadi'}, status=400)
+    
+    zip_file = request.FILES.get('zip_file')
+    if not zip_file:
+        return JsonResponse({'error': 'ZIP fayl yuklanmadi'}, status=400)
+    
+    # ZIP ekanligini tekshirish
+    if not zip_file.name.lower().endswith('.zip'):
+        return JsonResponse({'error': 'Faqat ZIP formatdagi fayllar qabul qilinadi'}, status=400)
+    
+    results = []
+    allowed_extensions = ['.pdf', '.docx', '.doc', '.txt']
+    
+    try:
+        # Vaqtinchalik papkaga saqlash
+        with tempfile.TemporaryDirectory() as temp_dir:
+            zip_path = os.path.join(temp_dir, 'uploaded.zip')
+            
+            with open(zip_path, 'wb') as f:
+                for chunk in zip_file.chunks():
+                    f.write(chunk)
+            
+            # ZIP ni ochish
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                file_list = zf.namelist()
+                
+                for file_name in file_list:
+                    # Papkalarni o'tkazib yuborish
+                    if file_name.endswith('/'):
+                        continue
+                    
+                    # Fayl kengaytmasini tekshirish
+                    ext = os.path.splitext(file_name)[1].lower()
+                    if ext not in allowed_extensions:
+                        results.append({
+                            'file': file_name,
+                            'status': 'skipped',
+                            'message': f'Qo\'llab-quvvatlanmaydigan format: {ext}'
+                        })
+                        continue
+                    
+                    try:
+                        # Faylni chiqarish
+                        zf.extract(file_name, temp_dir)
+                        extracted_path = os.path.join(temp_dir, file_name)
+                        
+                        # Fayl kontentini o'qish
+                        content = ""
+                        base_name = os.path.basename(file_name)
+                        title_from_file = os.path.splitext(base_name)[0]
+                        
+                        if ext == '.txt':
+                            try:
+                                with open(extracted_path, 'r', encoding='utf-8') as f:
+                                    content = f.read()
+                            except:
+                                with open(extracted_path, 'r', encoding='latin-1') as f:
+                                    content = f.read()
+                        
+                        elif ext == '.pdf':
+                            try:
+                                from pypdf import PdfReader
+                                reader = PdfReader(extracted_path)
+                                for page in reader.pages[:10]:  # Birinchi 10 sahifa
+                                    content += page.extract_text() or ""
+                            except:
+                                content = ""
+                        
+                        elif ext in ['.docx', '.doc']:
+                            try:
+                                from docx import Document
+                                doc = Document(extracted_path)
+                                for para in doc.paragraphs[:50]:  # Birinchi 50 paragraf
+                                    content += para.text + "\n"
+                            except:
+                                content = ""
+                        
+                        # AI bilan ma'lumotlarni aniqlash
+                        book_info = ai_extract_book_info(content, base_name)
+                        
+                        if book_info:
+                            author_name = book_info.get('author', '').strip()
+                            title = book_info.get('title', title_from_file)
+                            year = book_info.get('year')
+                            description = book_info.get('description', '')
+                        else:
+                            author_name = ''
+                            title = title_from_file
+                            year = None
+                            description = ''
+                        
+                        # Agar muallif nomi bo'sh yoki "noma'lum" bo'lsa
+                        if not author_name or author_name.lower() in ['noma\'lum', 'noma\'lum muallif', 'unknown', 'nomalum']:
+                            author_name = 'Noma\'lum muallif'
+                        
+                        # Agar tavsif bo'sh bo'lsa, birinchi 5 qatorni olish
+                        if not description and content:
+                            lines = content.strip().split('\n')[:5]
+                            description = '\n'.join(line.strip() for line in lines if line.strip())
+                            if len(description) > 500:
+                                description = description[:500] + '...'
+                        
+                        # Muallif topish yoki yaratish (iexact bilan - katta-kichik harf farq qilmaydi)
+                        author = Author.objects.filter(name__iexact=author_name).first()
+                        if not author:
+                            author = Author.objects.create(name=author_name)
+                        
+                        # Kitob mavjudligini tekshirish (nom va muallif bo'yicha)
+                        existing_book = Book.objects.filter(
+                            title__iexact=title,
+                            author=author
+                        ).first()
+                        
+                        if existing_book:
+                            results.append({
+                                'file': base_name,
+                                'status': 'exists',
+                                'message': f'Kitob bazada mavjud: "{title}" ({author_name})'
+                            })
+                            continue
+                        
+                        # Kitobni saqlash
+                        from django.core.files.base import ContentFile
+                        
+                        with open(extracted_path, 'rb') as f:
+                            file_content = f.read()
+                        
+                        book = Book(
+                            title=title,
+                            description=description if description else '',
+                            author=author,
+                            year_written=year if year else None
+                        )
+                        book.file.save(base_name, ContentFile(file_content))
+                        book.save()
+                        
+                        # Sahifalarni saqlash
+                        try:
+                            book.save_pages_from_file()
+                        except:
+                            pass
+                        
+                        results.append({
+                            'file': base_name,
+                            'status': 'success',
+                            'title': title,
+                            'author': author_name,
+                            'year': year,
+                            'description': description[:100] + '...' if len(description) > 100 else description
+                        })
+                        
+                    except Exception as e:
+                        results.append({
+                            'file': file_name,
+                            'status': 'error',
+                            'message': str(e)
+                        })
+            
+        return JsonResponse({
+            'success': True,
+            'total': len(results),
+            'results': results
+        })
+        
+    except zipfile.BadZipFile:
+        return JsonResponse({'error': 'Noto\'g\'ri ZIP fayl'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# ============== YANGI FUNKSIYALAR ==============
+
+def book_detail(request, book_id):
+    """Kitob haqida batafsil sahifa"""
+    from .models import Book, BookRating, Favorite, ReadingProgress, SearchQuery
+    from django.shortcuts import get_object_or_404
+    
+    book = get_object_or_404(Book, id=book_id)
+    book.views_count += 1
+    book.save(update_fields=['views_count'])
+    
+    ratings = book.ratings.all()[:10]
+    is_favorite = False
+    reading_progress = None
+    
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, book=book).exists()
+        reading_progress = ReadingProgress.objects.filter(user=request.user, book=book).first()
+    
+    # O'xshash kitoblar
+    similar_books = Book.objects.filter(
+        author=book.author
+    ).exclude(id=book.id)[:4]
+    
+    # Kategoriyalar bo'yicha o'xshash kitoblar (ManyToMany)
+    book_categories = book.categories.all()
+    if book_categories.exists():
+        category_books = Book.objects.filter(
+            categories__in=book_categories
+        ).exclude(id=book.id).distinct()[:4]
+        similar_books = list(similar_books) + list(category_books)
+        similar_books = similar_books[:6]
+    
+    context = {
+        'book': book,
+        'ratings': ratings,
+        'is_favorite': is_favorite,
+        'reading_progress': reading_progress,
+        'similar_books': similar_books,
+        'total_pages': book.pages.count(),
+    }
+    return render(request, 'blog/book_detail.html', context)
+
+
+def read_book(request, book_id):
+    """Kitobni online o'qish - LibreOffice bilan PDF ko'rsatish"""
+    from .models import Book, ReadingProgress
+    from django.shortcuts import get_object_or_404
+    from django.conf import settings
+    import os
+    import subprocess
+    
+    book = get_object_or_404(Book, id=book_id)
+    pages = book.pages.all()
+    
+    current_page = int(request.GET.get('page', 1))
+    
+    # Fayl mavjud bo'lsa uni ko'rsatish
+    file_url = None
+    show_file = False
+    
+    if book.file:
+        file_path = book.file.path
+        file_name = book.file.name.lower()
+        
+        if file_name.endswith('.pdf'):
+            # PDF to'g'ridan-to'g'ri ko'rsatiladi
+            file_url = book.file.url
+            show_file = True
+        elif file_name.endswith(('.doc', '.docx', '.odt', '.txt', '.rtf')):
+            # LibreOffice bilan PDF ga convert qilish
+            try:
+                pdf_dir = os.path.join(os.path.dirname(file_path), 'converted_pdfs')
+                os.makedirs(pdf_dir, exist_ok=True)
+                
+                base_name = os.path.splitext(os.path.basename(file_path))[0]
+                pdf_path = os.path.join(pdf_dir, f'{base_name}.pdf')
+                
+                # PDF mavjud bo'lmasa yoki eski bo'lsa convert qilish
+                if not os.path.exists(pdf_path) or os.path.getmtime(file_path) > os.path.getmtime(pdf_path):
+                    # LibreOffice bilan convert
+                    result = subprocess.run([
+                        'soffice', '--headless', '--convert-to', 'pdf',
+                        '--outdir', pdf_dir, file_path
+                    ], capture_output=True, timeout=60)
+                
+                if os.path.exists(pdf_path):
+                    # Media URL yaratish
+                    relative_path = os.path.relpath(pdf_path, settings.MEDIA_ROOT)
+                    file_url = settings.MEDIA_URL + relative_path.replace('\\', '/')
+                    show_file = True
+            except Exception as e:
+                print(f"LibreOffice convert xatosi: {e}")
+    
+    if request.user.is_authenticated:
+        progress, created = ReadingProgress.objects.get_or_create(
+            user=request.user,
+            book=book,
+            defaults={'total_pages': pages.count()}
+        )
+        if not created and current_page > progress.current_page:
+            progress.current_page = current_page
+            progress.total_pages = pages.count()
+            progress.save()
+    
+    context = {
+        'book': book,
+        'pages': pages,
+        'current_page': current_page,
+        'total_pages': pages.count(),
+        'file_url': file_url,
+        'show_file': show_file,
+    }
+    return render(request, 'blog/read_book.html', context)
+
+
+@csrf_exempt
+def rate_book(request):
+    """Kitobga baho qo'yish"""
+    from .models import Book, BookRating
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        rating = data.get('rating')
+        comment = data.get('comment', '')
+        name = data.get('name', '')
+        
+        book = Book.objects.get(id=book_id)
+        
+        BookRating.objects.create(
+            book=book,
+            user=request.user if request.user.is_authenticated else None,
+            name=name,
+            rating=rating,
+            comment=comment
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'average_rating': book.average_rating,
+            'total_ratings': book.total_ratings
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+def toggle_favorite(request):
+    """Sevimlilar ro'yxatiga qo'shish/o'chirish"""
+    from .models import Book, Favorite
+    import json
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Tizimga kiring'}, status=401)
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        book = Book.objects.get(id=book_id)
+        
+        favorite, created = Favorite.objects.get_or_create(
+            user=request.user,
+            book=book
+        )
+        
+        if not created:
+            favorite.delete()
+            return JsonResponse({'success': True, 'is_favorite': False})
+        
+        return JsonResponse({'success': True, 'is_favorite': True})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+def save_reading_progress(request):
+    """O'qish progressini saqlash"""
+    from .models import Book, ReadingProgress
+    import json
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Tizimga kiring'}, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        current_page = data.get('current_page')
+        
+        book = Book.objects.get(id=book_id)
+        total_pages = book.pages.count()
+        
+        progress, _ = ReadingProgress.objects.update_or_create(
+            user=request.user,
+            book=book,
+            defaults={
+                'current_page': current_page,
+                'total_pages': total_pages,
+                'is_completed': current_page >= total_pages
+            }
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'progress_percent': progress.progress_percent
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+def get_book_summary(request):
+    """AI bilan kitob xulosasini olish"""
+    from .models import Book, BookSummary
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        book = Book.objects.get(id=book_id)
+        
+        # Mavjud xulosa bormi?
+        try:
+            summary = book.summary
+            return JsonResponse({
+                'success': True,
+                'summary': summary.short_summary,
+                'key_points': summary.key_points
+            })
+        except BookSummary.DoesNotExist:
+            pass
+        
+        # AI bilan xulosa yaratish
+        if not groq_client:
+            return JsonResponse({'error': 'AI xizmati mavjud emas'}, status=400)
+        
+        content = book.content[:5000] if book.content else ""
+        if not content and book.pages.exists():
+            content = "\n".join([p.text for p in book.pages.all()[:5]])[:5000]
+        
+        if not content:
+            return JsonResponse({'error': 'Kitob matni mavjud emas'}, status=400)
+        
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Kitob xulosasini o'zbek tilida yoz. Qisqa va aniq bo'l."
+                },
+                {
+                    "role": "user",
+                    "content": f"Kitob: {book.title}\nMuallif: {book.author.name}\n\nMatn:\n{content}\n\nQisqa xulosa yoz (3-5 jumla)."
+                }
+            ],
+            temperature=0.5,
+            max_tokens=500
+        )
+        
+        summary_text = response.choices[0].message.content
+        
+        BookSummary.objects.create(
+            book=book,
+            short_summary=summary_text
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'summary': summary_text
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+def ask_about_book(request):
+    """Kitob haqida savol berish"""
+    from .models import Book
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        question = data.get('question', '').strip()
+        
+        if not question:
+            return JsonResponse({'error': 'Savol bo\'sh'}, status=400)
+        
+        book = Book.objects.get(id=book_id)
+        
+        if not groq_client:
+            return JsonResponse({'error': 'AI xizmati mavjud emas'}, status=400)
+        
+        content = book.content[:6000] if book.content else ""
+        if not content and book.pages.exists():
+            content = "\n".join([p.text for p in book.pages.all()[:8]])[:6000]
+        
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"Sen {book.title} kitobi bo'yicha mutaxassissan. Savolga kitob asosida javob ber. O'zbek tilida qisqa va aniq javob ber."
+                },
+                {
+                    "role": "user",
+                    "content": f"Kitob matni:\n{content}\n\nSavol: {question}"
+                }
+            ],
+            temperature=0.7,
+            max_tokens=600
+        )
+        
+        answer = response.choices[0].message.content
+        
+        return JsonResponse({
+            'success': True,
+            'answer': answer
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+def get_similar_books(request):
+    """O'xshash kitoblarni topish"""
+    from .models import Book
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        book = Book.objects.get(id=book_id)
+        
+        # Muallif va kategoriya bo'yicha o'xshash (ManyToMany)
+        similar = Book.objects.filter(
+            models.Q(author=book.author) | models.Q(categories__in=book.categories.all())
+        ).exclude(id=book.id).distinct()[:8]
+        
+        results = [{
+            'id': b.id,
+            'title': b.title,
+            'author': b.author.name,
+            'cover': b.cover_image.url if b.cover_image else None,
+            'rating': b.average_rating
+        } for b in similar]
+        
+        return JsonResponse({'success': True, 'books': results})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+def categories_list(request):
+    """Kategoriyalar ro'yxati"""
+    from .models import Category
+    categories = Category.objects.all()
+    return render(request, 'blog/categories.html', {'categories': categories})
+
+
+def category_books(request, slug):
+    """Kategoriya bo'yicha kitoblar"""
+    from .models import Category, Book
+    from django.shortcuts import get_object_or_404
+    
+    category = get_object_or_404(Category, slug=slug)
+    books = category.books.all()  # ManyToMany related_name orqali
+    return render(request, 'blog/category_books.html', {'category': category, 'books': books})
+
+
+def top_books(request):
+    """Eng ko'p o'qilgan va yuqori baholangan kitoblar"""
+    from .models import Book, SearchQuery
+    from django.db.models import Avg
+    
+    # Eng ko'p ko'rilgan
+    most_viewed = Book.objects.order_by('-views_count')[:10]
+    
+    # Eng yuqori baholangan
+    top_rated = Book.objects.annotate(
+        avg_rating=Avg('ratings__rating')
+    ).filter(avg_rating__isnull=False).order_by('-avg_rating')[:10]
+    
+    # Eng ko'p qidirilgan so'zlar
+    top_searches = SearchQuery.objects.all()[:10]
+    
+    context = {
+        'most_viewed': most_viewed,
+        'top_rated': top_rated,
+        'top_searches': top_searches,
+    }
+    return render(request, 'blog/top_books.html', context)
+
+
+def new_books(request):
+    """Yangi qo'shilgan kitoblar"""
+    from .models import Book
+    books = Book.objects.order_by('-created_at')[:20]
+    return render(request, 'blog/new_books.html', {'books': books})
+
+
+def favorites_list(request):
+    """Foydalanuvchi sevimlilari"""
+    from .models import Favorite
+    
+    if not request.user.is_authenticated:
+        from django.shortcuts import redirect
+        return redirect('login')
+    
+    favorites = Favorite.objects.filter(user=request.user).select_related('book', 'book__author')
+    return render(request, 'blog/favorites.html', {'favorites': favorites})
+
+
+def user_profile(request):
+    """Foydalanuvchi profili"""
+    from .models import ReadingProgress, Favorite, BookRating
+    
+    if not request.user.is_authenticated:
+        from django.shortcuts import redirect
+        return redirect('login')
+    
+    reading_progress = ReadingProgress.objects.filter(user=request.user).select_related('book')
+    favorites_count = Favorite.objects.filter(user=request.user).count()
+    ratings_count = BookRating.objects.filter(user=request.user).count()
+    
+    completed_books = reading_progress.filter(is_completed=True).count()
+    in_progress = reading_progress.filter(is_completed=False)
+    
+    context = {
+        'user': request.user,
+        'reading_progress': in_progress[:10],
+        'favorites_count': favorites_count,
+        'ratings_count': ratings_count,
+        'completed_books': completed_books,
+        'total_books_read': reading_progress.count(),
+    }
+    return render(request, 'blog/profile.html', context)

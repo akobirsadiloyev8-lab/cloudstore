@@ -1,0 +1,166 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Kitoblar{% endblock %}
+
+{% block head %}
+<style>
+    .category-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    
+    .category-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .category-name {
+        font-size: 2rem;
+        color: var(--text-color, #333);
+        margin-bottom: 10px;
+    }
+    
+    .category-description {
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+    
+    .book-card {
+        background: var(--card-bg, #fff);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .book-cover {
+        height: 220px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 60px;
+        position: relative;
+    }
+    
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .book-rating {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.7);
+        color: #fbbf24;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .book-info {
+        padding: 20px;
+    }
+    
+    .book-title {
+        font-weight: 600;
+        color: var(--text-color, #333);
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+    }
+    
+    .book-author {
+        color: #6366f1;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .book-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #888;
+    }
+    
+    body.dark-mode .book-card {
+        background: #1e1e1e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <div class="category-header">
+        <div class="category-icon">
+            <i class="{{ category.icon|default:'fas fa-book' }}"></i>
+        </div>
+        <h1 class="category-name">{{ category.name }}</h1>
+        {% if category.description %}
+        <p class="category-description">{{ category.description }}</p>
+        {% endif %}
+        <p style="color:#666; margin-top:15px">{{ books.count }} ta kitob</p>
+    </div>
+    
+    <div class="books-grid">
+        {% for book in books %}
+        <a href="{% url 'book_detail' book.id %}" class="book-card">
+            <div class="book-cover">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                {% else %}
+                    <i class="fas fa-book"></i>
+                {% endif %}
+                {% if book.average_rating > 0 %}
+                <span class="book-rating">
+                    <i class="fas fa-star"></i> {{ book.average_rating|floatformat:1 }}
+                </span>
+                {% endif %}
+            </div>
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">{{ book.author.name }}</p>
+                <div class="book-meta">
+                    <span><i class="fas fa-eye"></i> {{ book.views_count }}</span>
+                    <span><i class="fas fa-file-alt"></i> {{ book.pages.count }} sahifa</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p style="text-align:center; grid-column:1/-1; color:#999; padding:50px;">
+            Bu kategoriyada kitoblar yo'q
+        </p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

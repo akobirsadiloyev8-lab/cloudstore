@@ -1,0 +1,99 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}Kategoriyalar{% endblock %}
+
+{% block head %}
+<style>
+    .categories-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+        text-align: center;
+        color: var(--text-color, #333);
+    }
+    
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+    }
+    
+    .category-card {
+        background: var(--card-bg, #fff);
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .category-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text-color, #333);
+    }
+    
+    .category-count {
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    body.dark-mode .category-card {
+        background: #1e1e1e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Orqaga tugmasi -->
+<a href="{% url 'boshlash' %}" class="back-btn" style="position:fixed; top:80px; left:20px; background:linear-gradient(45deg,#667eea,#764ba2); color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:600; z-index:999; display:flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(102,126,234,0.3);">
+    <i class="fas fa-arrow-left"></i> Orqaga
+</a>
+
+<div class="categories-container" style="position:relative; z-index:1; padding-top:30px;">
+    <h1 class="page-title"><i class="fas fa-folder-open"></i> Kategoriyalar</h1>
+    
+    <div class="categories-grid">
+        {% for category in categories %}
+        <a href="{% url 'category_books' category.slug %}" class="category-card">
+            <div class="category-icon">
+                <i class="{{ category.icon|default:'fas fa-book' }}"></i>
+            </div>
+            <h3 class="category-name">{{ category.name }}</h3>
+            <p class="category-count">{{ category.books.count }} ta kitob</p>
+        </a>
+        {% empty %}
+        <p style="text-align:center; grid-column:1/-1; color:#999; padding:50px;">
+            Hali kategoriyalar yo'q
+        </p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

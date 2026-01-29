@@ -24,6 +24,29 @@ urlpatterns = [
     path('ai-chat/', views.ai_chat, name='ai_chat'),
     path('api/get-file-content/', views.get_file_content, name='get_file_content'),
     path('api/ai-ask/', views.ai_ask, name='ai_ask'),
+    path('adabiyotlar/', views.adabiyotlar, name='adabiyotlar'),
+    path('kitoblar/', views.all_books, name='all_books'),
+    path('book-list/<int:author_id>/', views.book_list, name='book_list'),
+    path('api/search-books/', views.ai_search_books, name='ai_search_books'),
+    path('kitob-yuklash/', views.kitob_yuklash, name='kitob_yuklash'),
+    path('api/get-authors/', views.get_authors, name='get_authors'),
+    path('api/upload-zip/', views.upload_zip_books, name='upload_zip_books'),
+    
+    # Yangi funksiyalar
+    path('kitob/<int:book_id>/', views.book_detail, name='book_detail'),
+    path('kitob/<int:book_id>/read/', views.read_book, name='read_book'),
+    path('rate-book/', views.rate_book, name='rate_book'),
+    path('toggle-favorite/', views.toggle_favorite, name='toggle_favorite'),
+    path('save-progress/', views.save_reading_progress, name='save_reading_progress'),
+    path('get-summary/', views.get_book_summary, name='get_book_summary'),
+    path('ask-book/', views.ask_about_book, name='ask_about_book'),
+    path('similar-books/', views.get_similar_books, name='get_similar_books'),
+    path('kategoriyalar/', views.categories_list, name='categories'),
+    path('kategoriya/<slug:slug>/', views.category_books, name='category_books'),
+    path('top-kitoblar/', views.top_books, name='top_books'),
+    path('yangi-kitoblar/', views.new_books, name='new_books'),
+    path('sevimlilar/', views.favorites_list, name='favorites'),
+    path('profil/', views.user_profile, name='profile'),
 ]
 
 

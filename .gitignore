@@ -19,7 +19,11 @@ db.sqlite3
 db.sqlite3-journal
 
 # Static files (production)
-# staticfiles/
+staticfiles/
+
+# User uploads / generated outputs
+media/
+converted_files/
 
 # Environment
 .env

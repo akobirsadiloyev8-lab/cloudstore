@@ -34,3 +34,12 @@ env/
 # Temporary files
 temp_files/
 *.tmp
+
+# Django generated/output
+staticfiles/
+media/
+converted_files/
+
+# Local DB
+db.sqlite3
+db.sqlite3-journal

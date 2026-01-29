@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ author.name }} - Kitoblar</title>
+    <link rel="stylesheet" href="/static/blog/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .book-container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 40px; }
+        h1 { color: #764ba2; text-align: center; margin-bottom: 10px; }
+        .author-info { text-align: center; color: #666; margin-bottom: 30px; }
+        .author-bio { background: #f8f9fa; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; font-size: 0.95rem; color: #555; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #667eea; text-decoration: none; font-size: 1rem; }
+        .back-btn:hover { text-decoration: underline; }
+        
+        /* Author Header with Image */
+        .author-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 16px;
+        }
+        .author-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+        }
+        .author-image-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .author-details {
+            flex: 1;
+        }
+        .author-details h1 {
+            text-align: left;
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+        .author-details .author-years {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .author-details .author-bio-short {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .book-list { list-style: none; padding: 0; }
+        .book-item { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid #eee; }
+        .book-item:last-child { border-bottom: none; }
+        .book-icon { font-size: 1.5rem; color: #10a37f; }
+        .book-info { flex: 1; }
+        .book-title { font-size: 1.1rem; font-weight: 500; color: #333; display: block; }
+        .book-year { font-size: 0.85rem; color: #888; }
+        .book-description { font-size: 0.9rem; color: #666; margin-top: 5px; }
+        .book-download { color: #667eea; text-decoration: none; padding: 8px 16px; background: #eef2ff; border-radius: 6px; font-size: 0.9rem; }
+        .book-download:hover { background: #667eea; color: #fff; }
+        .empty-message { text-align: center; color: #888; padding: 40px; }
+        .search-box { width: 100%; padding: 12px 16px; margin-bottom: 24px; border-radius: 8px; border: 1px solid #eee; font-size: 1rem; }
+        
+        /* AI Qidiruv stillari */
+        .ai-search-section { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 30px;
+        }
+        .ai-search-section h3 { color: white; margin-bottom: 15px; font-size: 1.2rem; }
+        .ai-search-section p { color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 15px; }
+        .ai-search-form { display: flex; gap: 10px; }
+        .ai-search-input { 
+            flex: 1; 
+            padding: 14px 18px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1rem;
+            outline: none;
+        }
+        .ai-search-btn {
+            padding: 14px 24px;
+            background: #10a37f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        .ai-search-btn:hover { background: #0d8a6a; }
+        .ai-search-btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        /* AI natijalar */
+        .ai-results-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        .ai-results-container.active { display: block; }
+        .ai-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .ai-results-header h4 { color: #333; margin: 0; }
+        .close-results { 
+            background: none; 
+            border: none; 
+            font-size: 1.2rem; 
+            color: #666; 
+            cursor: pointer; 
+        }
+        .ai-response {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #10a37f;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(16, 163, 127, 0.1);
+        }
+        .ai-response-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #10a37f;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        .ai-response-text {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        .ai-response-label i {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .search-result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .search-result-item h5 { color: #333; margin: 0 0 5px 0; }
+        .search-result-item .author { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+        .search-result-item .snippet { 
+            color: #555; 
+            font-size: 0.9rem; 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .no-results { text-align: center; color: #666; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="book-container">
+        <a href="{% url 'adabiyotlar' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Orqaga</a>
+        
+        <!-- Author Header with Image -->
+        <div class="author-header">
+            {% if author.image %}
+            <img src="{{ author.image.url }}" alt="{{ author.name }}" class="author-image">
+            {% else %}
+            <div class="author-image-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+            {% endif %}
+            <div class="author-details">
+                <h1>{{ author.name }}</h1>
+                {% if author.birth_year or author.death_year %}
+                <p class="author-years">
+                    <i class="fas fa-calendar-alt"></i> {{ author.birth_year|default:"?" }} - {{ author.death_year|default:"hozir" }}
+                </p>
+                {% endif %}
+                {% if author.bio %}
+                <p class="author-bio-short">{{ author.bio|truncatewords:40 }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- AI Qidiruv bo'limi -->
+        <div class="ai-search-section">
+            <h3><i class="fas fa-robot"></i> Sun'iy intellekt bilan qidirish</h3>
+            <p>Kitoblar ichidan gap, so'z yoki mavzu bo'yicha aqlli qidiring</p>
+            <form class="ai-search-form" id="aiSearchForm">
+                <input type="text" class="ai-search-input" id="aiSearchQuery" 
+                       placeholder="Masalan: muhabbat haqida, tabiat tasvirlari, qahramonlar..." required>
+                <button type="submit" class="ai-search-btn" id="aiSearchBtn">
+                    <i class="fas fa-search"></i> Qidirish
+                </button>
+            </form>
+        </div>
+        
+        <!-- AI natijalari -->
+        <div class="ai-results-container" id="aiResultsContainer">
+            <div class="ai-results-header">
+                <h4><i class="fas fa-lightbulb"></i> Qidiruv natijalari</h4>
+                <button class="close-results" onclick="closeAIResults()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="aiResultsContent"></div>
+        </div>
+        
+        <h2 style="color: #333; margin-bottom: 20px;"><i class="fas fa-book"></i> Kitoblar ro'yxati</h2>
+        
+        <input type="text" id="searchInput" class="search-box" placeholder="Kitob nomini qidiring...">
+        
+        <ul class="book-list" id="bookList">
+            {% for book in books %}
+            <li class="book-item">
+                <span class="book-icon"><i class="fas fa-book-open"></i></span>
+                <div class="book-info">
+                    <span class="book-title">{{ book.title }}</span>
+                    {% if book.year_written %}
+                    <span class="book-year">Yozilgan yili: {{ book.year_written }}</span>
+                    {% endif %}
+                    {% if book.description %}
+                    <p class="book-description">{{ book.description|truncatewords:30 }}</p>
+                    {% endif %}
+                </div>
+                {% if book.file %}
+                <a href="{{ book.file.url }}" class="book-download" download><i class="fas fa-download"></i> Yuklab olish</a>
+                {% endif %}
+            </li>
+            {% empty %}
+            <li class="empty-message">
+                <i class="fas fa-info-circle"></i> Bu adib uchun hozircha kitoblar qo'shilmagan.
+            </li>
+            {% endfor %}
+        </ul>
+        <!-- Fikr qoldirish bo'limi -->
+        <section class="feedback-section" style="margin-top:40px;">
+            <div class="feedback-card" style="background:#f8f9fa;max-width:600px;margin:0 auto;padding:32px 24px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+                <h2 style="color:#333;margin-bottom:10px;font-size:1.5rem;">Kitob va adiblar haqida fikringiz</h2>
+                <p style="color:#666;margin-bottom:24px;">O'zingizning taklif va mulohazalaringizni yozib qoldiring</p>
+                <form method="post" action="{% url 'submit_feedback' %}" class="feedback-form">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <input type="text" name="name" placeholder="Ismingiz (ixtiyoriy)" class="form-control" style="width:100%;padding:12px;border-radius:8px;border:1px solid #eee;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <textarea name="message" placeholder="Fikringizni yozing..." required class="form-control" rows="4" style="width:100%;padding:12px;border-radius:8px;border:1px solid #eee;"></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="padding:12px 32px;background:linear-gradient(45deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;">Fikrni yuborish</button>
+                </form>
+            </div>
+        </section>
+        <script>
+        // Lotin-Krill konvertatsiya funksiyalari
+        const latinToCyrillic = {
+            'yo': 'ё', 'yu': 'ю', 'ya': 'я', 'ye': 'е', 'sh': 'ш', 'ch': 'ч', 'ng': 'нг',
+            "o'": 'ў', "g'": 'ғ', "O'": 'Ў', "G'": 'Ғ',
+            'Yo': 'Ё', 'Yu': 'Ю', 'Ya': 'Я', 'Ye': 'Е', 'Sh': 'Ш', 'Ch': 'Ч', 'Ng': 'Нг',
+            'YO': 'Ё', 'YU': 'Ю', 'YA': 'Я', 'YE': 'Е', 'SH': 'Ш', 'CH': 'Ч', 'NG': 'НГ',
+            'a': 'а', 'b': 'б', 'd': 'д', 'e': 'е', 'f': 'ф', 'g': 'г', 'h': 'ҳ',
+            'i': 'и', 'j': 'ж', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о',
+            'p': 'п', 'q': 'қ', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'v': 'в',
+            'x': 'х', 'y': 'й', 'z': 'з',
+            'A': 'А', 'B': 'Б', 'D': 'Д', 'E': 'Е', 'F': 'Ф', 'G': 'Г', 'H': 'Ҳ',
+            'I': 'И', 'J': 'Ж', 'K': 'К', 'L': 'Л', 'M': 'М', 'N': 'Н', 'O': 'О',
+            'P': 'П', 'Q': 'Қ', 'R': 'Р', 'S': 'С', 'T': 'Т', 'U': 'У', 'V': 'В',
+            'X': 'Х', 'Y': 'Й', 'Z': 'З'
+        };
+        
+        const cyrillicToLatin = {
+            'ё': 'yo', 'ю': 'yu', 'я': 'ya', 'ш': 'sh', 'ч': 'ch', 'ў': "o'", 'ғ': "g'",
+            'Ё': 'Yo', 'Ю': 'Yu', 'Я': 'Ya', 'Ш': 'Sh', 'Ч': 'Ch', 'Ў': "O'", 'Ғ': "G'",
+            'а': 'a', 'б': 'b', 'д': 'd', 'е': 'e', 'ф': 'f', 'г': 'g', 'ҳ': 'h',
+            'и': 'i', 'ж': 'j', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+            'п': 'p', 'қ': 'q', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'в': 'v',
+            'х': 'x', 'й': 'y', 'з': 'z', 'э': 'e', 'ъ': "'", 'ь': '',
+            'А': 'A', 'Б': 'B', 'Д': 'D', 'Е': 'E', 'Ф': 'F', 'Г': 'G', 'Ҳ': 'H',
+            'И': 'I', 'Ж': 'J', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O',
+            'П': 'P', 'Қ': 'Q', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'В': 'V',
+            'Х': 'X', 'Й': 'Y', 'З': 'Z', 'Э': 'E', 'Ъ': "'", 'Ь': ''
+        };
+        
+        function convertToLatin(text) {
+            let result = text;
+            for (let [cyr, lat] of Object.entries(cyrillicToLatin)) {
+                result = result.split(cyr).join(lat);
+            }
+            return result;
+        }
+        
+        function convertToCyrillic(text) {
+            let result = text;
+            const twoChar = ['yo', 'yu', 'ya', 'ye', 'sh', 'ch', 'ng', "o'", "g'", 
+                            'Yo', 'Yu', 'Ya', 'Ye', 'Sh', 'Ch', 'Ng', "O'", "G'",
+                            'YO', 'YU', 'YA', 'YE', 'SH', 'CH', 'NG'];
+            for (let key of twoChar) {
+                if (latinToCyrillic[key]) {
+                    result = result.split(key).join(latinToCyrillic[key]);
+                }
+            }
+            for (let [lat, cyr] of Object.entries(latinToCyrillic)) {
+                if (lat.length === 1) {
+                    result = result.split(lat).join(cyr);
+                }
+            }
+            return result;
+        }
+        
+        function matchesSearch(text, filter) {
+            const textLower = text.toLowerCase();
+            const filterLower = filter.toLowerCase();
+            if (textLower.includes(filterLower)) return true;
+            if (textLower.includes(convertToCyrillic(filterLower).toLowerCase())) return true;
+            if (textLower.includes(convertToLatin(filterLower).toLowerCase())) return true;
+            if (convertToLatin(textLower).includes(filterLower)) return true;
+            if (convertToCyrillic(textLower).includes(filterLower)) return true;
+            return false;
+        }
+        
+        const searchInput = document.getElementById('searchInput');
+        const bookList = document.getElementById('bookList');
+        searchInput.addEventListener('input', function() {
+            const filter = this.value;
+            const items = bookList.querySelectorAll('.book-item');
+            items.forEach(item => {
+                const title = item.querySelector('.book-title');
+                if (title) {
+                    if (filter === '' || matchesSearch(title.textContent, filter)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        });
+        
+        // AI Qidiruv funksiyalari
+        const aiSearchForm = document.getElementById('aiSearchForm');
+        const aiSearchQuery = document.getElementById('aiSearchQuery');
+        const aiSearchBtn = document.getElementById('aiSearchBtn');
+        const aiResultsContainer = document.getElementById('aiResultsContainer');
+        const aiResultsContent = document.getElementById('aiResultsContent');
+        
+        aiSearchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const query = aiSearchQuery.value.trim();
+            if (!query) return;
+            
+            // Loading holati
+            aiSearchBtn.disabled = true;
+            aiSearchBtn.innerHTML = '<span class="loading-spinner"></span> Qidirilmoqda...';
+            aiResultsContainer.classList.add('active');
+            aiResultsContent.innerHTML = '<div class="no-results"><i class="fas fa-spinner fa-spin"></i> AI tahlil qilmoqda...</div>';
+            
+            try {
+                const response = await fetch('{% url "ai_search_books" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        author_id: {{ author.id }}
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '';
+                    
+                    // Qidiruv tahlili ma'lumoti (tuzatilgan so'z, kalit so'zlar)
+                    if (data.search_info) {
+                        html += `<div style="background:#fff3e0; padding:10px 15px; border-radius:8px; margin-bottom:15px; color:#e65100; font-size:0.9rem;">
+                            <i class="fas fa-magic"></i> ${data.search_info}
+                        </div>`;
+                    }
+                    
+                    // AI javobi - faqat savollarga
+                    if (data.ai_response) {
+                        html += `
+                            <div class="ai-response">
+                                <div class="ai-response-label">
+                                    <i class="fas fa-robot"></i> AI Javobi
+                                </div>
+                                <div class="ai-response-text">${data.ai_response.replace(/\n/g, '<br>')}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Natijalar soni
+                    if (data.total_occurrences > 0) {
+                        html += `<div style="background:#e8f5e9; padding:10px 15px; border-radius:8px; margin:15px 0; color:#2e7d32;">
+                            <i class="fas fa-check-circle"></i> ${data.message}
+                        </div>`;
+                    }
+                    
+                    // Matnda topilgan joylar
+                    if (data.results && data.results.length > 0) {
+                        html += '<h5 style="margin: 15px 0 10px; color: #666;"><i class="fas fa-quote-left"></i> Kitoblarda topilgan joylar:</h5>';
+                        data.results.forEach(result => {
+                            const snippetHtml = result.snippet.replace(/\n/g, '<br>');
+                            html += `
+                                <div class="search-result-item">
+                                    <h5><i class="fas fa-book-open"></i> ${result.book_title}</h5>
+                                    <div class="author">Adib: ${result.author_name} | <span style='color:#10a37f; font-weight:600;'><i class="fas fa-file-alt"></i> ${result.page_number}-sahifa</span></div>
+                                    <div class="snippet">${snippetHtml}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (!data.ai_response && (!data.results || data.results.length === 0)) {
+                        html = '<div class="no-results"><i class="fas fa-search"></i> Hech narsa topilmadi</div>';
+                    }
+                    
+                    aiResultsContent.innerHTML = html;
+                } else {
+                    aiResultsContent.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-circle"></i> ${data.message || data.error || 'Xatolik yuz berdi'}</div>`;
+                }
+                
+            } catch (error) {
+                aiResultsContent.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-triangle"></i> Xatolik: ${error.message}</div>`;
+            } finally {
+                aiSearchBtn.disabled = false;
+                aiSearchBtn.innerHTML = '<i class="fas fa-search"></i> Qidirish';
+            }
+        });
+        
+        function closeAIResults() {
+            aiResultsContainer.classList.remove('active');
+            aiResultsContent.innerHTML = '';
+        }
+        </script>
+    </div>
+</body>
+</html>

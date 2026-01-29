@@ -1,0 +1,244 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}Sevimli Kitoblarim{% endblock %}
+
+{% block head %}
+<style>
+    .favorites-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+        text-align: center;
+        color: var(--text-color, #333);
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+    
+    .book-card {
+        background: var(--card-bg, #fff);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: flex;
+        transition: all 0.3s;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .book-cover {
+        width: 100px;
+        min-height: 150px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 35px;
+        flex-shrink: 0;
+    }
+    
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .book-info {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .book-title {
+        font-weight: 600;
+        color: var(--text-color, #333);
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+    
+    .book-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .book-title a:hover {
+        color: #6366f1;
+    }
+    
+    .book-author {
+        color: #6366f1;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .book-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 0.85rem;
+        color: #888;
+    }
+    
+    .book-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .btn-action {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-read {
+        background: #6366f1;
+        color: white;
+    }
+    
+    .btn-remove {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+    
+    .btn-remove:hover {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #999;
+    }
+    
+    .empty-state i {
+        font-size: 5rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state p {
+        margin-bottom: 20px;
+    }
+    
+    .empty-state a {
+        color: #6366f1;
+        text-decoration: none;
+    }
+    
+    body.dark-mode .book-card {
+        background: #1e1e1e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Orqaga tugmasi -->
+<a href="{% url 'boshlash' %}" class="back-btn" style="position:fixed; top:80px; left:20px; background:linear-gradient(45deg,#667eea,#764ba2); color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:600; z-index:999; display:flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(102,126,234,0.3);">
+    <i class="fas fa-arrow-left"></i> Orqaga
+</a>
+
+<div class="favorites-container" style="position:relative; z-index:1; padding-top:30px;">
+    <h1 class="page-title"><i class="fas fa-heart" style="color:#ef4444"></i> Sevimli Kitoblarim</h1>
+    
+    {% if favorites %}
+    <div class="books-grid">
+        {% for fav in favorites %}
+        <div class="book-card" id="fav-{{ fav.book.id }}">
+            <div class="book-cover">
+                {% if fav.book.cover_image %}
+                    <img src="{{ fav.book.cover_image.url }}" alt="{{ fav.book.title }}">
+                {% else %}
+                    <i class="fas fa-book"></i>
+                {% endif %}
+            </div>
+            <div class="book-info">
+                <div>
+                    <h3 class="book-title">
+                        <a href="{% url 'book_detail' fav.book.id %}">{{ fav.book.title }}</a>
+                    </h3>
+                    <p class="book-author">{{ fav.book.author.name }}</p>
+                    <div class="book-meta">
+                        <span><i class="fas fa-star" style="color:#fbbf24"></i> {{ fav.book.average_rating|floatformat:1 }}</span>
+                        <span><i class="fas fa-file-alt"></i> {{ fav.book.pages.count }} sahifa</span>
+                    </div>
+                </div>
+                <div class="book-actions">
+                    <a href="{% url 'read_book' fav.book.id %}" class="btn-action btn-read">
+                        <i class="fas fa-book-reader"></i> O'qish
+                    </a>
+                    <button class="btn-action btn-remove" onclick="removeFavorite({{ fav.book.id }})">
+                        <i class="fas fa-heart-broken"></i> O'chirish
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-heart-broken"></i>
+        <h3>Sevimli kitoblaringiz yo'q</h3>
+        <p>Kitoblarni o'qib, sevimlilar ro'yxatiga qo'shing</p>
+        <a href="{% url 'all_books' %}"><i class="fas fa-book"></i> Kitoblarni ko'rish</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// CSRF token olish
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+async function removeFavorite(bookId) {
+    if (!confirm("Sevimlilardan o'chirilsinmi?")) return;
+    
+    try {
+        const response = await fetch('/toggle-favorite/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({book_id: bookId})
+        });
+        
+        const data = await response.json();
+        if (!data.is_favorite) {
+            document.getElementById('fav-' + bookId).remove();
+            
+            // Check if empty
+            if (!document.querySelector('.book-card')) {
+                location.reload();
+            }
+        }
+    } catch (e) {
+        alert("Xatolik yuz berdi");
+    }
+}
+</script>
+{% endblock %}

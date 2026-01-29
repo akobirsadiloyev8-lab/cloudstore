@@ -1,0 +1,624 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - O'qish{% endblock %}
+
+{% block head %}
+<style>
+    .reader-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    /* View Mode Switcher */
+    .view-mode-switcher {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .view-mode-btn {
+        padding: 10px 20px;
+        border: 2px solid #6366f1;
+        background: transparent;
+        color: #6366f1;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .view-mode-btn.active {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border-color: transparent;
+    }
+    
+    .view-mode-btn:hover:not(.active) {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    /* PDF Viewer */
+    .pdf-viewer-container {
+        background: var(--card-bg, #fff);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+        display: none;
+    }
+    
+    .pdf-viewer-container.active {
+        display: block;
+    }
+    
+    .pdf-viewer {
+        width: 100%;
+        height: 85vh;
+        border: none;
+    }
+    
+    /* Text Reader */
+    .text-reader-container {
+        display: none;
+    }
+    
+    .text-reader-container.active {
+        display: block;
+    }
+    
+    .reader-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: var(--card-bg, #fff);
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .book-title-small {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color, #333);
+    }
+    
+    .reader-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .font-controls button {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    
+    .font-controls button:hover {
+        background: #f0f0f0;
+    }
+    
+    .reader-content {
+        background: var(--card-bg, #fff);
+        padding: 40px 60px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        min-height: 70vh;
+        line-height: 1.9;
+        font-size: 18px;
+        color: var(--text-color, #333);
+    }
+    
+    .reader-content.sepia {
+        background: #f4ecd8;
+    }
+    
+    .reader-content.dark {
+        background: #1a1a2e;
+        color: #e0e0e0;
+    }
+    
+    .page-content {
+        white-space: pre-wrap;
+        font-family: 'Georgia', serif;
+    }
+    
+    .page-navigation {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .nav-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .nav-btn-prev {
+        background: #f3f4f6;
+        color: #333;
+    }
+    
+    .nav-btn-next {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+    }
+    
+    .nav-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .page-indicator {
+        font-size: 1.1rem;
+        color: #666;
+    }
+    
+    .page-indicator input {
+        width: 60px;
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    
+    .progress-bar {
+        background: #eee;
+        height: 6px;
+        border-radius: 3px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        transition: width 0.3s;
+    }
+    
+    /* Settings Panel */
+    .settings-panel {
+        position: fixed;
+        right: -300px;
+        top: 0;
+        width: 300px;
+        height: 100%;
+        background: var(--card-bg, #fff);
+        box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+        padding: 30px;
+        transition: right 0.3s;
+        z-index: 1000;
+    }
+    
+    .settings-panel.open {
+        right: 0;
+    }
+    
+    .settings-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+    
+    .settings-section {
+        margin-bottom: 30px;
+    }
+    
+    .settings-section h4 {
+        margin-bottom: 15px;
+        color: #666;
+    }
+    
+    .theme-options {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .theme-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+    
+    .theme-btn.active {
+        border-color: #6366f1;
+    }
+    
+    .theme-light {
+        background: #fff;
+        border: 1px solid #ddd;
+    }
+    
+    .theme-sepia {
+        background: #f4ecd8;
+    }
+    
+    .theme-dark {
+        background: #1a1a2e;
+    }
+    
+    .slider-control {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .slider-control input[type="range"] {
+        flex: 1;
+    }
+    
+    /* Table of Contents */
+    .toc-toggle {
+        position: fixed;
+        left: 20px;
+        top: 100px;
+        background: var(--card-bg, #fff);
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        z-index: 100;
+    }
+    
+    .toc-panel {
+        position: fixed;
+        left: -320px;
+        top: 0;
+        width: 300px;
+        height: 100%;
+        background: var(--card-bg, #fff);
+        box-shadow: 5px 0 20px rgba(0,0,0,0.1);
+        padding: 30px;
+        transition: left 0.3s;
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    
+    .toc-panel.open {
+        left: 0;
+    }
+    
+    .toc-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .toc-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+    
+    .toc-list li:hover {
+        color: #6366f1;
+    }
+    
+    .toc-list li.active {
+        color: #6366f1;
+        font-weight: 600;
+    }
+    
+    /* Dark mode */
+    body.dark-mode .reader-header,
+    body.dark-mode .settings-panel,
+    body.dark-mode .toc-panel,
+    body.dark-mode .toc-toggle {
+        background: #1e1e1e;
+    }
+    
+    body.dark-mode .view-mode-btn {
+        border-color: #8b5cf6;
+        color: #8b5cf6;
+    }
+    
+    @media (max-width: 768px) {
+        .reader-content {
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        .toc-toggle {
+            display: none;
+        }
+        
+        .pdf-viewer {
+            height: 70vh;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Orqaga tugmasi -->
+<a href="{% url 'book_detail' book.id %}" class="back-btn" style="position:fixed; top:80px; left:20px; background:linear-gradient(45deg,#667eea,#764ba2); color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:600; z-index:999; display:flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(102,126,234,0.3);">
+    <i class="fas fa-arrow-left"></i> Orqaga
+</a>
+
+<div class="reader-container" style="position:relative; z-index:1; padding-top:30px;">
+    
+    {% if show_file and file_url %}
+    <!-- View Mode Switcher -->
+    <div class="view-mode-switcher">
+        <button class="view-mode-btn active" onclick="showViewMode('pdf')">
+            <i class="fas fa-file-pdf"></i> Asl fayl (PDF)
+        </button>
+        <button class="view-mode-btn" onclick="showViewMode('text')">
+            <i class="fas fa-align-left"></i> Matn ko'rinishi
+        </button>
+    </div>
+    
+    <!-- PDF Viewer -->
+    <div class="pdf-viewer-container active" id="pdfViewer">
+        <iframe src="{{ file_url }}" class="pdf-viewer" title="{{ book.title }}"></iframe>
+    </div>
+    {% endif %}
+    
+    <!-- Text Reader -->
+    <div class="text-reader-container {% if not show_file %}active{% endif %}" id="textReader">
+        <!-- Table of Contents Toggle -->
+        <div class="toc-toggle" onclick="toggleTOC()">
+            <i class="fas fa-list"></i> Sahifalar
+        </div>
+
+        <!-- Table of Contents Panel -->
+        <div class="toc-panel" id="tocPanel">
+            <button class="settings-close" onclick="toggleTOC()">&times;</button>
+            <h3>Sahifalar</h3>
+            <ul class="toc-list">
+                {% for page in pages %}
+                <li onclick="goToPage({{ page.page_number }})" 
+                    class="{% if page.page_number == current_page %}active{% endif %}">
+                    {{ page.page_number }}-sahifa
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Header -->
+        <div class="reader-header">
+            <span class="book-title-small">{{ book.title }}</span>
+            <div class="reader-controls">
+                <button onclick="toggleSettings()" title="Sozlamalar">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: {{ current_page|floatformat:0 }}%"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="reader-content" id="readerContent">
+            {% for page in pages %}
+            <div class="page-content" data-page="{{ page.page_number }}" 
+                 style="{% if page.page_number != current_page %}display:none{% endif %}">
+                {{ page.text }}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Navigation -->
+        <div class="page-navigation">
+            <button class="nav-btn nav-btn-prev" onclick="prevPage()" id="prevBtn">
+                <i class="fas fa-chevron-left"></i> Oldingi
+            </button>
+            
+            <div class="page-indicator">
+                <input type="number" id="pageInput" value="{{ current_page }}" min="1" max="{{ total_pages }}" 
+                       onchange="goToPage(this.value)"> / {{ total_pages }}
+            </div>
+            
+            <button class="nav-btn nav-btn-next" onclick="nextPage()" id="nextBtn">
+                Keyingi <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Panel -->
+<div class="settings-panel" id="settingsPanel">
+    <button class="settings-close" onclick="toggleSettings()">&times;</button>
+    <h3>Sozlamalar</h3>
+    
+    <div class="settings-section">
+        <h4>Tema</h4>
+        <div class="theme-options">
+            <button class="theme-btn theme-light active" onclick="setTheme('light')" title="Oq"></button>
+            <button class="theme-btn theme-sepia" onclick="setTheme('sepia')" title="Sepia"></button>
+            <button class="theme-btn theme-dark" onclick="setTheme('dark')" title="Qorong'u"></button>
+        </div>
+    </div>
+    
+    <div class="settings-section">
+        <h4>Shrift o'lchami</h4>
+        <div class="slider-control">
+            <span>A</span>
+            <input type="range" id="fontSizeSlider" min="14" max="28" value="18" 
+                   oninput="setFontSize(this.value)">
+            <span style="font-size:1.3rem">A</span>
+        </div>
+    </div>
+    
+    <div class="settings-section">
+        <h4>Qator oralig'i</h4>
+        <div class="slider-control">
+            <input type="range" id="lineHeightSlider" min="1.4" max="2.5" value="1.9" step="0.1"
+                   oninput="setLineHeight(this.value)">
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPage = {{ current_page }};
+const totalPages = {{ total_pages }};
+const bookId = {{ book.id }};
+
+function showPage(pageNum) {
+    document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+    const page = document.querySelector(`.page-content[data-page="${pageNum}"]`);
+    if (page) page.style.display = 'block';
+    
+    document.getElementById('pageInput').value = pageNum;
+    document.getElementById('progressFill').style.width = (pageNum / totalPages * 100) + '%';
+    
+    // Update TOC
+    document.querySelectorAll('.toc-list li').forEach(li => li.classList.remove('active'));
+    document.querySelector(`.toc-list li:nth-child(${pageNum})`)?.classList.add('active');
+    
+    // Save progress
+    saveProgress(pageNum);
+    
+    // Update buttons
+    document.getElementById('prevBtn').disabled = pageNum <= 1;
+    document.getElementById('nextBtn').disabled = pageNum >= totalPages;
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        showPage(currentPage);
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage);
+    }
+}
+
+function goToPage(pageNum) {
+    pageNum = parseInt(pageNum);
+    if (pageNum >= 1 && pageNum <= totalPages) {
+        currentPage = pageNum;
+        showPage(currentPage);
+    }
+}
+
+// CSRF token olish
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+async function saveProgress(pageNum) {
+    try {
+        await fetch('/save-progress/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                book_id: bookId,
+                current_page: pageNum
+            })
+        });
+    } catch (e) {
+        console.log('Progress save error');
+    }
+}
+
+// Settings
+function toggleSettings() {
+    document.getElementById('settingsPanel').classList.toggle('open');
+}
+
+function toggleTOC() {
+    document.getElementById('tocPanel').classList.toggle('open');
+}
+
+// View mode switching (PDF/Text)
+function showViewMode(mode) {
+    const pdfViewer = document.getElementById('pdfViewer');
+    const textReader = document.getElementById('textReader');
+    const buttons = document.querySelectorAll('.view-mode-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.closest('.view-mode-btn').classList.add('active');
+    
+    if (mode === 'pdf') {
+        if (pdfViewer) pdfViewer.classList.add('active');
+        if (textReader) textReader.classList.remove('active');
+    } else {
+        if (pdfViewer) pdfViewer.classList.remove('active');
+        if (textReader) textReader.classList.add('active');
+    }
+}
+
+function setTheme(theme) {
+    const content = document.getElementById('readerContent');
+    content.className = 'reader-content';
+    if (theme !== 'light') content.classList.add(theme);
+    
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.theme-${theme}`).classList.add('active');
+    
+    localStorage.setItem('reader-theme', theme);
+}
+
+function setFontSize(size) {
+    document.getElementById('readerContent').style.fontSize = size + 'px';
+    localStorage.setItem('reader-font-size', size);
+}
+
+function setLineHeight(height) {
+    document.getElementById('readerContent').style.lineHeight = height;
+    localStorage.setItem('reader-line-height', height);
+}
+
+// Load saved settings
+document.addEventListener('DOMContentLoaded', () => {
+    const theme = localStorage.getItem('reader-theme');
+    if (theme) setTheme(theme);
+    
+    const fontSize = localStorage.getItem('reader-font-size');
+    if (fontSize) {
+        setFontSize(fontSize);
+        document.getElementById('fontSizeSlider').value = fontSize;
+    }
+    
+    const lineHeight = localStorage.getItem('reader-line-height');
+    if (lineHeight) {
+        setLineHeight(lineHeight);
+        document.getElementById('lineHeightSlider').value = lineHeight;
+    }
+    
+    showPage(currentPage);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
+    if (e.key === 'ArrowLeft') prevPage();
+});
+</script>
+{% endblock %}

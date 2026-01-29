@@ -976,40 +976,75 @@
             });
 
             // Oddiy fayllarni ko'rsatish
-            html += uploadedFiles.map((file, index) => `
-                <div class="file-item">
-                    <div class="file-icon ${getFileIconClass(file.name)}">
-                        <i class="fas ${getFileIcon(file.name)}"></i>
-                    </div>
-                    <div class="file-info">
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-size">${file.size}</div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="action-btn btn-preview" onclick="previewFile(${index})">
-                            <i class="fas fa-eye"></i> Ko'rish
-                        </button>
-                        <button class="action-btn btn-preview" onclick="editFile(${index})">
-                            <i class="fas fa-edit"></i> Tahrirlash
-                        </button>
-                        <button class="action-btn btn-pdf" onclick="convertFile(${index}, 'pdf')">
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </button>
-                        <button class="action-btn btn-word" onclick="convertFile(${index}, 'docx')">
-                            <i class="fas fa-file-word"></i> Word
-                        </button>
-                        <button class="action-btn btn-excel" onclick="convertFile(${index}, 'xlsx')">
-                            <i class="fas fa-file-excel"></i> Excel
-                        </button>
-                        <button class="action-btn btn-txt" onclick="convertFile(${index}, 'txt')">
-                            <i class="fas fa-file-alt"></i> TXT
-                        </button>
-                        <button class="action-btn btn-delete" onclick="removeFile(${index})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            html += uploadedFiles.map((file, index) => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (ext === 'pdf') {
+                    // Faqat yuklab olish tugmasi (media papkasidan asl nom bilan)
+                    let mediaUrl = '';
+                    if (file.path.includes('media')) {
+                        // Agar path allaqachon media bilan boshlansa
+                        mediaUrl = file.path.replace(/\\/g, '/').replace(/^.*media\//, '/media/');
+                    } else {
+                        // Aks holda, to'g'ridan-to'g'ri path
+                        mediaUrl = '/media/' + file.name;
+                    }
+                    return `
+                        <div class="file-item">
+                            <div class="file-icon ${getFileIconClass(file.name)}">
+                                <i class="fas ${getFileIcon(file.name)}"></i>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-name">${file.name}</div>
+                                <div class="file-size">${file.size}</div>
+                            </div>
+                            <div class="file-actions">
+                                <a class="action-btn btn-pdf" href="${mediaUrl}" download="${file.name}">
+                                    <i class="fas fa-download"></i> Yuklab olish
+                                </a>
+                                <button class="action-btn btn-delete" onclick="removeFile(${index})">
+                                    <i class="fas fa-trash"></i> O'chirish
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Barcha tugmalar
+                    return `
+                        <div class="file-item">
+                            <div class="file-icon ${getFileIconClass(file.name)}">
+                                <i class="fas ${getFileIcon(file.name)}"></i>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-name">${file.name}</div>
+                                <div class="file-size">${file.size}</div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="action-btn btn-preview" onclick="previewFile(${index})">
+                                    <i class="fas fa-eye"></i> Ko'rish
+                                </button>
+                                <button class="action-btn btn-preview" onclick="editFile(${index})">
+                                    <i class="fas fa-edit"></i> Tahrirlash
+                                </button>
+                                <button class="action-btn btn-pdf" onclick="convertFile(${index}, 'pdf')">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                                <button class="action-btn btn-word" onclick="convertFile(${index}, 'docx')">
+                                    <i class="fas fa-file-word"></i> Word
+                                </button>
+                                <button class="action-btn btn-excel" onclick="convertFile(${index}, 'xlsx')">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                                <button class="action-btn btn-txt" onclick="convertFile(${index}, 'txt')">
+                                    <i class="fas fa-file-alt"></i> TXT
+                                </button>
+                                <button class="action-btn btn-delete" onclick="removeFile(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
             
             container.innerHTML = html;
         }

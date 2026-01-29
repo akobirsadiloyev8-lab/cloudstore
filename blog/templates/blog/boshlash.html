@@ -5,10 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Cloudstore</title>
+    <title>{% block title %}Cloudstore{% endblock %}</title>
     <link rel="stylesheet" href="/static/blog/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #fff;
+            --text-color: #333;
+            --text-secondary: #666;
+            --border-color: #eee;
+        }
+        
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-secondary: #aaa;
+            --border-color: #333;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -18,8 +34,95 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #f8f9fa;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode header nav.navbar {
+            background: rgba(30, 30, 30, 0.95);
+        }
+        
+        body.dark-mode .nav-buttons a {
+            background: rgba(50, 50, 50, 0.8);
+            color: #e0e0e0;
+            border-color: #444;
+        }
+        
+        body.dark-mode .upload-container,
+        body.dark-mode .upload-card {
+            background: var(--card-bg);
+        }
+        
+        body.dark-mode .upload-card h2,
+        body.dark-mode .upload-card p {
+            color: var(--text-color);
+        }
+        
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            background: none;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode-toggle:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+        
+        body.dark-mode .dark-mode-toggle:hover {
+            background: #fbbf24;
+            color: #1e1e1e;
+        }
+        
+        /* Nav Links Dropdown */
+        .nav-dropdown {
+            position: relative;
+        }
+        
+        .nav-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            min-width: 200px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 10px;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        
+        .nav-dropdown:hover .nav-dropdown-content {
+            display: block;
+        }
+        
+        .nav-dropdown-content a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .nav-dropdown-content a:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .nav-dropdown-content a i {
+            width: 25px;
+            color: #667eea;
         }
 
         /* Navigation */
@@ -686,6 +789,7 @@
             }
         }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <!-- Navigatsiya paneli -->
@@ -693,22 +797,51 @@
         <nav class="navbar">
             <div class="logo">Cloudstore</div>
             <div class="nav-buttons">
+                <!-- Dark Mode Toggle -->
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Tungi rejim">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                </button>
+                
                 {% if not user.is_authenticated %}
                 <a href="{% url 'login' %}" class="btn btn-primary">Kirish</a>
                 <a href="{% url 'register' %}" class="btn">Ro'yxatdan o'tish</a>
                 {% else %}
+                <!-- Kitoblar dropdown -->
+                <div class="nav-dropdown">
+                    <a href="{% url 'all_books' %}" class="btn"><i class="fas fa-book"></i> Kitoblar</a>
+                    <div class="nav-dropdown-content">
+                        <a href="{% url 'all_books' %}"><i class="fas fa-book"></i> Barcha kitoblar</a>
+                        <a href="{% url 'categories' %}"><i class="fas fa-folder-open"></i> Kategoriyalar</a>
+                        <a href="{% url 'new_books' %}"><i class="fas fa-sparkles"></i> Yangi kitoblar</a>
+                        <a href="{% url 'top_books' %}"><i class="fas fa-trophy"></i> TOP kitoblar</a>
+                        <a href="{% url 'kitob_yuklash' %}"><i class="fas fa-upload"></i> Kitob yuklash</a>
+                    </div>
+                </div>
+                
                 <a href="{% url 'preview' %}" class="btn">Fayllar</a>
                 <a href="{% url 'image_list' %}" class="btn">Rasmlar</a>
                 <a href="{% url 'ai_chat' %}" class="btn" style="background: linear-gradient(45deg, #10a37f, #1a7f5a); color: white;"><i class="fas fa-robot"></i> AI</a>
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn">Chiqish</button>
-                </form>
+                
+                <!-- Profil dropdown -->
+                <div class="nav-dropdown">
+                    <a href="{% url 'profile' %}" class="btn"><i class="fas fa-user"></i> {{ user.username }}</a>
+                    <div class="nav-dropdown-content">
+                        <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profilim</a>
+                        <a href="{% url 'favorites' %}"><i class="fas fa-heart"></i> Sevimlilar</a>
+                        <form method="post" action="{% url 'logout' %}" style="margin:0">
+                            {% csrf_token %}
+                            <button type="submit" style="width:100%; text-align:left; padding:10px 20px; background:none; border:none; cursor:pointer; color:var(--text-color);">
+                                <i class="fas fa-sign-out-alt" style="width:25px; color:#667eea"></i> Chiqish
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </nav>
     </header>
     
+    {% block content %}
 
     {% if messages %}
     <div class="messages" style="position: fixed; top: 80px; right: 20px; z-index: 1000;">
@@ -952,26 +1085,63 @@
         <div class="footer-bottom">
             <p>&copy; 2026 Cloudstore. Barcha huquqlar himoyalangan.</p>
         </div>
+    
+    {% endblock %}
+    
     <script>
-        document.getElementById('file-input').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                document.querySelector('.file-text').textContent = file.name;
-            } else {
-                document.querySelector('.file-text').textContent = 'Fayl tanlang';
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            updateDarkModeIcon();
+        }
+        
+        function updateDarkModeIcon() {
+            const icon = document.getElementById('darkModeIcon');
+            if (icon) {
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.className = 'fas fa-sun';
+                } else {
+                    icon.className = 'fas fa-moon';
+                }
             }
+        }
+        
+        // Load dark mode preference
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            updateDarkModeIcon();
         });
+        
+        // File input handlers
+        const fileInput = document.getElementById('file-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    document.querySelector('.file-text').textContent = file.name;
+                } else {
+                    document.querySelector('.file-text').textContent = 'Fayl tanlang';
+                }
+            });
+        }
 
-        document.getElementById('image-input').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const label = this.nextElementSibling;
-                label.querySelector('.file-text').textContent = file.name;
-            } else {
-                const label = this.nextElementSibling;
-                label.querySelector('.file-text').textContent = 'Rasm tanlang';
-            }
-        });
+        const imageInput = document.getElementById('image-input');
+        if (imageInput) {
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const label = this.nextElementSibling;
+                    label.querySelector('.file-text').textContent = file.name;
+                } else {
+                    const label = this.nextElementSibling;
+                    label.querySelector('.file-text').textContent = 'Rasm tanlang';
+                }
+            });
+        }
 
         function checkFeedbackPassword() {
             const password = document.getElementById('feedback-password').value;
