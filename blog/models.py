@@ -124,30 +124,58 @@ class Book(models.Model):
         self.pages.all().delete()
         
         if file_name.endswith('.pdf'):
-            # 1-usul: pypdf bilan urinish
             all_text = ""
-            try:
-                from pypdf import PdfReader
-                reader = PdfReader(file_path)
-                for i, page in enumerate(reader.pages):
-                    text = page.extract_text() or ''
-                    all_text += text
-                    BookPage.objects.create(book=self, page_number=i+1, text=text)
-            except Exception as e:
-                print(f"pypdf xatosi: {e}")
+            pages_created = False
             
-            # 2-usul: Agar pypdf matn ololmasa, LibreOffice bilan urinish
-            if not all_text.strip():
+            # 1-usul: pdfplumber - eng yaxshi strukturani saqlaydi
+            try:
+                import pdfplumber
+                with pdfplumber.open(file_path) as pdf:
+                    for i, page in enumerate(pdf.pages):
+                        # Asosiy matnni olish
+                        text = page.extract_text() or ''
+                        
+                        # Jadvallarni ham olish (agar bo'lsa)
+                        tables = page.extract_tables()
+                        if tables:
+                            for table in tables:
+                                for row in table:
+                                    if row:
+                                        row_text = ' | '.join([str(cell) if cell else '' for cell in row])
+                                        text += '\n' + row_text
+                        
+                        all_text += text
+                        if text.strip():
+                            BookPage.objects.create(book=self, page_number=i+1, text=text)
+                            pages_created = True
+                print(f"pdfplumber bilan {len(pdf.pages)} sahifa o'qildi")
+            except Exception as e:
+                print(f"pdfplumber xatosi: {e}")
+            
+            # 2-usul: pypdf - agar pdfplumber ishlamasa
+            if not all_text.strip() and not pages_created:
                 try:
-                    # Vaqtinchalik papka
+                    from pypdf import PdfReader
+                    reader = PdfReader(file_path)
+                    for i, page in enumerate(reader.pages):
+                        text = page.extract_text() or ''
+                        all_text += text
+                        if text.strip():
+                            BookPage.objects.create(book=self, page_number=i+1, text=text)
+                            pages_created = True
+                    print(f"pypdf bilan {len(reader.pages)} sahifa o'qildi")
+                except Exception as e:
+                    print(f"pypdf xatosi: {e}")
+            
+            # 3-usul: LibreOffice - oxirgi variant (skaner qilingan PDF uchun)
+            if not all_text.strip() and not pages_created:
+                try:
                     with tempfile.TemporaryDirectory() as temp_dir:
-                        # PDF ni TXT ga convert qilish (LibreOffice)
                         result = subprocess.run([
                             'soffice', '--headless', '--convert-to', 'txt:Text',
                             '--outdir', temp_dir, file_path
                         ], capture_output=True, timeout=120)
                         
-                        # TXT fayl nomini topish
                         base_name = os.path.splitext(os.path.basename(file_path))[0]
                         txt_path = os.path.join(temp_dir, f'{base_name}.txt')
                         
@@ -155,18 +183,16 @@ class Book(models.Model):
                             with open(txt_path, 'r', encoding='utf-8', errors='ignore') as f:
                                 content = f.read()
                             
-                            # Eski sahifalarni o'chirish (agar pypdf biror narsa yaratgan bo'lsa)
-                            self.pages.all().delete()
-                            
-                            # Har 2000 belgi = 1 sahifa
-                            page_size = 2000
-                            pages_text = [content[i:i+page_size] for i in range(0, len(content), page_size)]
-                            
-                            for i, page_text in enumerate(pages_text):
-                                if page_text.strip():
-                                    BookPage.objects.create(book=self, page_number=i+1, text=page_text)
-                            
-                            print(f"LibreOffice bilan {len(pages_text)} sahifa olindi")
+                            if content.strip():
+                                self.pages.all().delete()
+                                page_size = 2000
+                                pages_text = [content[i:i+page_size] for i in range(0, len(content), page_size)]
+                                
+                                for i, page_text in enumerate(pages_text):
+                                    if page_text.strip():
+                                        BookPage.objects.create(book=self, page_number=i+1, text=page_text)
+                                
+                                print(f"LibreOffice bilan {len(pages_text)} sahifa olindi")
                 except Exception as e:
                     print(f"LibreOffice PDF->TXT xatosi: {e}")
                     
