@@ -112,18 +112,64 @@ class Book(models.Model):
     def save_pages_from_file(self):
         """Fayldan matnni sahifalarga bo‘lib BookPage obyektlari sifatida saqlash"""
         from .models import BookPage
+        import os
+        import subprocess
+        import tempfile
+        
         if not self.file:
             return
         file_path = self.file.path
         file_name = self.file.name.lower()
-        # Avval eski sahifalarni o‘chir
+        # Avval eski sahifalarni o'chir
         self.pages.all().delete()
+        
         if file_name.endswith('.pdf'):
-            from pypdf import PdfReader
-            reader = PdfReader(file_path)
-            for i, page in enumerate(reader.pages):
-                text = page.extract_text() or ''
-                BookPage.objects.create(book=self, page_number=i+1, text=text)
+            # 1-usul: pypdf bilan urinish
+            all_text = ""
+            try:
+                from pypdf import PdfReader
+                reader = PdfReader(file_path)
+                for i, page in enumerate(reader.pages):
+                    text = page.extract_text() or ''
+                    all_text += text
+                    BookPage.objects.create(book=self, page_number=i+1, text=text)
+            except Exception as e:
+                print(f"pypdf xatosi: {e}")
+            
+            # 2-usul: Agar pypdf matn ololmasa, LibreOffice bilan urinish
+            if not all_text.strip():
+                try:
+                    # Vaqtinchalik papka
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        # PDF ni TXT ga convert qilish (LibreOffice)
+                        result = subprocess.run([
+                            'soffice', '--headless', '--convert-to', 'txt:Text',
+                            '--outdir', temp_dir, file_path
+                        ], capture_output=True, timeout=120)
+                        
+                        # TXT fayl nomini topish
+                        base_name = os.path.splitext(os.path.basename(file_path))[0]
+                        txt_path = os.path.join(temp_dir, f'{base_name}.txt')
+                        
+                        if os.path.exists(txt_path):
+                            with open(txt_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                content = f.read()
+                            
+                            # Eski sahifalarni o'chirish (agar pypdf biror narsa yaratgan bo'lsa)
+                            self.pages.all().delete()
+                            
+                            # Har 2000 belgi = 1 sahifa
+                            page_size = 2000
+                            pages_text = [content[i:i+page_size] for i in range(0, len(content), page_size)]
+                            
+                            for i, page_text in enumerate(pages_text):
+                                if page_text.strip():
+                                    BookPage.objects.create(book=self, page_number=i+1, text=page_text)
+                            
+                            print(f"LibreOffice bilan {len(pages_text)} sahifa olindi")
+                except Exception as e:
+                    print(f"LibreOffice PDF->TXT xatosi: {e}")
+                    
         elif file_name.endswith('.docx'):
             from docx import Document
             doc = Document(file_path)
@@ -133,6 +179,30 @@ class Book(models.Model):
             for i in range(0, len(paragraphs), page_size):
                 page_text = '\n'.join(paragraphs[i:i+page_size])
                 BookPage.objects.create(book=self, page_number=(i//page_size)+1, text=page_text)
+        elif file_name.endswith('.doc'):
+            # .doc fayllar uchun LibreOffice
+            try:
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    result = subprocess.run([
+                        'soffice', '--headless', '--convert-to', 'txt:Text',
+                        '--outdir', temp_dir, file_path
+                    ], capture_output=True, timeout=120)
+                    
+                    base_name = os.path.splitext(os.path.basename(file_path))[0]
+                    txt_path = os.path.join(temp_dir, f'{base_name}.txt')
+                    
+                    if os.path.exists(txt_path):
+                        with open(txt_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        
+                        page_size = 2000
+                        pages_text = [content[i:i+page_size] for i in range(0, len(content), page_size)]
+                        
+                        for i, page_text in enumerate(pages_text):
+                            if page_text.strip():
+                                BookPage.objects.create(book=self, page_number=i+1, text=page_text)
+            except Exception as e:
+                print(f"LibreOffice DOC->TXT xatosi: {e}")
         elif file_name.endswith('.txt'):
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
@@ -141,6 +211,30 @@ class Book(models.Model):
             for i in range(0, len(lines), page_size):
                 page_text = ''.join(lines[i:i+page_size])
                 BookPage.objects.create(book=self, page_number=(i//page_size)+1, text=page_text)
+        elif file_name.endswith(('.odt', '.rtf', '.ppt', '.pptx', '.xls', '.xlsx')):
+            # Boshqa formatlar uchun LibreOffice
+            try:
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    result = subprocess.run([
+                        'soffice', '--headless', '--convert-to', 'txt:Text',
+                        '--outdir', temp_dir, file_path
+                    ], capture_output=True, timeout=120)
+                    
+                    base_name = os.path.splitext(os.path.basename(file_path))[0]
+                    txt_path = os.path.join(temp_dir, f'{base_name}.txt')
+                    
+                    if os.path.exists(txt_path):
+                        with open(txt_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        
+                        page_size = 2000
+                        pages_text = [content[i:i+page_size] for i in range(0, len(content), page_size)]
+                        
+                        for i, page_text in enumerate(pages_text):
+                            if page_text.strip():
+                                BookPage.objects.create(book=self, page_number=i+1, text=page_text)
+            except Exception as e:
+                print(f"LibreOffice convert xatosi: {e}")
 
     class Meta:
         verbose_name = "Kitob"
