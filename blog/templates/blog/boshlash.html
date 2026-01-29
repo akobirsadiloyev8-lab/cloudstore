@@ -802,11 +802,7 @@
                     <i class="fas fa-moon" id="darkModeIcon"></i>
                 </button>
                 
-                {% if not user.is_authenticated %}
-                <a href="{% url 'login' %}" class="btn btn-primary">Kirish</a>
-                <a href="{% url 'register' %}" class="btn">Ro'yxatdan o'tish</a>
-                {% else %}
-                <!-- Kitoblar dropdown -->
+                <!-- Kitoblar dropdown - HAMMAGA ko'rinadi -->
                 <div class="nav-dropdown">
                     <a href="{% url 'all_books' %}" class="btn"><i class="fas fa-book"></i> Kitoblar</a>
                     <div class="nav-dropdown-content">
@@ -818,6 +814,11 @@
                     </div>
                 </div>
                 
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Kirish</a>
+                <a href="{% url 'register' %}" class="btn">Ro'yxatdan o'tish</a>
+                {% else %}
+                <!-- Fayllar va Rasmlar - faqat login qilganlarga -->
                 <a href="{% url 'preview' %}" class="btn">Fayllar</a>
                 <a href="{% url 'image_list' %}" class="btn">Rasmlar</a>
                 <a href="{% url 'ai_chat' %}" class="btn" style="background: linear-gradient(45deg, #10a37f, #1a7f5a); color: white;"><i class="fas fa-robot"></i> AI</a>
