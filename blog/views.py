@@ -52,11 +52,17 @@ def book_list(request, author_id):
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import os
-from groq import Groq
 
-# Groq AI sozlash
+# Groq AI sozlash (xavfsiz import)
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
-groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+groq_client = None
+try:
+    from groq import Groq
+    if GROQ_API_KEY:
+        groq_client = Groq(api_key=GROQ_API_KEY)
+except Exception:
+    # Import yoki versiya xatosi bo'lsa o'tkazib yuborish
+    groq_client = None
 
 @csrf_exempt
 def ai_search_books(request):
@@ -302,17 +308,24 @@ from ebooklib import epub
 import openpyxl
 import xlwt
 from PIL import Image as PILImage
-from groq import Groq
-import cloudconvert
 
-# Groq AI sozlash (environment variable'dan olish)
-GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
-groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+# Groq va CloudConvert - xavfsiz import
+try:
+    from groq import Groq
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+    groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+except Exception:
+    # Import yoki versiya xatosi bo'lsa o'tkazib yuborish
+    groq_client = None
 
-# CloudConvert API sozlash (faqat PDF → Word, HTML → PDF, Rasm → Word uchun)
-CLOUDCONVERT_API_KEY = os.environ.get('CLOUDCONVERT_API_KEY', '')
-if CLOUDCONVERT_API_KEY:
-    cloudconvert.configure(api_key=CLOUDCONVERT_API_KEY)
+try:
+    import cloudconvert
+    CLOUDCONVERT_API_KEY = os.environ.get('CLOUDCONVERT_API_KEY', '')
+    if CLOUDCONVERT_API_KEY:
+        cloudconvert.configure(api_key=CLOUDCONVERT_API_KEY)
+except Exception:
+    cloudconvert = None
+    CLOUDCONVERT_API_KEY = ''
 
 
 def boshlash(request):
