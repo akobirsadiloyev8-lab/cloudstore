@@ -292,6 +292,67 @@ except Exception as e:
     print(f"universal_pdf_converter import xatosi: {e}")
     convert_any_to_pdf = None
 
+# PDF o'qish uchun advanced function
+def extract_pdf_text_advanced(filepath):
+    """PDF matnini turli usullar bilan o'qish (fitz, pdfplumber, PyPDF2, OCR)"""
+    text = ""
+    
+    # 1-usul: PyMuPDF (fitz) - eng tez
+    try:
+        import fitz
+        doc = fitz.open(filepath)
+        text = "\n".join([page.get_text() for page in doc])
+        doc.close()
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"PyMuPDF xatosi: {e}")
+    
+    # 2-usul: pdfplumber - ko'proq matn topadi
+    try:
+        import pdfplumber
+        with pdfplumber.open(filepath) as pdf:
+            text = "\n".join([page.extract_text() or "" for page in pdf.pages])
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"pdfplumber xatosi: {e}")
+    
+    # 3-usul: PyPDF2 - boshqa format
+    try:
+        from pypdf import PdfReader
+        reader = PdfReader(filepath)
+        text = "\n".join([page.extract_text() for page in reader.pages])
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"PyPDF2 xatosi: {e}")
+    
+    # 4-usul: OCR (rasm matnlarni o'qish)
+    try:
+        import pytesseract
+        from pdf2image import convert_from_path
+        from PIL import Image
+        
+        # PDF'ni rasmlarga aylantirish
+        pages = convert_from_path(filepath, dpi=200, first_page=1, last_page=5)
+        ocr_text = ""
+        
+        for i, page in enumerate(pages):
+            page_text = pytesseract.image_to_string(page, lang='eng+uzb+rus')
+            ocr_text += f"\n--- Sahifa {i+1} ---\n{page_text}\n"
+        
+        if ocr_text and len(ocr_text.strip()) >= 20:
+            return ocr_text.strip()
+            
+    except ImportError:
+        return "OCR kutubxonalari o'rnatilmagan (pytesseract, pdf2image kerak)"
+    except Exception as e:
+        return f"OCR xatosi: {str(e)}"
+    
+    return 'PDF faylidan matn oqib bolmadi. Fayl shikastlangan yoki matn yoq bolishi mumkin.'
+
+
 # agar docx/pdf ishlatmoqchi bo'lsangiz, quyidagilarni import qiling:
 import docx
 from pypdf import PdfReader
@@ -548,41 +609,712 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 @csrf_exempt
 def upload_file(request):
-    if request.method == 'POST' and request.FILES.get('file'):
+    if request.method == 'POST':
         try:
-            uploaded_file = request.FILES['file']
-            
-            # Papka yuklash uchun - relative path ni tekshirish
-            relative_path = request.POST.get('relative_path', '')
-            is_folder_upload = request.POST.get('is_folder_upload', 'false') == 'true'
-            
-            # Faylni media/files papkasiga saqlash
-            from django.core.files.storage import default_storage
-            from django.core.files.base import ContentFile
-            
-            # Bazaga saqlash
-            file_instance = File(
-                user=request.user if request.user.is_authenticated else None,
-                file=uploaded_file
-            )
-            file_instance.save()
-            
-            # Saqlangan fayl yo'li
-            file_path = file_instance.file.path
-            
-            return JsonResponse({
-                'success': True,
-                'filename': os.path.basename(file_instance.file.name),
-                'filepath': file_path,
-                'size': uploaded_file.size,
-                'file_id': file_instance.id,
-                'relative_path': relative_path if is_folder_upload else ''
-            })
+            uploaded_file = request.FILES.get('file')
+            if uploaded_file:
+                # Fayl saqlash logikasi
+                file_path = os.path.join(settings.MEDIA_ROOT, 'files', uploaded_file.name)
+                with open(file_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+                return JsonResponse({'success': True, 'message': 'Fayl yuklandi'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Fayl tanlanmadi'})
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Fayl topilmadi'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+@csrf_exempt
+def convert_to_format(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            filepath = data.get('filepath')
+            output_format = data.get('format', 'pdf')
+            
+            if not filepath or not os.path.exists(filepath):
+                return JsonResponse({'success': False, 'error': 'Fayl topilmadi'})
+            
+            input_path = Path(filepath)
+            result = None
+            ext = input_path.suffix.lower()
+            output_path = OUTPUT_DIR / f"{input_path.stem}.{output_format}"
+            
+            # PDF ga konvertatsiya
+            if output_format == 'pdf':
+                output_path = OUTPUT_DIR / f"{input_path.stem}.pdf"
+                
+                # Python kutubxonalari orqali konvertatsiya (LibreOffice o'rniga)
+                if ext == '.docx':
+                    try:
+                        # docx faylni matn sifatida o'qish va PDF yaratish
+                        from docx import Document
+                        from reportlab.pdfgen import canvas
+                        from reportlab.lib.pagesizes import A4
+                        
+                        # DOCX'dan matn o'qish
+                        doc = Document(input_path)
+                        text = "\n".join([p.text for p in doc.paragraphs])
+                        
+                        # PDF yaratish
+                        c = canvas.Canvas(str(output_path), pagesize=A4)
+                        width, height = A4
+                        
+                        # Matnni PDF'ga yozish
+                        y_position = height - 50
+                        for line in text.split('\n'):
+                            if y_position < 50:
+                                c.showPage()
+                                y_position = height - 50
+                            if line.strip():  # Bo'sh qatorlarni o'tkazib yuborish
+                                c.drawString(50, y_position, line[:100])  # 100 belgigacha
+                                y_position -= 20
+                        
+                        c.save()
+                        result = str(output_path)
+                        print(f"✓ DOCX dan PDF yaratildi: {result}")
+                    except Exception as e:
+                        result = f"DOCX konvertatsiya xatosi: {str(e)}"
+                        print(f"✗ DOCX konvertatsiya xatosi: {str(e)}")
+                else:
+                    result = f"LibreOffice o'rnatilmagan. Faqat DOCX -> PDF qo'llab-quvvatlanadi."
+                
+                # Natijani qaytarish
+                if result:
+                    return JsonResponse({'success': True, 'output_file': result})
+                else:
+                    return JsonResponse({'success': False, 'error': 'Konvertatsiya amalga oshmadi'})
+                    
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def adabiyotlar(request):
+    from .models import Author
+    authors = Author.objects.all()
+    return render(request, 'blog/adabiyotlar.html', {'authors': authors})
+
+def all_books(request):
+    """Barcha kitoblarni ko'rsatish"""
+    from .models import Book, Category, Author
+    
+    books = Book.objects.all().select_related('author').prefetch_related('categories').order_by('-created_at')
+    categories = Category.objects.all()
+    authors = Author.objects.all()
+    
+    # Filter by category
+    category_slug = request.GET.get('category')
+    if category_slug:
+        books = books.filter(categories__slug=category_slug)
+    
+    # Filter by author
+    author_id = request.GET.get('author')
+    if author_id:
+        books = books.filter(author_id=author_id)
+    
+    # Search
+    search = request.GET.get('q')
+    if search:
+        books = books.filter(
+            models.Q(title__icontains=search) | 
+            models.Q(author__name__icontains=search)
+        )
+    
+    return render(request, 'blog/all_books.html', {
+        'books': books,
+        'categories': categories,
+        'authors': authors,
+        'current_category': category_slug,
+        'current_author': int(author_id) if author_id else None,
+        'search_query': search
+    })
+
+def book_list(request, author_id):
+    from .models import Author, Book
+    
+    author = get_object_or_404(Author, id=author_id)
+    books = Book.objects.filter(author=author)
+    return render(request, 'blog/book_list.html', {'author': author, 'books': books})
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import os
+
+# Groq AI sozlash (xavfsiz import)
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+groq_client = None
+try:
+    from groq import Groq
+    if GROQ_API_KEY:
+        groq_client = Groq(api_key=GROQ_API_KEY)
+except Exception:
+    # Import yoki versiya xatosi bo'lsa o'tkazib yuborish
+    groq_client = None
+
+@csrf_exempt
+def ai_search_books(request):
+    """Kitoblar ichidan AI bilan aqlli qidiruv"""
+    from .models import Book, Author, BookPage
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST so\'rov qabul qilinadi'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        original_query = data.get('query', '').strip()
+        author_id = data.get('author_id')
+        
+        if not original_query:
+            return JsonResponse({'error': 'Qidiruv so\'rovi bo\'sh'}, status=400)
+        
+        # Kitoblarni olish
+        if author_id:
+            books = Book.objects.filter(author_id=author_id)
+        else:
+            books = Book.objects.all()
+        
+        if not books.exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Kitoblar topilmadi'
+            })
+        
+        # 1-BOSQICH: AI so'rovni tahlil qilsin
+        search_terms = [original_query.lower()]  # Asosiy so'rov
+        ai_analysis = None
+        
+        if groq_client:
+            try:
+                analysis_prompt = f"""Foydalanuvchi qidiruv so'rovi: "{original_query}"
+
+Vazifang:
+1. Imloviy xatolarni tuzat (masalan: "muhabbat" -> "muhabbat", "kitop" -> "kitob")
+2. Agar bu savol bo'lsa - qidirilishi kerak bo'lgan kalit so'zlarni ajrat
+3. Agar bu gap bo'lsa - asosiy iboralarni ajrat
+4. Sinonimlar yoki yaqin ma'noli so'zlarni qo'sh
+
+MUHIM: Faqat JSON formatda javob ber, boshqa hech narsa yozma:
+{{"corrected": "tuzatilgan so'rov", "keywords": ["kalit1", "kalit2", "kalit3"], "is_question": true/false}}"""
+
+                analysis_completion = groq_client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "Sen matn tahlilchisisisan. Faqat JSON formatda javob ber."},
+                        {"role": "user", "content": analysis_prompt}
+                    ],
+                    model="llama-3.1-8b-instant",
+                    temperature=0.1,
+                    max_tokens=200
+                )
+                
+                ai_result = analysis_completion.choices[0].message.content.strip()
+                # JSON ni parse qilish
+                import re
+                json_match = re.search(r'\{[^{}]*\}', ai_result)
+                if json_match:
+                    ai_analysis = json.loads(json_match.group())
+                    # Tuzatilgan so'rovni qo'shish
+                    if ai_analysis.get('corrected'):
+                        corrected = ai_analysis['corrected'].lower()
+                        if corrected != original_query.lower() and corrected not in search_terms:
+                            search_terms.insert(0, corrected)
+                    # Kalit so'zlarni qo'shish
+                    if ai_analysis.get('keywords'):
+                        for kw in ai_analysis['keywords']:
+                            kw_lower = kw.lower().strip()
+                            if kw_lower and kw_lower not in search_terms and len(kw_lower) > 2:
+                                search_terms.append(kw_lower)
+            except Exception as e:
+                pass
+        
+        # 2-BOSQICH: Barcha kalit so'zlar bo'yicha qidirish
+        all_found_snippets = []
+        found_positions = set()  # Takrorlanishni oldini olish
+        relevant_texts = []
+        
+        for search_term in search_terms[:5]:  # Maksimum 5 ta term
+            for book in books:
+                pages = book.pages.all()
+                for page in pages:
+                    text_lower = (page.text or '').lower()
+                    start_pos = 0
+                    while True:
+                        idx = text_lower.find(search_term, start_pos)
+                        if idx == -1:
+                            break
+                        
+                        # Takrorlanishni tekshirish
+                        position_key = f"{book.id}-{page.page_number}-{idx}"
+                        if position_key in found_positions:
+                            start_pos = idx + 1
+                            continue
+                        found_positions.add(position_key)
+                        
+                        snippet_start = max(0, idx - 150)
+                        snippet_end = min(len(page.text), idx + len(search_term) + 150)
+                        snippet = page.text[snippet_start:snippet_end]
+                        highlight_start = idx - snippet_start
+                        highlight_end = highlight_start + len(search_term)
+                        highlighted_snippet = (
+                            snippet[:highlight_start] +
+                            f'<mark>{snippet[highlight_start:highlight_end]}</mark>' +
+                            snippet[highlight_end:]
+                        )
+                        all_found_snippets.append({
+                            'book_id': book.id,
+                            'book_title': book.title,
+                            'author_name': book.author.name,
+                            'snippet': f"...{highlighted_snippet}...",
+                            'page_number': page.page_number,
+                            'position': idx,
+                            'search_term': search_term
+                        })
+                        if len(relevant_texts) < 5:
+                            relevant_texts.append(f"[{book.title}, {page.page_number}-sahifa]: {snippet}")
+                        start_pos = idx + 1
+        
+        # 3-BOSQICH: Agar savol bo'lsa, AI javob bersin
+        ai_response = None
+        is_question = (ai_analysis and ai_analysis.get('is_question')) or original_query.endswith('?') or original_query.lower().startswith(('nima', 'kim', 'qanday', 'qachon', 'nega', 'qaysi', 'qayer', 'necha', 'qancha', 'nimaga'))
+        
+        if groq_client and is_question and relevant_texts:
+            try:
+                context = "\n\n".join(relevant_texts)
+                answer_prompt = f"""Savol: "{original_query}"
+
+Kitoblardan topilgan ma'lumotlar:
+{context}
+
+Vazifa: Shu ma'lumotlar asosida savolga qisqa javob ber (2-3 gap). O'zbek tilida."""
+
+                answer_completion = groq_client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "Sen yordamchi assistantsan. Savolga qisqa javob ber."},
+                        {"role": "user", "content": answer_prompt}
+                    ],
+                    model="llama-3.1-8b-instant",
+                    temperature=0.3,
+                    max_tokens=300
+                )
+                ai_response = answer_completion.choices[0].message.content
+            except:
+                pass
+        
+        # Natijalarni tartiblash
+        all_found_snippets.sort(key=lambda x: (x['book_title'], x['page_number'], x['position']))
+        total_occurrences = len(all_found_snippets)
+        unique_books = len(set(s['book_id'] for s in all_found_snippets))
+        
+        # Qidirilgan so'zlar haqida ma'lumot
+        search_info = None
+        if ai_analysis and ai_analysis.get('corrected') and ai_analysis['corrected'].lower() != original_query.lower():
+            search_info = f"Tuzatildi: \"{ai_analysis['corrected']}\""
+        if len(search_terms) > 1:
+            search_info = (search_info + " | " if search_info else "") + f"Qidirildi: {', '.join(search_terms[:3])}"
+        
+        return JsonResponse({
+            'success': True,
+            'results': all_found_snippets[:20],
+            'ai_response': ai_response,
+            'search_info': search_info,
+            'message': f"'{original_query}' bo'yicha {total_occurrences} ta natija topildi ({unique_books} ta kitobda)" if total_occurrences > 0 else f"'{original_query}' kitoblardan topilmadi",
+            'total_occurrences': total_occurrences,
+            'unique_books': unique_books
+        })
+            
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Noto\'g\'ri JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+import os
+import sys
+import tempfile
+import traceback
+import json
+import re
+import time
+import shutil
+import subprocess
+import base64
+import html as html_module
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, Http404, JsonResponse
+from django.core.files.storage import FileSystemStorage
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from .forms import ImageForm
+from .models import Image, Feedback, File
+
+# LibreOffice konverter - Word, Excel, PowerPoint uchun
+try:
+    # Asosiy papkadan import qilish
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from libreoffice_converter import (
+        convert_to_pdf_with_libreoffice,
+        convert_libreoffice_format,
+        is_libreoffice_available
+    )
+except ImportError as e:
+    print(f"LibreOffice converter import xatosi: {e}")
+    # Agar import qilib bo'lmasa, None qilib qo'yamiz
+    convert_to_pdf_with_libreoffice = None
+    convert_libreoffice_format = None
+    is_libreoffice_available = lambda: False
+
+# Universal PDF converter (zaxira usul)
+try:
+    # Root papkadan import qilish
+    import sys
+    from pathlib import Path
+    root_path = str(Path(__file__).resolve().parent.parent.parent)
+    if root_path not in sys.path:
+        sys.path.insert(0, root_path)
+    from universal_pdf_converter import convert_any_to_pdf
+except Exception as e:
+    print(f"universal_pdf_converter import xatosi: {e}")
+    convert_any_to_pdf = None
+
+# PDF o'qish uchun advanced function
+def extract_pdf_text_advanced(filepath):
+    """PDF matnini turli usullar bilan o'qish (fitz, pdfplumber, PyPDF2, OCR)"""
+    text = ""
+    
+    # 1-usul: PyMuPDF (fitz) - eng tez
+    try:
+        import fitz
+        doc = fitz.open(filepath)
+        text = "\n".join([page.get_text() for page in doc])
+        doc.close()
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"PyMuPDF xatosi: {e}")
+    
+    # 2-usul: pdfplumber - ko'proq matn topadi
+    try:
+        import pdfplumber
+        with pdfplumber.open(filepath) as pdf:
+            text = "\n".join([page.extract_text() or "" for page in pdf.pages])
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"pdfplumber xatosi: {e}")
+    
+    # 3-usul: PyPDF2 - boshqa format
+    try:
+        from pypdf import PdfReader
+        reader = PdfReader(filepath)
+        text = "\n".join([page.extract_text() for page in reader.pages])
+        if text and len(text.strip()) >= 50:
+            return text.strip()
+    except Exception as e:
+        print(f"PyPDF2 xatosi: {e}")
+    
+    # 4-usul: OCR (rasm matnlarni o'qish)
+    try:
+        import pytesseract
+        from pdf2image import convert_from_path
+        from PIL import Image
+        
+        # PDF'ni rasmlarga aylantirish
+        pages = convert_from_path(filepath, dpi=200, first_page=1, last_page=5)
+        ocr_text = ""
+        
+        for i, page in enumerate(pages):
+            page_text = pytesseract.image_to_string(page, lang='eng+uzb+rus')
+            ocr_text += f"\n--- Sahifa {i+1} ---\n{page_text}\n"
+        
+        if ocr_text and len(ocr_text.strip()) >= 20:
+            return ocr_text.strip()
+            
+    except ImportError:
+        return "OCR kutubxonalari o'rnatilmagan (pytesseract, pdf2image kerak)"
+    except Exception as e:
+        return f"OCR xatosi: {str(e)}"
+    
+    return 'PDF faylidan matn oqib bolmadi. Fayl shikastlangan yoki matn yoq bolishi mumkin.'
+
+
+# agar docx/pdf ishlatmoqchi bo'lsangiz, quyidagilarni import qiling:
+import docx
+from pypdf import PdfReader
+from io import BytesIO
+import zipfile
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
+
+from odf import text as odf_text, teletype
+from odf.opendocument import OpenDocumentText
+from ebooklib import epub
+
+import openpyxl
+import xlwt
+from PIL import Image as PILImage
+
+# Groq va CloudConvert - xavfsiz import
+try:
+    from groq import Groq
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+    groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+except Exception:
+    # Import yoki versiya xatosi bo'lsa o'tkazib yuborish
+    groq_client = None
+
+try:
+    import cloudconvert
+    CLOUDCONVERT_API_KEY = os.environ.get('CLOUDCONVERT_API_KEY', '')
+    if CLOUDCONVERT_API_KEY:
+        cloudconvert.configure(api_key=CLOUDCONVERT_API_KEY)
+except Exception:
+    cloudconvert = None
+    CLOUDCONVERT_API_KEY = ''
+
+
+def boshlash(request):
+    context = {}
+    if request.method == "POST":
+        if 'upload_image' in request.POST:
+            form = ImageForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.instance.user = request.user
+                form.save()
+                return redirect('image_list')
+        elif request.FILES.get("uploaded_file"):
+            uploaded_file = request.FILES["uploaded_file"]
+
+            file_instance = File(user=request.user, file=uploaded_file)
+            file_instance.save()
+            filename = file_instance.file.name
+            return redirect('preview', filename=filename)
+
+    return render(request, "blog/boshlash.html", context)
+
+
+def preview_files(request):
+    # Bazadan fayllarni olish
+    from django.conf import settings
+    
+    existing_files = []
+    
+    # Bazadagi fayllar - faqat o'z foydalanuvchining fayllari
+    if request.user.is_authenticated:
+        db_files = File.objects.filter(user=request.user).order_by('-uploaded_at')
+    else:
+        # Login qilmagan foydalanuvchilar uchun faqat user=None bo'lgan fayllar
+        db_files = File.objects.filter(user=None).order_by('-uploaded_at')
+    
+    for f in db_files:
+        if f.file and os.path.exists(f.file.path):
+            existing_files.append({
+                'id': f.id,
+                'name': os.path.basename(f.file.name),
+                'path': f.file.path,
+                'size': os.path.getsize(f.file.path),
+                'uploaded_at': f.uploaded_at
+            })
+    
+    return render(request, 'blog/malumot.html', {'existing_files': existing_files})
+
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+@csrf_exempt
+def preview_file_content(request):
+    # converter/views.py dagi preview_file_content funksiyasi
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            filepath = data.get('filepath')
+            if not filepath or not os.path.exists(filepath):
+                return JsonResponse({'success': False, 'error': 'Fayl topilmadi'})
+            file_path = filepath
+            ext = os.path.splitext(file_path)[1].lower()
+            filename = os.path.basename(file_path)
+            text_extensions = ['.txt', '.html', '.htm', '.css', '.js', '.py', '.json', '.xml', '.csv', '.md']
+            image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg']
+            pdf_extensions = ['.pdf']
+            result = {
+                'success': True,
+                'filename': filename,
+                'file_type': 'unknown',
+                'content': None,
+                'preview_url': None
+            }
+            if ext in text_extensions:
+                result['file_type'] = 'text'
+                encodings = ['utf-8', 'cp1251', 'latin-1', 'utf-16']
+                content = None
+                for encoding in encodings:
+                    try:
+                        with open(filepath, 'r', encoding=encoding) as f:
+                            content = f.read()
+                        break
+                    except:
+                        continue
+                if content is None:
+                    with open(filepath, 'rb') as f:
+                        content = f.read().decode('utf-8', errors='replace')
+                result['content'] = content
+            elif ext in image_extensions:
+                result['file_type'] = 'image'
+                import base64
+                with open(filepath, 'rb') as f:
+                    image_data = base64.b64encode(f.read()).decode('utf-8')
+                mime_types = {
+                    '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+                    '.png': 'image/png', '.gif': 'image/gif',
+                    '.bmp': 'image/bmp', '.webp': 'image/webp',
+                    '.svg': 'image/svg+xml'
+                }
+                mime = mime_types.get(ext, 'image/png')
+                result['content'] = f'data:{mime};base64,{image_data}'
+            elif ext in pdf_extensions:
+                result['file_type'] = 'pdf'
+                # Faqat PyMuPDF (fitz) orqali PDF matnini o'qish
+                try:
+                    import fitz
+                    doc = fitz.open(filepath)
+                    text = "\n".join([page.get_text() for page in doc])
+                    if text and text.strip():
+                        result['content'] = text
+                    else:
+                        result['content'] = 'PDF faylidan matn o‘qib bo‘lmadi yoki fayl bo‘sh.'
+                except Exception as e:
+                    result['content'] = f'PDF matnini o‘qishda xatolik: {str(e)}'
+            elif ext in ['.doc', '.docx']:
+                result['file_type'] = 'document'
+                content = None
+                try:
+                    from docx import Document
+                    from docx.shared import Pt
+                    doc = Document(filepath)
+                    
+                    # Word faylini HTML formatiga o'tkazish
+                    html_parts = ['<div class="word-document">']
+                    
+                    for element in doc.element.body:
+                        if element.tag.endswith('p'):  # Paragraf
+                            for para in doc.paragraphs:
+                                if para._element == element:
+                                    style_name = para.style.name if para.style else ''
+                                    text = para.text.strip()
+                                    if not text:
+                                        continue
+                                    
+                                    # Sarlavhalarni aniqlash
+                                    if 'Heading 1' in style_name or style_name == 'Title':
+                                        html_parts.append(f'<h1>{text}</h1>')
+                                    elif 'Heading 2' in style_name:
+                                        html_parts.append(f'<h2>{text}</h2>')
+                                    elif 'Heading 3' in style_name:
+                                        html_parts.append(f'<h3>{text}</h3>')
+                                    elif 'Heading' in style_name:
+                                        html_parts.append(f'<h4>{text}</h4>')
+                                    else:
+                                        # Oddiy paragraf - bold/italic tekshirish
+                                        formatted_text = ''
+                                        for run in para.runs:
+                                            run_text = run.text
+                                            if run.bold and run.italic:
+                                                formatted_text += f'<strong><em>{run_text}</em></strong>'
+                                            elif run.bold:
+                                                formatted_text += f'<strong>{run_text}</strong>'
+                                            elif run.italic:
+                                                formatted_text += f'<em>{run_text}</em>'
+                                            else:
+                                                formatted_text += run_text
+                                        if formatted_text.strip():
+                                            html_parts.append(f'<p>{formatted_text}</p>')
+                                    break
+                        
+                        elif element.tag.endswith('tbl'):  # Jadval
+                            for table in doc.tables:
+                                if table._element == element:
+                                    html_parts.append('<table class="word-table">')
+                                    for i, row in enumerate(table.rows):
+                                        html_parts.append('<tr>')
+                                        for cell in row.cells:
+                                            tag = 'th' if i == 0 else 'td'
+                                            html_parts.append(f'<{tag}>{cell.text}</{tag}>')
+                                        html_parts.append('</tr>')
+                                    html_parts.append('</table>')
+                                    break
+                    
+                    html_parts.append('</div>')
+                    content = '\n'.join(html_parts)
+                    result['file_type'] = 'html_document'
+                    
+                except Exception as e:
+                    # Oddiy matn sifatida o'qish
+                    try:
+                        from docx import Document
+                        doc = Document(filepath)
+                        paragraphs = [para.text for para in doc.paragraphs if para.text.strip()]
+                        content = '\n\n'.join(paragraphs)
+                    except:
+                        pass
+                
+                if not content:
+                    try:
+                        import textract
+                        content = textract.process(str(filepath)).decode('utf-8', errors='replace')
+                    except Exception as e:
+                        content = "Word faylini o'qib bo'lmadi. python-docx yoki textract kutubxonasi kerak."
+                result['content'] = content
+            elif ext in ['.xls', '.xlsx']:
+                result['file_type'] = 'spreadsheet'
+                try:
+                    import pandas as pd
+                    df = pd.read_excel(filepath)
+                    result['content'] = df.to_html(classes='excel-table', index=False)
+                except:
+                    result['content'] = 'Excel faylini o\'qib bo\'lmadi. pandas va openpyxl kerak.'
+            else:
+                result['file_type'] = 'binary'
+                result['content'] = 'Bu fayl turini ko\'rib bo\'lmaydi.'
+            return JsonResponse(result)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'POST kerak'})
+
+
+# Upload va convert funksiyalari
+from pathlib import Path
+from django.conf import settings
+
+TEMP_DIR = Path(settings.BASE_DIR) / 'temp_files'
+TEMP_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR = Path(settings.BASE_DIR) / 'converted_files'
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+@csrf_exempt
+def upload_file(request):
+    if request.method == 'POST':
+        try:
+            uploaded_file = request.FILES.get('file')
+            if uploaded_file:
+                # Fayl saqlash logikasi
+                file_path = os.path.join(settings.MEDIA_ROOT, 'files', uploaded_file.name)
+                with open(file_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+                return JsonResponse({'success': True, 'message': 'Fayl yuklandi'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Fayl tanlanmadi'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 
 @csrf_exempt
@@ -2060,11 +2792,16 @@ def kitob_yuklash(request):
             messages.error(request, "Kitob fayli yuklanishi shart!")
             return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
         
-        # Fayl formatini tekshirish
-        allowed_extensions = ['.pdf', '.docx', '.doc', '.txt']
+        # Fayl formatini tekshirish - PDF qabul qilinmaydi!
+        allowed_extensions = ['.docx', '.doc', '.txt']
         file_ext = os.path.splitext(book_file.name)[1].lower()
+        
+        if file_ext == '.pdf':
+            messages.error(request, "❌ PDF format qabul qilinmaydi! Iltimos Word formatda (.docx, .doc) yuklang.")
+            return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
+        
         if file_ext not in allowed_extensions:
-            messages.error(request, f"Faqat {', '.join(allowed_extensions)} formatdagi fayllar qabul qilinadi!")
+            messages.error(request, f"Faqat {', '.join(allowed_extensions)} formatdagi fayllar qabul qilinadi! PDF qabul qilinmaydi.")
             return render(request, 'blog/kitob_yuklash.html', {'authors': Author.objects.all()})
         
         # Muallif tanlash yoki yangi yaratish
@@ -2400,7 +3137,7 @@ def book_detail(request, book_id):
 
 @login_required
 def read_book(request, book_id):
-    """Kitobni online o'qish - LibreOffice bilan PDF ko'rsatish"""
+    """Kitobni online o'qish - DOCX asl ko'rinishda, PDF LibreOffice bilan"""
     from .models import Book, ReadingProgress
     from django.shortcuts import get_object_or_404
     from django.conf import settings
@@ -2415,6 +3152,7 @@ def read_book(request, book_id):
     # Fayl mavjud bo'lsa uni ko'rsatish
     file_url = None
     show_file = False
+    is_docx = False
     
     if book.file:
         file_path = book.file.path
@@ -2424,30 +3162,16 @@ def read_book(request, book_id):
             # PDF to'g'ridan-to'g'ri ko'rsatiladi
             file_url = book.file.url
             show_file = True
-        elif file_name.endswith(('.doc', '.docx', '.odt', '.txt', '.rtf')):
-            # LibreOffice bilan PDF ga convert qilish
-            try:
-                pdf_dir = os.path.join(os.path.dirname(file_path), 'converted_pdfs')
-                os.makedirs(pdf_dir, exist_ok=True)
-                
-                base_name = os.path.splitext(os.path.basename(file_path))[0]
-                pdf_path = os.path.join(pdf_dir, f'{base_name}.pdf')
-                
-                # PDF mavjud bo'lmasa yoki eski bo'lsa convert qilish
-                if not os.path.exists(pdf_path) or os.path.getmtime(file_path) > os.path.getmtime(pdf_path):
-                    # LibreOffice bilan convert
-                    result = subprocess.run([
-                        'soffice', '--headless', '--convert-to', 'pdf',
-                        '--outdir', pdf_dir, file_path
-                    ], capture_output=True, timeout=60)
-                
-                if os.path.exists(pdf_path):
-                    # Media URL yaratish
-                    relative_path = os.path.relpath(pdf_path, settings.MEDIA_ROOT)
-                    file_url = settings.MEDIA_URL + relative_path.replace('\\', '/')
-                    show_file = True
-            except Exception as e:
-                print(f"LibreOffice convert xatosi: {e}")
+            is_docx = False
+        elif file_name.endswith(('.docx', '.doc')):
+            # DOCX/DOC to'g'ridan-to'g'ri docx-preview.js orqali ko'rsatiladi
+            file_url = book.file.url
+            show_file = True
+            is_docx = True
+        elif file_name.endswith(('.odt', '.txt', '.rtf')):
+            # Boshqa formatlar - faqat matn rejimida ko'rsatish
+            show_file = False
+            is_docx = False
     
     if request.user.is_authenticated:
         progress, created = ReadingProgress.objects.get_or_create(
@@ -2467,6 +3191,7 @@ def read_book(request, book_id):
         'total_pages': pages.count(),
         'file_url': file_url,
         'show_file': show_file,
+        'is_docx': is_docx,
     }
     return render(request, 'blog/read_book.html', context)
 
@@ -2783,13 +3508,69 @@ def favorites_list(request):
     return render(request, 'blog/favorites.html', {'favorites': favorites})
 
 
+@login_required
+def delete_account(request):
+    """Foydalanuvchi akkauntini va uning fayllarini o'chirish"""
+    from .models import Image, File
+    import os
+    
+    if request.method == 'POST':
+        user = request.user
+        
+        # Foydalanuvchi yuklagan rasmlarni o'chirish
+        user_images = Image.objects.filter(user=user)
+        for img in user_images:
+            if img.image and os.path.exists(img.image.path):
+                try:
+                    os.remove(img.image.path)
+                except:
+                    pass
+        user_images.delete()
+        
+        # Foydalanuvchi yuklagan fayllarni o'chirish
+        user_files = File.objects.filter(user=user)
+        for f in user_files:
+            if f.file and os.path.exists(f.file.path):
+                try:
+                    os.remove(f.file.path)
+                except:
+                    pass
+        user_files.delete()
+        
+        # Akkauntni o'chirish
+        from django.contrib.auth import logout
+        logout(request)
+        user.delete()
+        
+        return redirect('boshlash')
+    
+    return redirect('profile')
+
+
 def user_profile(request):
-    """Foydalanuvchi profili"""
+    """Foydalanuvchi profili va parol o'zgartirish"""
     from .models import ReadingProgress, Favorite, BookRating
+    from .forms_password import CustomPasswordChangeForm
+    from django.contrib.auth import update_session_auth_hash
     
     if not request.user.is_authenticated:
         from django.shortcuts import redirect
         return redirect('login')
+    
+    password_change_success = False
+    password_change_error = None
+
+    if request.method == 'POST' and 'change_password' in request.POST:
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Session'ni yangilash
+            password_change_success = True
+            form = CustomPasswordChangeForm(user=request.user)  # Form'ni tozalash
+        else:
+            password_change_error = form.errors
+    else:
+        form = CustomPasswordChangeForm(user=request.user)
     
     reading_progress = ReadingProgress.objects.filter(user=request.user).select_related('book')
     favorites_count = Favorite.objects.filter(user=request.user).count()
@@ -2805,5 +3586,8 @@ def user_profile(request):
         'ratings_count': ratings_count,
         'completed_books': completed_books,
         'total_books_read': reading_progress.count(),
+        'password_form': form,
+        'password_change_success': password_change_success,
+        'password_change_error': password_change_error,
     }
     return render(request, 'blog/profile.html', context)

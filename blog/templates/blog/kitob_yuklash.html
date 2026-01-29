@@ -29,6 +29,13 @@
             margin: 0 auto;
         }
 
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -38,7 +45,6 @@
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 10px;
-            margin-bottom: 20px;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
@@ -46,6 +52,10 @@
         .back-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateX(-5px);
+        }
+
+        .books-btn:hover {
+            transform: translateX(5px);
         }
 
         .header {
@@ -600,9 +610,14 @@
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'boshlash' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Orqaga
-        </a>
+        <div class="nav-buttons">
+            <a href="{% url 'boshlash' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'all_books' %}" class="back-btn books-btn">
+                <i class="fas fa-book-open"></i> Kitoblar ro'yxati
+            </a>
+        </div>
 
         <div class="header">
             <h1><i class="fas fa-book"></i> Kitob yuklash</h1>
@@ -630,9 +645,7 @@
             <button class="tab-btn active" data-tab="single">
                 <i class="fas fa-file"></i> Bitta kitob
             </button>
-            <button class="tab-btn" data-tab="zip">
-                <i class="fas fa-file-zipper"></i> ZIP papka (AI)
-            </button>
+            <!-- ZIP papka yuklash tugmasi olib tashlandi -->
         </div>
 
         <div class="form-card">
@@ -714,7 +727,7 @@
                         </div>
                         <div class="format-info">
                             <i class="fas fa-info-circle"></i>
-                            Qabul qilinadigan formatlar: PDF, DOCX, DOC, TXT
+                            Qabul qilinadigan formatlar:  DOCX, DOC, TXT
                         </div>
                     </div>
 
@@ -724,61 +737,7 @@
                 </form>
             </div>
 
-            <!-- Tab 2: ZIP Upload with AI -->
-            <div class="tab-content" id="zip">
-                <div class="zip-info">
-                    <h3><i class="fas fa-magic"></i> AI avtomatik yuklash</h3>
-                    <ul>
-                        <li><i class="fas fa-check"></i> ZIP papka ichidagi barcha kitoblar avtomatik yuklanadi</li>
-                        <li><i class="fas fa-check"></i> AI kitob matnini o'qib muallif, nom, yil va tavsifni aniqlaydi</li>
-                        <li><i class="fas fa-check"></i> Har bir kitob alohida bazaga saqlanadi</li>
-                        <li><i class="fas fa-check"></i> Qo'llab-quvvatlanadigan formatlar: PDF, DOCX, DOC, TXT</li>
-                    </ul>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-file-zipper"></i> ZIP papka <span class="required">*</span></label>
-                    <div class="file-upload" id="zipUpload">
-                        <input type="file" id="zipFile" accept=".zip">
-                        <div class="file-upload-icon">
-                            <i class="fas fa-file-zipper"></i>
-                        </div>
-                        <div class="file-upload-text">
-                            <strong>ZIP faylni tanlash</strong> yoki bu yerga tashlang
-                        </div>
-                    </div>
-                    <div class="file-info" id="zipFileInfo">
-                        <i class="fas fa-file-check"></i>
-                        <span id="zipFileName"></span>
-                    </div>
-                </div>
-
-                <button type="button" class="submit-btn" id="zipSubmitBtn" onclick="uploadZip()">
-                    <i class="fas fa-robot"></i> AI bilan yuklash
-                </button>
-
-                <!-- Progress -->
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 100%"></div>
-                    </div>
-                    <p class="progress-text" id="progressText">
-                        <i class="fas fa-spinner fa-spin"></i> AI kitoblarni tahlil qilmoqda...
-                    </p>
-                </div>
-
-                <!-- Results -->
-                <div class="results-container" id="resultsContainer">
-                    <div class="results-header">
-                        <h3><i class="fas fa-list-check"></i> Natijalar</h3>
-                        <div class="results-stats">
-                            <span class="stat" id="successCount">✅ 0 ta yuklandi</span>
-                            <span class="stat" id="errorCount">❌ 0 ta xato</span>
-                        </div>
-                    </div>
-                    <div class="results-list" id="resultsList"></div>
-                </div>
-            </div>
+            <!-- ZIP papka yuklash bo'limi olib tashlandi -->
         </div>
     </div>
 
@@ -825,39 +784,21 @@
             }
         });
 
-        // ZIP file upload
-        const zipInput = document.getElementById('zipFile');
-        const zipFileInfo = document.getElementById('zipFileInfo');
-        const zipFileName = document.getElementById('zipFileName');
-
-        zipInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                zipFileName.textContent = this.files[0].name;
-                zipFileInfo.classList.add('show');
-            } else {
-                zipFileInfo.classList.remove('show');
-            }
-        });
-
-        // Drag and drop for both
-        ['fileUpload', 'zipUpload'].forEach(id => {
+        // Drag and drop faqat bitta kitob uchun
+        ['fileUpload'].forEach(id => {
             const upload = document.getElementById(id);
-            
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 upload.addEventListener(eventName, e => {
                     e.preventDefault();
                     e.stopPropagation();
                 });
             });
-
             ['dragenter', 'dragover'].forEach(eventName => {
                 upload.addEventListener(eventName, () => upload.classList.add('dragover'));
             });
-
             ['dragleave', 'drop'].forEach(eventName => {
                 upload.addEventListener(eventName, () => upload.classList.remove('dragover'));
             });
-
             upload.addEventListener('drop', function(e) {
                 const files = e.dataTransfer.files;
                 const input = this.querySelector('input');

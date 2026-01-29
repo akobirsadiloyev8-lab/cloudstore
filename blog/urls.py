@@ -47,6 +47,7 @@ urlpatterns = [
     path('yangi-kitoblar/', views.new_books, name='new_books'),
     path('sevimlilar/', views.favorites_list, name='favorites'),
     path('profil/', views.user_profile, name='profile'),
+    path('delete-account/', views.delete_account, name='delete_account'),
 ]
 
 

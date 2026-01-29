@@ -252,6 +252,34 @@
         <p class="profile-email">{{ user.email }}</p>
     </div>
     
+    <!-- Password Change Form -->
+    <div class="section" style="margin-bottom: 30px;">
+        <h2 class="section-title">
+            <i class="fas fa-key"></i> Parolni o'zgartirish
+        </h2>
+        {% if password_change_success %}
+            <div style="color: green; margin-bottom: 10px;">Parolingiz muvaffaqiyatli o'zgartirildi.</div>
+        {% elif password_change_error %}
+            <div style="color: red; margin-bottom: 10px;">
+                Parolni o'zgartirishda xatolik:
+                <ul>
+                {% for field, errors in password_change_error.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <form method="post" style="max-width:400px; margin:auto;">
+            {% csrf_token %}
+            {{ password_form.new_password1.label_tag }}<br>
+            {{ password_form.new_password1 }}<br><br>
+            {{ password_form.new_password2.label_tag }}<br>
+            {{ password_form.new_password2 }}<br><br>
+            <button type="submit" name="change_password" style="background:#6366f1; color:white; border:none; padding:10px 25px; border-radius:8px; font-size:1rem;">Parolni o'zgartirish</button>
+        </form>
+    </div>
     <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-card">
@@ -351,5 +379,55 @@
             </a>
         </div>
     </div>
+    
+    <!-- Akkauntni o'chirish -->
+    <div class="section" style="border: 2px solid #ef4444;">
+        <h2 class="section-title" style="color:#ef4444;">
+            <i class="fas fa-exclamation-triangle"></i> Xavfli zona
+        </h2>
+        <p style="color:#666; margin-bottom:20px;">Akkauntingizni o'chirsangiz, barcha ma'lumotlaringiz (yuklangan fayllar, rasmlar, o'qish tarixi) butunlay yo'qoladi va qayta tiklab bo'lmaydi.</p>
+        <button onclick="showDeleteModal()" style="padding:12px 25px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer; font-size:1rem;">
+            <i class="fas fa-trash-alt"></i> Akkauntni o'chirish
+        </button>
+    </div>
 </div>
+
+<!-- O'chirish tasdiqlash modali -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; border-radius:15px; max-width:400px; text-align:center; margin:20px;">
+        <div style="width:80px; height:80px; background:#fee2e2; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <i class="fas fa-exclamation-triangle" style="font-size:2.5rem; color:#ef4444;"></i>
+        </div>
+        <h2 style="color:#ef4444; margin-bottom:15px;">Haqiqatan ham o'chirmoqchimisiz?</h2>
+        <p style="color:#666; margin-bottom:25px;">Bu amalni ortga qaytarib bo'lmaydi. Barcha ma'lumotlaringiz yo'qoladi.</p>
+        <form method="post" action="{% url 'delete_account' %}">
+            {% csrf_token %}
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button type="button" onclick="hideDeleteModal()" style="padding:12px 25px; background:#e5e7eb; color:#333; border:none; border-radius:8px; cursor:pointer; font-size:1rem;">
+                    <i class="fas fa-times"></i> Bekor qilish
+                </button>
+                <button type="submit" style="padding:12px 25px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer; font-size:1rem;">
+                    <i class="fas fa-trash-alt"></i> Ha, o'chirish
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Modal tashqarisiga bosilganda yopish
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideDeleteModal();
+    }
+});
+</script>
 {% endblock %}

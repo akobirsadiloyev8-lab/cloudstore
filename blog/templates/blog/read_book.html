@@ -4,6 +4,9 @@
 {% block title %}{{ book.title }} - O'qish{% endblock %}
 
 {% block head %}
+<!-- docx-preview.js kutubxonasi -->
+<script src="https://unpkg.com/jszip@3.7.1/dist/jszip.min.js"></script>
+<script src="https://unpkg.com/docx-preview@0.1.20/dist/docx-preview.min.js"></script>
 <style>
     .reader-container {
         max-width: 1100px;
@@ -57,6 +60,32 @@
         width: 100%;
         height: 85vh;
         border: none;
+    }
+    
+    /* DOCX Viewer */
+    .docx-viewer-container {
+        background: var(--card-bg, #fff);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+        display: none;
+        padding: 20px;
+    }
+    
+    .docx-viewer-container.active {
+        display: block;
+    }
+    
+    #docx-container {
+        width: 100%;
+        min-height: 85vh;
+        background: white;
+        border-radius: 10px;
+        overflow: auto;
+    }
+    
+    #docx-container .docx-wrapper {
+        padding: 40px;
     }
     
     /* Text Reader */
@@ -365,18 +394,36 @@
     {% if show_file and file_url %}
     <!-- View Mode Switcher -->
     <div class="view-mode-switcher">
+        {% if is_docx %}
+        <button class="view-mode-btn active" onclick="showViewMode('docx')">
+            <i class="fas fa-file-word"></i> Asl ko'rinish (Word)
+        </button>
+        {% else %}
         <button class="view-mode-btn active" onclick="showViewMode('pdf')">
             <i class="fas fa-file-pdf"></i> Asl fayl (PDF)
         </button>
+        {% endif %}
         <button class="view-mode-btn" onclick="showViewMode('text')">
             <i class="fas fa-align-left"></i> Matn ko'rinishi
         </button>
     </div>
     
+    {% if is_docx %}
+    <!-- DOCX Viewer -->
+    <div class="docx-viewer-container active" id="docxViewer">
+        <div id="docx-container">
+            <div style="text-align:center; padding:40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem; color:#6366f1;"></i>
+                <p style="margin-top:10px;">Word fayl yuklanmoqda...</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
     <!-- PDF Viewer -->
     <div class="pdf-viewer-container active" id="pdfViewer">
         <iframe src="{{ file_url }}" class="pdf-viewer" title="{{ book.title }}"></iframe>
     </div>
+    {% endif %}
     {% endif %}
     
     <!-- Text Reader -->
@@ -556,9 +603,10 @@ function toggleTOC() {
     document.getElementById('tocPanel').classList.toggle('open');
 }
 
-// View mode switching (PDF/Text)
+// View mode switching (DOCX/PDF/Text)
 function showViewMode(mode) {
     const pdfViewer = document.getElementById('pdfViewer');
+    const docxViewer = document.getElementById('docxViewer');
     const textReader = document.getElementById('textReader');
     const buttons = document.querySelectorAll('.view-mode-btn');
     
@@ -567,12 +615,59 @@ function showViewMode(mode) {
     
     if (mode === 'pdf') {
         if (pdfViewer) pdfViewer.classList.add('active');
+        if (docxViewer) docxViewer.classList.remove('active');
+        if (textReader) textReader.classList.remove('active');
+    } else if (mode === 'docx') {
+        if (pdfViewer) pdfViewer.classList.remove('active');
+        if (docxViewer) docxViewer.classList.add('active');
         if (textReader) textReader.classList.remove('active');
     } else {
         if (pdfViewer) pdfViewer.classList.remove('active');
+        if (docxViewer) docxViewer.classList.remove('active');
         if (textReader) textReader.classList.add('active');
     }
 }
+
+// DOCX faylni yuklash va ko'rsatish
+async function loadDocxFile(url) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        const container = document.getElementById('docx-container');
+        container.innerHTML = '';
+        
+        await docx.renderAsync(blob, container, null, {
+            className: 'docx-wrapper',
+            inWrapper: true,
+            ignoreWidth: false,
+            ignoreHeight: false,
+            ignoreFonts: false,
+            breakPages: true,
+            useBase64URL: true,
+            renderHeaders: true,
+            renderFooters: true,
+            renderFootnotes: true,
+            renderEndnotes: true
+        });
+        
+        console.log('DOCX fayl muvaffaqiyatli yuklandi');
+    } catch (error) {
+        console.error('DOCX yuklashda xato:', error);
+        document.getElementById('docx-container').innerHTML = 
+            '<div style="text-align:center; padding:40px; color:#ef4444;">' +
+            '<i class="fas fa-exclamation-circle" style="font-size:2rem;"></i>' +
+            '<p style="margin-top:10px;">Word faylni yuklashda xato. Matn ko\'rinishidan foydalaning.</p>' +
+            '</div>';
+    }
+}
+
+// Sahifa yuklanganda DOCX yuklash
+document.addEventListener('DOMContentLoaded', () => {
+    {% if is_docx and file_url %}
+    loadDocxFile('{{ file_url }}');
+    {% endif %}
+});
 
 function setTheme(theme) {
     const content = document.getElementById('readerContent');

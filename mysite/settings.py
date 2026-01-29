@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import gc
 from dotenv import load_dotenv
+
+# RAM tejash uchun garbage collection optimizatsiyasi
+gc.set_threshold(700, 10, 10)  # Tez-tez garbage collection
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +32,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-4qu^cip^$6^ikf-3*e+y47j$0@#mfd%luznci+ey1c2s$pn4-a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+DEBUG = True  # Development uchun yoqilgan
 
 ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1']
 
@@ -108,7 +112,7 @@ if os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
+            conn_max_age=60,
             conn_health_checks=True,
         )
     }
@@ -159,10 +163,30 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
 # Fayllar uchun papkalarni yaratish
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'files'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'images'), exist_ok=True)
+
+# Vaqtinchalik fayllar uchun maxsus papka (media/tmp)
+import tempfile
+TEMP_DIR = os.path.join(MEDIA_ROOT, 'tmp')
+os.makedirs(TEMP_DIR, exist_ok=True)
+
+# Django fayl yuklash vaqtinchalik papkasini sozlash
+FILE_UPLOAD_TEMP_DIR = TEMP_DIR
+
+# 1MB dan katta fayllar to'g'ridan-to'g'ri diskka yoziladi (RAM tejash uchun)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576  # 1MB
+
+# Maksimal upload hajmi (RAM himoyasi)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
+# Session cleanup sozlamalari
+SESSION_COOKIE_AGE = 86400  # 1 kun (24 soat)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = False  # Har so'rovda session save qilmaslik
 
 # Shriftlar papkasi
 FONTS_ROOT = os.path.join(BASE_DIR, 'fonts')
@@ -170,6 +194,23 @@ os.makedirs(FONTS_ROOT, exist_ok=True)
 
 LOGIN_REDIRECT_URL = 'boshlash'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Session'larni database'da saqlash (RAM tejash uchun)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Cache'ni file'ga saqlash (RAM tejash uchun)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,  # Maksimal cache entry'lar soni
+        }
+    }
+}
+
+# Cache papkasini yaratish
+os.makedirs(os.path.join(BASE_DIR, 'cache'), exist_ok=True)
 
 # CSRF sozlamalari (Render.com uchun)
 CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
@@ -194,12 +235,12 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'WARNING',
+        'level': 'ERROR',  # Faqat xatolarni yozish (RAM tejash)
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'level': 'ERROR',  # Minimal logging
             'propagate': False,
         },
     },

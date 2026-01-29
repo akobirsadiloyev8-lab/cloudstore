@@ -86,6 +86,19 @@
             color: #1e1e1e;
         }
         
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 10002;
+        }
+        
         /* Nav Links Dropdown */
         .nav-dropdown {
             position: relative;
@@ -96,15 +109,19 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: var(--card-bg);
+            background: var(--card-bg, white);
             min-width: 200px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             border-radius: 10px;
             padding: 10px 0;
-            z-index: 1000;
+            z-index: 10003;
         }
         
         .nav-dropdown:hover .nav-dropdown-content {
+            display: block;
+        }
+        
+        .nav-dropdown.active .nav-dropdown-content {
             display: block;
         }
         
@@ -133,7 +150,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            z-index: 1000;
+            z-index: 10001;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -623,21 +640,62 @@
             header nav.navbar {
                 padding: 10px 15px;
                 flex-wrap: wrap;
+                position: fixed;
+                z-index: 10001;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                order: 2;
             }
             
             .navbar .logo {
                 font-size: 1.4rem;
+                order: 1;
             }
             
             .nav-buttons {
+                display: none;
+                width: 100%;
+                flex-direction: column;
                 gap: 8px;
-                flex-wrap: wrap;
-                justify-content: center;
+                padding-top: 15px;
+                order: 3;
+            }
+            
+            .nav-buttons.active {
+                display: flex;
             }
             
             .nav-buttons a, .nav-buttons button {
-                padding: 6px 12px;
-                font-size: 0.8rem;
+                padding: 12px 15px;
+                font-size: 0.95rem;
+                width: 100%;
+                text-align: center;
+                border-radius: 10px;
+            }
+            
+            .nav-dropdown {
+                width: 100%;
+            }
+            
+            .nav-dropdown > a {
+                width: 100%;
+                display: block;
+            }
+            
+            .nav-dropdown-content {
+                position: static;
+                width: 100%;
+                box-shadow: none;
+                background: rgba(102, 126, 234, 0.05);
+                border-radius: 10px;
+                margin-top: 5px;
+            }
+            
+            .dark-mode-toggle {
+                order: 0;
+                margin-right: auto;
             }
             
             .hero {
@@ -796,15 +854,21 @@
     <header>
         <nav class="navbar">
             <div class="logo">Cloudstore</div>
-            <div class="nav-buttons">
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars" id="mobileMenuIcon"></i>
+            </button>
+            
+            <div class="nav-buttons" id="navButtons">
                 <!-- Dark Mode Toggle -->
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Tungi rejim">
                     <i class="fas fa-moon" id="darkModeIcon"></i>
                 </button>
                 
                 <!-- Kitoblar dropdown - HAMMAGA ko'rinadi -->
-                <div class="nav-dropdown">
-                    <a href="{% url 'all_books' %}" class="btn"><i class="fas fa-book"></i> Kitoblar</a>
+                <div class="nav-dropdown" onclick="toggleDropdown(this)">
+                    <a href="{% url 'all_books' %}" class="btn" onclick="event.stopPropagation()"><i class="fas fa-book"></i> Kitoblar</a>
                     <div class="nav-dropdown-content">
                         <a href="{% url 'all_books' %}"><i class="fas fa-book"></i> Barcha kitoblar</a>
                         <a href="{% url 'categories' %}"><i class="fas fa-folder-open"></i> Kategoriyalar</a>
@@ -1090,6 +1154,39 @@
     {% endblock %}
     
     <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navButtons = document.getElementById('navButtons');
+            const menuIcon = document.getElementById('mobileMenuIcon');
+            navButtons.classList.toggle('active');
+            
+            if (navButtons.classList.contains('active')) {
+                menuIcon.className = 'fas fa-times';
+            } else {
+                menuIcon.className = 'fas fa-bars';
+            }
+        }
+        
+        // Dropdown toggle for mobile
+        function toggleDropdown(element) {
+            if (window.innerWidth <= 768) {
+                element.classList.toggle('active');
+            }
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const navbar = document.querySelector('.navbar');
+            const navButtons = document.getElementById('navButtons');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (navButtons && !navbar.contains(e.target)) {
+                navButtons.classList.remove('active');
+                const menuIcon = document.getElementById('mobileMenuIcon');
+                if (menuIcon) menuIcon.className = 'fas fa-bars';
+            }
+        });
+        
         // Dark Mode Toggle
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
