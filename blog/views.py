@@ -2398,6 +2398,7 @@ def book_detail(request, book_id):
     return render(request, 'blog/book_detail.html', context)
 
 
+@login_required
 def read_book(request, book_id):
     """Kitobni online o'qish - LibreOffice bilan PDF ko'rsatish"""
     from .models import Book, ReadingProgress
