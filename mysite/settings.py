@@ -162,8 +162,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'blog', 'static'),
 ]
 
-# Whitenoise uchun static fayllarni compress qilish
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Whitenoise - oddiy storage (hash qo'shmaslik uchun)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
