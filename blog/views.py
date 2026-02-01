@@ -1,45 +1,7 @@
 ﻿from django.shortcuts import render, get_object_or_404
 from django.db import models
 
-def adabiyotlar(request):
-    from .models import Author
-    authors = Author.objects.all()
-    return render(request, 'blog/adabiyotlar.html', {'authors': authors})
-
-def all_books(request):
-    """Barcha kitoblarni ko'rsatish"""
-    from .models import Book, Category, Author
-    
-    books = Book.objects.all().select_related('author').prefetch_related('categories').order_by('-created_at')
-    categories = Category.objects.all()
-    authors = Author.objects.all()
-    
-    # Filter by category
-    category_slug = request.GET.get('category')
-    if category_slug:
-        books = books.filter(categories__slug=category_slug)
-    
-    # Filter by author
-    author_id = request.GET.get('author')
-    if author_id:
-        books = books.filter(author_id=author_id)
-    
-    # Search
-    search = request.GET.get('q')
-    if search:
-        books = books.filter(
-            models.Q(title__icontains=search) | 
-            models.Q(author__name__icontains=search)
-        )
-    
-    return render(request, 'blog/all_books.html', {
-        'books': books,
-        'categories': categories,
-        'authors': authors,
-        'current_category': category_slug,
-        'current_author': int(author_id) if author_id else None,
-        'search_query': search
-    })
+# Birinchi all_books va adabiyotlar 700-qatorda mavjud
 
 def book_list(request, author_id):
     from .models import Author, Book
@@ -698,12 +660,36 @@ def adabiyotlar(request):
     return render(request, 'blog/adabiyotlar.html', {'authors': authors})
 
 def all_books(request):
-    """Barcha kitoblarni ko'rsatish"""
-    from .models import Book, Category, Author
+    """Barcha kitoblarni ko'rsatish - tab tizimi bilan birlashtirilgan"""
+    from .models import Book, Category, Author, Favorite, SearchQuery
+    from django.db.models import Avg
     
-    books = Book.objects.all().select_related('author').prefetch_related('categories').order_by('-created_at')
     categories = Category.objects.all()
     authors = Author.objects.all()
+    
+    # Tab tizimi
+    current_tab = request.GET.get('tab', 'all')
+    
+    if current_tab == 'top':
+        # Eng ko'p ko'rilgan va yuqori baholangan
+        books = Book.objects.annotate(
+            avg_rating=Avg('ratings__rating')
+        ).order_by('-views_count', '-avg_rating')
+    elif current_tab == 'new':
+        # Yangi qo'shilgan kitoblar
+        books = Book.objects.order_by('-created_at')
+    elif current_tab == 'favorites':
+        # Foydalanuvchi sevimlilari
+        if request.user.is_authenticated:
+            favorite_ids = Favorite.objects.filter(user=request.user).values_list('book_id', flat=True)
+            books = Book.objects.filter(id__in=favorite_ids)
+        else:
+            books = Book.objects.none()
+    else:
+        # Barcha kitoblar
+        books = Book.objects.all().order_by('-created_at')
+    
+    books = books.select_related('author').prefetch_related('categories')
     
     # Filter by category
     category_slug = request.GET.get('category')
@@ -723,14 +709,37 @@ def all_books(request):
             models.Q(author__name__icontains=search)
         )
     
+    # Top searches for top tab
+    top_searches = []
+    if current_tab == 'top':
+        top_searches = SearchQuery.objects.all()[:10]
+    
     return render(request, 'blog/all_books.html', {
         'books': books,
         'categories': categories,
         'authors': authors,
         'current_category': category_slug,
         'current_author': int(author_id) if author_id else None,
-        'search_query': search
+        'search_query': search,
+        'current_tab': current_tab,
+        'top_searches': top_searches,
     })
+
+# top_books, new_books, favorites_list - all_books ga birlashtirildi (redirect sifatida)
+def top_books(request):
+    """all_books ga yo'naltirish"""
+    from django.shortcuts import redirect
+    return redirect('/kitoblar/?tab=top')
+
+def new_books(request):
+    """all_books ga yo'naltirish"""
+    from django.shortcuts import redirect
+    return redirect('/kitoblar/?tab=new')
+
+def favorites_list(request):
+    """all_books ga yo'naltirish"""
+    from django.shortcuts import redirect
+    return redirect('/kitoblar/?tab=favorites')
 
 def book_list(request, author_id):
     from .models import Author, Book
@@ -3456,56 +3465,13 @@ def categories_list(request):
 
 
 def category_books(request, slug):
-    """Kategoriya bo'yicha kitoblar"""
-    from .models import Category, Book
-    from django.shortcuts import get_object_or_404
-    
-    category = get_object_or_404(Category, slug=slug)
-    books = category.books.all()  # ManyToMany related_name orqali
-    return render(request, 'blog/category_books.html', {'category': category, 'books': books})
+    """Kategoriya bo'yicha kitoblar - all_books ga yo'naltirish"""
+    from django.shortcuts import redirect
+    return redirect(f'/kitoblar/?category={slug}')
 
 
-def top_books(request):
-    """Eng ko'p o'qilgan va yuqori baholangan kitoblar"""
-    from .models import Book, SearchQuery
-    from django.db.models import Avg
-    
-    # Eng ko'p ko'rilgan
-    most_viewed = Book.objects.order_by('-views_count')[:10]
-    
-    # Eng yuqori baholangan
-    top_rated = Book.objects.annotate(
-        avg_rating=Avg('ratings__rating')
-    ).filter(avg_rating__isnull=False).order_by('-avg_rating')[:10]
-    
-    # Eng ko'p qidirilgan so'zlar
-    top_searches = SearchQuery.objects.all()[:10]
-    
-    context = {
-        'most_viewed': most_viewed,
-        'top_rated': top_rated,
-        'top_searches': top_searches,
-    }
-    return render(request, 'blog/top_books.html', context)
-
-
-def new_books(request):
-    """Yangi qo'shilgan kitoblar"""
-    from .models import Book
-    books = Book.objects.order_by('-created_at')[:20]
-    return render(request, 'blog/new_books.html', {'books': books})
-
-
-def favorites_list(request):
-    """Foydalanuvchi sevimlilari"""
-    from .models import Favorite
-    
-    if not request.user.is_authenticated:
-        from django.shortcuts import redirect
-        return redirect('login')
-    
-    favorites = Favorite.objects.filter(user=request.user).select_related('book', 'book__author')
-    return render(request, 'blog/favorites.html', {'favorites': favorites})
+# ESKIRGAN: top_books, new_books, favorites_list - bular endi 728-qatordagi yangi versiyada
+# Eski kodni saqlab qolish (lekin ishlatilmaydi)
 
 
 @login_required
@@ -3548,51 +3514,30 @@ def delete_account(request):
 
 
 def user_profile(request):
-    """Foydalanuvchi profili va parol o'zgartirish"""
-    from .models import ReadingProgress, Favorite, BookRating
-    from .forms_password import CustomPasswordChangeForm
-    from django.contrib.auth import update_session_auth_hash
-    
+    """Foydalanuvchi profili - user_profile_view ga yo'naltirish"""
     if not request.user.is_authenticated:
         from django.shortcuts import redirect
         return redirect('login')
     
-    password_change_success = False
-    password_change_error = None
-
-    if request.method == 'POST' and 'change_password' in request.POST:
-        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Session'ni yangilash
-            password_change_success = True
-            form = CustomPasswordChangeForm(user=request.user)  # Form'ni tozalash
-        else:
-            password_change_error = form.errors
-    else:
-        form = CustomPasswordChangeForm(user=request.user)
-    
-    reading_progress = ReadingProgress.objects.filter(user=request.user).select_related('book')
-    favorites_count = Favorite.objects.filter(user=request.user).count()
-    ratings_count = BookRating.objects.filter(user=request.user).count()
-    
-    completed_books = reading_progress.filter(is_completed=True).count()
-    in_progress = reading_progress.filter(is_completed=False)
-    
-    context = {
-        'user': request.user,
-        'reading_progress': in_progress[:10],
-        'favorites_count': favorites_count,
-        'ratings_count': ratings_count,
-        'completed_books': completed_books,
-        'total_books_read': reading_progress.count(),
-        'password_form': form,
-        'password_change_success': password_change_success,
-        'password_change_error': password_change_error,
-    }
-    return render(request, 'blog/profile.html', context)
+    # O'z profilini ko'rish uchun social profile ga yo'naltirish
+    return redirect('user_profile', username=request.user.username)
 
 
 def offline_page(request):
     """Offline sahifa (PWA uchun)"""
     return render(request, 'blog/offline.html')
+
+
+def privacy_policy(request):
+    """Maxfiylik siyosati sahifasi"""
+    return render(request, 'blog/privacy_policy.html')
+
+
+def terms_of_service(request):
+    """Foydalanish shartlari sahifasi"""
+    return render(request, 'blog/terms_of_service.html')
+
+
+def about(request):
+    """Biz haqimizda sahifasi"""
+    return render(request, 'blog/about.html')

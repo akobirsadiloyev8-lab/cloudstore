@@ -1,166 +1,201 @@
+{% extends 'blog/boshlash.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>Sayt haqida - Cloudstore</title>
-    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .navbar .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .nav-links {
-            display: flex;
-            gap: 15px;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .nav-links a:hover {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-        }
-        .container {
-            max-width: 800px;
-            margin: 100px auto 40px;
-            padding: 40px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-        }
-        h2 {
-            color: #667eea;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        p {
-            line-height: 1.6;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        .feature {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-        .feature h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .database-info {
-            background: #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .database-info h3 {
-            color: #495057;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-    </style>
-</head>
-<body>
-    <header class="navbar">
-        <div class="logo">Cloudstore</div>
-        <ul class="nav-links">
-            <li><a href="{% url 'boshlash' %}">Bosh sahifa</a></li>
-            <li><a href="{% url 'login' %}">Kirish</a></li>
-        </ul>
-    </header>
 
-    <div class="container">
-        <h1>Sayt haqida</h1>
+{% block title %}Biz haqimizda - Cloudstore{% endblock %}
 
-        <div class="feature">
-            <h3>🎯 Maqsad</h3>
-            <p>Cloudstore - bu fayllarni osongina yuklash, saqlash va boshqarish uchun mo'ljallangan zamonaviy veb-ilova. Foydalanuvchilarga fayllarini bulutda saqlash imkoniyatini beradi.</p>
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <!-- Hero Section -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 24px; padding: 50px 40px; color: white; margin-bottom: 35px; text-align: center; position: relative; overflow: hidden;">
+        <div style="position: relative; z-index: 1;">
+            <div style="width: 100px; height: 100px; margin: 0 auto 25px; background: rgba(255,255,255,0.2); border-radius: 25px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 3.5rem;">📚</span>
+            </div>
+            <h1 style="font-size: 2.5rem; margin-bottom: 15px;">Cloudstore</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                O'zbekistondagi eng zamonaviy elektron kutubxona. Bilim olishni oson va qiziqarli qilamiz!
+            </p>
         </div>
-
-        <div class="feature">
-            <h3>✨ Asosiy xususiyatlar</h3>
-            <ul>
-                <li>Fayllarni yuklash va saqlash</li>
-                <li>Rasmlarni yuklash va ko'rish</li>
-                <li>Fayl ichidagi matnni o'qish (TXT, DOCX, PDF)</li>
-                <li>Fayllarni o'chirish va yuklab olish</li>
-                <li>Foydalanuvchi ro'yxatdan o'tish va kirish</li>
-                <li>Fikr va takliflar yuborish</li>
-            </ul>
+        <div style="position: absolute; left: -50px; top: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; right: -30px; bottom: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+    </div>
+    
+    <!-- Mission Section -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; margin-bottom: 30px; border: 1px solid var(--border-color);">
+        <h2 style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; font-size: 1.5rem;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-bullseye" style="color: white; font-size: 1.3rem;"></i>
+            </div>
+            Bizning maqsadimiz
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8;">
+            Cloudstore platformasi O'zbekiston aholisiga sifatli elektron kitoblarni bepul yetkazib berish 
+            maqsadida yaratilgan. Biz bilim olishni hamma uchun oson, qulay va qiziqarli qilishga intilamiz.
+            Sun'iy intellekt texnologiyalari yordamida kitoblarni tez qidirish, tahlil qilish va tushunish 
+            imkoniyatini yaratdik.
+        </p>
+    </div>
+    
+    <!-- Features Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 35px;">
+        <div style="background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); text-align: center;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: rgba(102, 126, 234, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-book-open" style="font-size: 2rem; color: #667eea;"></i>
+            </div>
+            <h3 style="margin-bottom: 12px; font-size: 1.2rem;">Katta kutubxona</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                1000+ dan ortiq kitoblar to'plami. Adabiyot, fan, texnologiya, biznes va boshqa yo'nalishlarda.
+            </p>
         </div>
-
-        <div class="feature">
-            <h3>🔧 Texnologiyalar</h3>
-            <p>Ushbu sayt Python Django framework yordamida yaratilgan. Fayllar mahalliy serverda saqlanadi va boshqariladi.</p>
+        
+        <div style="background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); text-align: center;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: rgba(16, 163, 127, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-robot" style="font-size: 2rem; color: #10a37f;"></i>
+            </div>
+            <h3 style="margin-bottom: 12px; font-size: 1.2rem;">AI yordamchi</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                Sun'iy intellekt yordamida kitob mazmunini tahlil qiling va savollaringizga javob oling.
+            </p>
         </div>
-
-        <div class="database-info">
-            <h3>💾 Ma'lumotlar ombori</h3>
-            <p>Barcha ma'lumotlar (foydalanuvchi ma'lumotlari, fayl haqida ma'lumotlar, fikrlar) SQLite ma'lumotlar bazasida saqlanadi. SQLite - bu engil va ishonchli ma'lumotlar bazasi tizimi bo'lib, kichik va o'rta loyihalar uchun juda mos keladi.</p>
-            <p><strong>Saqlanadigan ma'lumotlar:</strong></p>
-            <ul>
-                <li>Foydalanuvchi hisoblari (ism, parol)</li>
-                <li>Yuklangan fayllar haqida ma'lumotlar</li>
-                <li>Rasmlar haqida ma'lumotlar</li>
-                <li>Fikr va takliflar</li>
-            </ul>
-        </div>
-
-        <div class="feature">
-            <h3>📞 Aloqa</h3>
-            <p>Agar sizda biror savol yoki taklif bo'lsa, quyidagi ma'lumotlar orqali bog'laning:</p>
-            <p>Email: akobirsadiloyev8@gmail.com</p>
-            <p>Telefon: +998976080115</p>
+        
+        <div style="background: var(--card-bg); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); text-align: center;">
+            <div style="width: 70px; height: 70px; margin: 0 auto 20px; background: rgba(139, 92, 246, 0.1); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-comments" style="font-size: 2rem; color: #8b5cf6;"></i>
+            </div>
+            <h3 style="margin-bottom: 12px; font-size: 1.2rem;">Ijtimoiy tarmoq</h3>
+            <p style="color: var(--text-secondary); line-height: 1.6; margin: 0;">
+                Do'stlaringiz bilan bog'laning, kitoblar haqida fikr almashing va suhbatlashing.
+            </p>
         </div>
     </div>
-
-    <div class="footer">
-        <p>&copy; 2026 Cloudstore. Barcha huquqlar himoyalangan.</p>
+    
+    <!-- Stats Section -->
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 35px;">
+        <h2 style="text-align: center; margin-bottom: 35px; font-size: 1.5rem;">
+            <i class="fas fa-chart-line"></i> Bizning yutuqlarimiz
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 30px; text-align: center;">
+            <div>
+                <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px;">1000+</div>
+                <div style="opacity: 0.9;">Kitoblar</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px;">500+</div>
+                <div style="opacity: 0.9;">Foydalanuvchilar</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px;">50+</div>
+                <div style="opacity: 0.9;">Kategoriyalar</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px;">24/7</div>
+                <div style="opacity: 0.9;">Xizmat</div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+    
+    <!-- Team Section -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; margin-bottom: 35px; border: 1px solid var(--border-color);">
+        <h2 style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; font-size: 1.5rem;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-users" style="color: white; font-size: 1.3rem;"></i>
+            </div>
+            Bizning jamoa
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; margin-bottom: 25px;">
+            Cloudstore O'zbekistonlik dasturchilar jamoasi tomonidan yaratilgan. Bizning maqsadimiz - 
+            zamonaviy texnologiyalar yordamida ta'lim va bilim olishni hammabop qilish.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                    AS
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 3px;">Akobir Sadiloyev</h4>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Asoschi & Dasturchi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Technology Stack -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; margin-bottom: 35px; border: 1px solid var(--border-color);">
+        <h2 style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; font-size: 1.5rem;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-code" style="color: white; font-size: 1.3rem;"></i>
+            </div>
+            Texnologiyalar
+        </h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <span style="padding: 10px 18px; background: rgba(102, 126, 234, 0.1); border-radius: 10px; color: #667eea; font-weight: 500;">
+                <i class="fab fa-python"></i> Python
+            </span>
+            <span style="padding: 10px 18px; background: rgba(16, 185, 129, 0.1); border-radius: 10px; color: #10b981; font-weight: 500;">
+                <i class="fas fa-leaf"></i> Django
+            </span>
+            <span style="padding: 10px 18px; background: rgba(245, 158, 11, 0.1); border-radius: 10px; color: #f59e0b; font-weight: 500;">
+                <i class="fab fa-js"></i> JavaScript
+            </span>
+            <span style="padding: 10px 18px; background: rgba(139, 92, 246, 0.1); border-radius: 10px; color: #8b5cf6; font-weight: 500;">
+                <i class="fas fa-database"></i> PostgreSQL
+            </span>
+            <span style="padding: 10px 18px; background: rgba(239, 68, 68, 0.1); border-radius: 10px; color: #ef4444; font-weight: 500;">
+                <i class="fas fa-cloud"></i> Render
+            </span>
+            <span style="padding: 10px 18px; background: rgba(16, 163, 127, 0.1); border-radius: 10px; color: #10a37f; font-weight: 500;">
+                <i class="fas fa-brain"></i> OpenAI
+            </span>
+        </div>
+    </div>
+    
+    <!-- Contact Section -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; border: 1px solid var(--border-color);">
+        <h2 style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; font-size: 1.5rem;">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-envelope" style="color: white; font-size: 1.3rem;"></i>
+            </div>
+            Biz bilan bog'laning
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; margin-bottom: 25px;">
+            Savollaringiz, takliflaringiz yoki shikoyatlaringiz bo'lsa, biz bilan bog'lanishingiz mumkin:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <a href="mailto:akobirsadiloyev8@gmail.com" style="display: flex; align-items: center; gap: 15px; padding: 18px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 14px; text-decoration: none;">
+                <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-envelope" style="font-size: 1.2rem;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">Email</div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">akobirsadiloyev8@gmail.com</div>
+                </div>
+            </a>
+            <a href="tel:+998976080115" style="display: flex; align-items: center; gap: 15px; padding: 18px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 14px; text-decoration: none;">
+                <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-phone" style="font-size: 1.2rem;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">Telefon</div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">+998 97 608 01 15</div>
+                </div>
+            </a>
+            <a href="https://github.com/akobirsadiloyev8-lab/cloudstore" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 18px; background: linear-gradient(135deg, #333, #24292e); color: white; border-radius: 14px; text-decoration: none;">
+                <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600;">GitHub</div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">Open Source</div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{% url 'boshlash' %}" style="display: inline-flex; align-items: center; gap: 8px; color: #667eea; text-decoration: none; font-weight: 500; font-size: 1.05rem;">
+            <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+        </a>
+    </div>
+</div>
+{% endblock %}

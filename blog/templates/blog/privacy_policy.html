@@ -1,0 +1,174 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}Maxfiylik siyosati - Cloudstore{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; text-align: center;">
+        <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-shield-alt" style="font-size: 2.5rem;"></i>
+        </div>
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">Maxfiylik siyosati</h1>
+        <p style="opacity: 0.9;">Oxirgi yangilash: 2024-yil, yanvar</p>
+    </div>
+    
+    <!-- Content -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; border: 1px solid var(--border-color);">
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #667eea;">
+                <i class="fas fa-info-circle"></i> Kirish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Cloudstore ("biz", "bizning") foydalanuvchilarning maxfiyligini hurmat qiladi va himoya qiladi. 
+                Ushbu maxfiylik siyosati qanday ma'lumotlarni to'plashimiz, ulardan qanday foydalanishimiz va 
+                qanday himoya qilishimizni tushuntiradi.
+            </p>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #10b981;">
+                <i class="fas fa-database"></i> To'planadigan ma'lumotlar
+            </h2>
+            <div style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 20px;">
+                <ul style="color: var(--text-secondary); line-height: 2; margin: 0; padding-left: 20px;">
+                    <li><strong>Shaxsiy ma'lumotlar:</strong> Ism, email, telefon raqami (ro'yxatdan o'tishda)</li>
+                    <li><strong>Profil ma'lumotlari:</strong> Profil rasmi, bio (ixtiyoriy)</li>
+                    <li><strong>Foydalanish ma'lumotlari:</strong> Qaysi kitoblarni o'qiganingiz, qidiruv tarixi</li>
+                    <li><strong>Texnik ma'lumotlar:</strong> IP manzil, brauzer turi, qurilma ma'lumotlari</li>
+                    <li><strong>Cookie fayllar:</strong> Sessiya va afzalliklar uchun</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #f59e0b;">
+                <i class="fas fa-cogs"></i> Ma'lumotlardan foydalanish
+            </h2>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; gap: 15px; align-items: flex-start; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Xizmat ko'rsatish</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Akkountingizni boshqarish va xizmatlardan foydalanish imkonini berish</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: flex-start; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Xizmatni yaxshilash</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Foydalanuvchi tajribasini tahlil qilish va platformani takomillashtirish</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: flex-start; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: #f59e0b; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Bildirishnomalar</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Yangi kitoblar, yangilanishlar va muhim xabarlar haqida xabardor qilish</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #8b5cf6;">
+                <i class="fas fa-lock"></i> Ma'lumotlarni himoya qilish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 15px;">
+                Biz ma'lumotlaringizni himoya qilish uchun quyidagi choralarni ko'ramiz:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="text-align: center; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px;">
+                    <i class="fas fa-key" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 10px;"></i>
+                    <h4 style="font-size: 0.95rem;">SSL shifrlash</h4>
+                </div>
+                <div style="text-align: center; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px;">
+                    <i class="fas fa-user-lock" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 10px;"></i>
+                    <h4 style="font-size: 0.95rem;">Parol xeshlash</h4>
+                </div>
+                <div style="text-align: center; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px;">
+                    <i class="fas fa-server" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 10px;"></i>
+                    <h4 style="font-size: 0.95rem;">Xavfsiz serverlar</h4>
+                </div>
+                <div style="text-align: center; padding: 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px;">
+                    <i class="fas fa-sync" style="font-size: 2rem; color: #8b5cf6; margin-bottom: 10px;"></i>
+                    <h4 style="font-size: 0.95rem;">Muntazam yangilanishlar</h4>
+                </div>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #ef4444;">
+                <i class="fas fa-share-alt"></i> Ma'lumotlarni ulashish
+            </h2>
+            <div style="background: rgba(239, 68, 68, 0.1); border-radius: 12px; padding: 20px;">
+                <p style="color: var(--text-secondary); line-height: 1.8; margin: 0;">
+                    <strong>Biz sizning shaxsiy ma'lumotlaringizni uchinchi tomonlarga sotmaymiz!</strong><br><br>
+                    Ma'lumotlar faqat quyidagi holatlarda ulashilishi mumkin:
+                </p>
+                <ul style="color: var(--text-secondary); line-height: 2; margin-top: 15px; margin-bottom: 0; padding-left: 20px;">
+                    <li>Qonun talab qilganda</li>
+                    <li>Sizning roziliginiz bilan</li>
+                    <li>Xizmat ko'rsatish uchun zarur bo'lganda (masalan, hosting provayderiga)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #10b981;">
+                <i class="fas fa-user-check"></i> Sizning huquqlaringiz
+            </h2>
+            <div style="display: grid; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span style="color: var(--text-secondary);">Ma'lumotlaringizni ko'rish va yuklash</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span style="color: var(--text-secondary);">Ma'lumotlarni o'zgartirish yoki yangilash</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span style="color: var(--text-secondary);">Akkountni va ma'lumotlarni o'chirish</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span style="color: var(--text-secondary);">Marketing xabarlaridan voz kechish</span>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #667eea;">
+                <i class="fas fa-envelope"></i> Bog'lanish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Maxfiylik bo'yicha savollaringiz bo'lsa, biz bilan bog'laning:
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px;">
+                <a href="mailto:support@cloudstore.uz" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px; text-decoration: none;">
+                    <i class="fas fa-envelope"></i> support@cloudstore.uz
+                </a>
+                <a href="#" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #0088cc, #0077b5); color: white; border-radius: 10px; text-decoration: none;">
+                    <i class="fab fa-telegram"></i> @cloudstore_uz
+                </a>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 25px;">
+        <a href="{% url 'boshlash' %}" style="display: inline-flex; align-items: center; gap: 8px; color: #667eea; text-decoration: none; font-weight: 500;">
+            <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+        </a>
+    </div>
+</div>
+{% endblock %}

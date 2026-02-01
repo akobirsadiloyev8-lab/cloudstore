@@ -435,6 +435,24 @@
     <div class="page-header">
         <h1 class="page-title"><i class="fas fa-book-open"></i> Kutubxona</h1>
         <p class="page-subtitle">Barcha kitoblarni ko'ring va o'qing</p>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-navigation" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+            <a href="{% url 'all_books' %}" class="tab-btn {% if current_tab == 'all' %}active{% endif %}" style="padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; {% if current_tab == 'all' %}background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;{% else %}background: var(--card-bg, #fff); color: var(--text-color, #333); border: 2px solid var(--border-color, #eee);{% endif %}">
+                <i class="fas fa-layer-group"></i> Barchasi
+            </a>
+            <a href="{% url 'all_books' %}?tab=new" class="tab-btn {% if current_tab == 'new' %}active{% endif %}" style="padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; {% if current_tab == 'new' %}background: linear-gradient(135deg, #10b981, #059669); color: white;{% else %}background: var(--card-bg, #fff); color: var(--text-color, #333); border: 2px solid var(--border-color, #eee);{% endif %}">
+                <i class="fas fa-sparkles"></i> Yangilar
+            </a>
+            <a href="{% url 'all_books' %}?tab=top" class="tab-btn {% if current_tab == 'top' %}active{% endif %}" style="padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; {% if current_tab == 'top' %}background: linear-gradient(135deg, #f59e0b, #d97706); color: white;{% else %}background: var(--card-bg, #fff); color: var(--text-color, #333); border: 2px solid var(--border-color, #eee);{% endif %}">
+                <i class="fas fa-fire"></i> Top
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'all_books' %}?tab=favorites" class="tab-btn {% if current_tab == 'favorites' %}active{% endif %}" style="padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; {% if current_tab == 'favorites' %}background: linear-gradient(135deg, #ef4444, #dc2626); color: white;{% else %}background: var(--card-bg, #fff); color: var(--text-color, #333); border: 2px solid var(--border-color, #eee);{% endif %}">
+                <i class="fas fa-heart"></i> Sevimlilar
+            </a>
+            {% endif %}
+        </div>
     </div>
     
     <!-- Stats -->

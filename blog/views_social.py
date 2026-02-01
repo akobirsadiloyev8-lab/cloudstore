@@ -34,12 +34,36 @@ def get_or_create_profile(user):
 # ===== USER SEARCH & DISCOVERY =====
 
 def search_users(request):
-    """Foydalanuvchilarni qidirish - Optimized"""
+    """Foydalanuvchilarni qidirish - Optimized va birlashtirilgan"""
     query = request.GET.get('q', '').strip()
     filter_by = request.GET.get('filter', 'all')
+    current_tab = request.GET.get('tab', 'all')
     
-    # select_related bilan N+1 muammosini hal qilish
-    users = User.objects.filter(is_active=True).exclude(is_superuser=True).select_related('social_profile')
+    # Tab tizimi bilan birlashtirish
+    if current_tab == 'followers' and request.user.is_authenticated:
+        # Mening kuzatuvchilarim
+        follower_ids = Follow.objects.filter(following=request.user).values_list('follower_id', flat=True)
+        users = User.objects.filter(id__in=follower_ids, is_active=True).select_related('social_profile')
+    elif current_tab == 'following' and request.user.is_authenticated:
+        # Men kuzatayotganlar
+        following_ids_list = Follow.objects.filter(follower=request.user).values_list('following_id', flat=True)
+        users = User.objects.filter(id__in=following_ids_list, is_active=True).select_related('social_profile')
+    elif current_tab == 'discover' and request.user.is_authenticated:
+        # Tavsiya qilinganlar - o'xshash qiziqishlar asosida
+        # Foydalanuvchi o'qigan kitoblar
+        my_books = set(ReadingActivity.objects.filter(user=request.user).values_list('book_id', flat=True))
+        # Shu kitoblarni o'qigan boshqa foydalanuvchilar
+        similar_users = ReadingActivity.objects.filter(
+            book_id__in=my_books
+        ).exclude(user=request.user).values_list('user_id', flat=True)
+        # Men kuzatmaganlarni olish
+        following_ids_list = Follow.objects.filter(follower=request.user).values_list('following_id', flat=True)
+        users = User.objects.filter(
+            id__in=similar_users, is_active=True
+        ).exclude(id__in=following_ids_list).exclude(is_superuser=True).select_related('social_profile')
+    else:
+        # Barcha foydalanuvchilar
+        users = User.objects.filter(is_active=True).exclude(is_superuser=True).select_related('social_profile')
     
     # Qidiruv
     if query:
@@ -104,6 +128,7 @@ def search_users(request):
         'filter_by': filter_by,
         'page_obj': users_page,
         'total_count': paginator.count,
+        'current_tab': current_tab,
     }
     return render(request, 'blog/social/search_users.html', context)
 
@@ -197,99 +222,27 @@ def toggle_follow(request, username):
 
 @login_required
 def my_followers(request):
-    """Mening kuzatuvchilarim"""
-    followers = Follow.objects.filter(following=request.user).select_related('follower')
-    
-    followers_with_profiles = []
-    for follow in followers:
-        profile = get_or_create_profile(follow.follower)
-        is_following_back = Follow.objects.filter(follower=request.user, following=follow.follower).exists()
-        followers_with_profiles.append({
-            'user': follow.follower,
-            'profile': profile,
-            'followed_at': follow.created_at,
-            'is_following_back': is_following_back,
-        })
-    
-    context = {
-        'followers': followers_with_profiles,
-        'count': len(followers_with_profiles),
-    }
-    return render(request, 'blog/social/followers.html', context)
+    """search_users ga yo'naltirish"""
+    return redirect('/users/?tab=followers')
 
 
 @login_required
 def my_following(request):
-    """Men kuzatayotganlar"""
-    following = Follow.objects.filter(follower=request.user).select_related('following')
-    
-    following_with_profiles = []
-    for follow in following:
-        profile = get_or_create_profile(follow.following)
-        following_with_profiles.append({
-            'user': follow.following,
-            'profile': profile,
-            'followed_at': follow.created_at,
-        })
-    
-    context = {
-        'following': following_with_profiles,
-        'count': len(following_with_profiles),
-    }
-    return render(request, 'blog/social/following.html', context)
+    """search_users ga yo'naltirish"""
+    return redirect('/users/?tab=following')
+
+
+def discover_users(request):
+    """search_users ga yo'naltirish"""
+    return redirect('/users/?tab=discover')
 
 
 # ===== MESSAGES =====
 
 @login_required
 def messages_inbox(request):
-    """Xabarlar qutisi"""
-    # Barcha suhbatlar
-    conversations = Message.objects.filter(
-        Q(sender=request.user) | Q(receiver=request.user)
-    ).values('sender', 'receiver').distinct()
-    
-    # Noyob foydalanuvchilar
-    chat_users = set()
-    for conv in conversations:
-        if conv['sender'] != request.user.id:
-            chat_users.add(conv['sender'])
-        if conv['receiver'] != request.user.id:
-            chat_users.add(conv['receiver'])
-    
-    chats = []
-    for user_id in chat_users:
-        other_user = User.objects.get(id=user_id)
-        last_message = Message.objects.filter(
-            (Q(sender=request.user, receiver=other_user) | Q(sender=other_user, receiver=request.user))
-        ).order_by('-created_at').first()
-        
-        unread_count = Message.objects.filter(
-            sender=other_user, receiver=request.user, is_read=False
-        ).count()
-        
-        chats.append({
-            'user': other_user,
-            'profile': get_or_create_profile(other_user),
-            'last_message': last_message,
-            'unread_count': unread_count,
-        })
-    
-    # Oxirgi xabar bo'yicha saralash
-    chats.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else timezone.now(), reverse=True)
-    
-    # Telegram uslubda ko'rsatish
-    if request.GET.get('telegram') == '1':
-        return render(request, 'blog/social/telegram_chat.html', {
-            'chats': chats,
-            'total_unread': sum(c['unread_count'] for c in chats),
-        })
-    
-    context = {
-        'chats': chats,
-        'total_unread': sum(c['unread_count'] for c in chats),
-    }
-    return render(request, 'blog/social/messages_inbox.html', context)
+    """telegram_chat ga yo'naltirish"""
+    return redirect('telegram_chat')
 
 
 @login_required

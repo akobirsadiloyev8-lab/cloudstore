@@ -284,8 +284,31 @@
         </div>
         
         <div class="search-header">
-            <h1><i class="fas fa-users" style="color: #667eea;"></i> Foydalanuvchilarni qidirish</h1>
+            <h1><i class="fas fa-users" style="color: #667eea;"></i> 
+                {% if current_tab == 'followers' %}Mening kuzatuvchilarim
+                {% elif current_tab == 'following' %}Men kuzatayotganlar
+                {% elif current_tab == 'discover' %}Tavsiya etilganlar
+                {% else %}Foydalanuvchilar{% endif %}
+            </h1>
             <p>Kitobxonlarni toping, kuzating va bog'laning</p>
+            
+            <!-- Tab Navigation -->
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                <a href="{% url 'search_users' %}" class="filter-tab {% if current_tab == 'all' %}active{% endif %}">
+                    <i class="fas fa-globe"></i> Barchasi
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'search_users' %}?tab=discover" class="filter-tab {% if current_tab == 'discover' %}active{% endif %}">
+                    <i class="fas fa-compass"></i> Tavsiyalar
+                </a>
+                <a href="{% url 'search_users' %}?tab=followers" class="filter-tab {% if current_tab == 'followers' %}active{% endif %}">
+                    <i class="fas fa-user-friends"></i> Kuzatuvchilar
+                </a>
+                <a href="{% url 'search_users' %}?tab=following" class="filter-tab {% if current_tab == 'following' %}active{% endif %}">
+                    <i class="fas fa-heart"></i> Kuzatayotganlar
+                </a>
+                {% endif %}
+            </div>
         </div>
         
         <!-- Search Box -->

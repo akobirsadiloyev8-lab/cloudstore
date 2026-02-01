@@ -1,0 +1,214 @@
+{% extends 'blog/boshlash.html' %}
+{% load static %}
+
+{% block title %}Foydalanish shartlari - Cloudstore{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; text-align: center;">
+        <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-file-contract" style="font-size: 2.5rem;"></i>
+        </div>
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">Foydalanish shartlari</h1>
+        <p style="opacity: 0.9;">Oxirgi yangilash: 2024-yil, yanvar</p>
+    </div>
+    
+    <!-- Content -->
+    <div style="background: var(--card-bg); border-radius: 20px; padding: 35px; border: 1px solid var(--border-color);">
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #667eea;">
+                <i class="fas fa-handshake"></i> Shartlarni qabul qilish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Cloudstore platformasidan foydalanish orqali siz ushbu foydalanish shartlarini o'qib chiqqaningizni 
+                va ular bilan rozi ekaningizni tasdiqlaysiz. Agar shartlarga rozi bo'lmasangiz, iltimos platformadan foydalanmang.
+            </p>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #10b981;">
+                <i class="fas fa-laptop"></i> Xizmatlar tavsifi
+            </h2>
+            <div style="background: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 20px;">
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 15px;">
+                    Cloudstore quyidagi xizmatlarni taqdim etadi:
+                </p>
+                <ul style="color: var(--text-secondary); line-height: 2; margin: 0; padding-left: 20px;">
+                    <li>📚 Elektron kitoblarni o'qish va yuklab olish</li>
+                    <li>🤖 AI yordamchi orqali kitoblar haqida ma'lumot olish</li>
+                    <li>💬 Foydalanuvchilar bilan real-time chat</li>
+                    <li>📁 Fayllarni konvertatsiya qilish (PDF, DOCX va boshqa formatlar)</li>
+                    <li>👤 Shaxsiy kutubxona yaratish</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #f59e0b;">
+                <i class="fas fa-user-plus"></i> Akkount ochish
+            </h2>
+            <div style="display: grid; gap: 15px;">
+                <div style="display: flex; gap: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 35px; height: 35px; background: #f59e0b; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">To'g'ri ma'lumotlar</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Ro'yxatdan o'tishda haqiqiy ma'lumotlarni kiritishingiz shart</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 35px; height: 35px; background: #f59e0b; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Yosh chegarasi</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Platformadan foydalanish uchun kamida 13 yoshda bo'lishingiz kerak</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <div style="width: 35px; height: 35px; background: #f59e0b; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Akkount xavfsizligi</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Parolingizni maxfiy saqlash va akkountingizni himoya qilish sizning javobgarligingiz</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #ef4444;">
+                <i class="fas fa-ban"></i> Taqiqlangan harakatlar
+            </h2>
+            <div style="background: rgba(239, 68, 68, 0.1); border-radius: 12px; padding: 20px;">
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 15px;">
+                    Quyidagi harakatlar qat'iyan taqiqlanadi:
+                </p>
+                <div style="display: grid; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Mualliflik huquqi buzilgan kontentni yuklash</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Spam va zararli xabarlar tarqatish</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Boshqa foydalanuvchilarni haqorat qilish</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Platformani buzishga urinish (hacking)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Soxta akkountlar yaratish</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-times-circle" style="color: #ef4444;"></i>
+                        <span style="color: var(--text-secondary);">Noqonuniy kontent yuklash yoki ulashish</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #8b5cf6;">
+                <i class="fas fa-copyright"></i> Intellektual mulk
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Cloudstore platformasidagi barcha dizayn elementlari, logotiplar va dasturiy ta'minot bizga tegishli. 
+                Foydalanuvchilar yuklagan kitoblar uchun mualliflik huquqi ularning egalariga tegishli bo'lib qoladi.
+            </p>
+            <div style="background: rgba(139, 92, 246, 0.1); border-radius: 12px; padding: 15px; margin-top: 15px;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                    ⚠️ <strong>Ogohlantirish:</strong> Mualliflik huquqi buzilgan kontentni yuklash akkountingizning o'chirilishiga olib kelishi mumkin.
+                </p>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #f59e0b;">
+                <i class="fas fa-crown"></i> Premium obuna
+            </h2>
+            <div style="display: grid; gap: 15px;">
+                <div style="padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <h4 style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-credit-card" style="color: #f59e0b;"></i> To'lov shartlari
+                    </h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.6;">
+                        Premium obuna har oy avtomatik yangilanadi. Bekor qilish uchun obuna tugashidan kamida 24 soat oldin xabar bering.
+                    </p>
+                </div>
+                <div style="padding: 15px; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                    <h4 style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-undo" style="color: #f59e0b;"></i> Pulni qaytarish
+                    </h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0; line-height: 1.6;">
+                        To'lovdan so'ng 7 kun ichida sababsiz pulni qaytarish mumkin. Bundan keyin pulni qaytarish faqat texnik muammolar bo'lganda amalga oshiriladi.
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #10b981;">
+                <i class="fas fa-gavel"></i> Javobgarlik chegarasi
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Cloudstore xizmatlari "bor holatida" taqdim etiladi. Biz platformaning uzluksiz ishlashiga kafolat bera olmaymiz. 
+                Foydalanuvchilar yuklagan kontent uchun biz javobgar emasmiz.
+            </p>
+        </section>
+        
+        <section style="margin-bottom: 30px;">
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #667eea;">
+                <i class="fas fa-edit"></i> Shartlarni o'zgartirish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Biz ushbu shartlarni istalgan vaqtda o'zgartirishga haqlimiz. Muhim o'zgarishlar haqida 
+                foydalanuvchilarni email orqali xabardor qilamiz. Platformadan davom etib foydalanish 
+                yangi shartlarga rozilikni bildiradi.
+            </p>
+        </section>
+        
+        <section>
+            <h2 style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; color: #667eea;">
+                <i class="fas fa-envelope"></i> Bog'lanish
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                Savollar yoki takliflar bo'lsa, biz bilan bog'laning:
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px;">
+                <a href="mailto:support@cloudstore.uz" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px; text-decoration: none;">
+                    <i class="fas fa-envelope"></i> support@cloudstore.uz
+                </a>
+                <a href="#" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: linear-gradient(135deg, #0088cc, #0077b5); color: white; border-radius: 10px; text-decoration: none;">
+                    <i class="fab fa-telegram"></i> @cloudstore_uz
+                </a>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Agreement Box -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 25px; margin-top: 25px; color: white; text-align: center;">
+        <i class="fas fa-check-circle" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+        <h3 style="margin-bottom: 10px;">Platformadan foydalanish</h3>
+        <p style="opacity: 0.9; margin-bottom: 0;">
+            Cloudstore'dan foydalanish orqali yuqoridagi shartlarga rozilik bildirasiz
+        </p>
+    </div>
+    
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 25px;">
+        <a href="{% url 'boshlash' %}" style="display: inline-flex; align-items: center; gap: 8px; color: #667eea; text-decoration: none; font-weight: 500;">
+            <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+        </a>
+    </div>
+</div>
+{% endblock %}
