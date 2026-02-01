@@ -83,6 +83,7 @@ urlpatterns = [
     path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
     path('sw.js', views.pwa_service_worker, name='pwa_sw'),
     path('offline/', views.pwa_offline, name='pwa_offline'),
+    path('pwa-icon/<str:size>/', views.pwa_icon, name='pwa_icon'),
     
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),
