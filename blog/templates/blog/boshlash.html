@@ -465,10 +465,98 @@
                 padding-left: 70px;
             }
         }
+        
+        /* PWA Install Banner */
+        .install-banner {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            z-index: 10000;
+            align-items: center;
+            gap: 15px;
+            max-width: 90%;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        .install-banner-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .install-banner-text h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        
+        .install-banner-text p {
+            margin: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .install-banner-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .install-banner-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .install-banner-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            padding: 5px;
+        }
+        
+        .install-banner-close:hover {
+            opacity: 1;
+        }
     </style>
     {% block head %}{% endblock %}
 </head>
 <body>
+    <!-- PWA Install Banner -->
+    <div class="install-banner" id="installBanner">
+        <div class="install-banner-icon">📱</div>
+        <div class="install-banner-text">
+            <h4>Ilovani o'rnating!</h4>
+            <p>Cloudstore'ni bosh ekranga qo'shing</p>
+        </div>
+        <button class="install-banner-btn" onclick="installApp()">
+            <i class="fas fa-download"></i> O'rnatish
+        </button>
+        <button class="install-banner-close" onclick="closeInstallBanner()">&times;</button>
+    </div>
+
     <!-- Skip to main content link for accessibility -->
     <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;">Asosiy kontentga o'tish</a>
     
@@ -937,6 +1025,47 @@
                 .then(() => console.log('SW registered'))
                 .catch(err => console.log('SW error:', err));
         }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        const installBanner = document.getElementById('installBanner');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Banner ko'rsatish
+            if (installBanner) {
+                installBanner.style.display = 'flex';
+            }
+        });
+        
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Ilova o\'rnatildi');
+                        if (installBanner) installBanner.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+        
+        function closeInstallBanner() {
+            if (installBanner) {
+                installBanner.style.display = 'none';
+                // 1 hafta so'ng qayta ko'rsatish
+                localStorage.setItem('installBannerClosed', Date.now());
+            }
+        }
+        
+        // Agar allaqachon o'rnatilgan bo'lsa, ko'rsatmaslik
+        window.addEventListener('appinstalled', () => {
+            console.log('Ilova o\'rnatildi!');
+            if (installBanner) installBanner.style.display = 'none';
+        });
     </script>
     
     {% block scripts %}{% endblock %}
