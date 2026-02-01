@@ -1,0 +1,283 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Kundalik Iqtibos | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .quote-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .quote-container {
+        max-width: 800px;
+        width: 100%;
+    }
+    
+    .quote-card {
+        background: white;
+        border-radius: 30px;
+        padding: 60px 50px;
+        text-align: center;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        position: relative;
+    }
+    
+    body.dark-mode .quote-card {
+        background: #2d2d2d;
+    }
+    
+    .quote-icon {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg, #f59e0b, #d97706);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .quote-text {
+        font-size: 1.8rem;
+        line-height: 1.6;
+        color: var(--text-color);
+        margin-bottom: 30px;
+        font-style: italic;
+    }
+    
+    .quote-text::before {
+        content: '"';
+        font-size: 4rem;
+        color: #667eea;
+        opacity: 0.3;
+        display: block;
+        line-height: 0.5;
+        margin-bottom: 10px;
+    }
+    
+    .quote-author {
+        font-size: 1.3rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .quote-book {
+        color: #64748b;
+        margin-bottom: 30px;
+    }
+    
+    .quote-book a {
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .quote-book a:hover {
+        text-decoration: underline;
+    }
+    
+    .share-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .share-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .share-btn.telegram {
+        background: #0088cc;
+        color: white;
+    }
+    
+    .share-btn.whatsapp {
+        background: #25d366;
+        color: white;
+    }
+    
+    .share-btn.twitter {
+        background: #1da1f2;
+        color: white;
+    }
+    
+    .share-btn.copy {
+        background: #667eea;
+        color: white;
+    }
+    
+    .date-badge {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background: #f1f5f9;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    body.dark-mode .date-badge {
+        background: #444;
+    }
+    
+    .nav-quotes {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .nav-btn {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .nav-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .quote-card {
+            padding: 50px 25px;
+        }
+        
+        .quote-text {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+
+<section class="quote-section">
+    <div class="quote-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: white; border-radius: 10px; text-decoration: none; color: #667eea; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        {% if quote %}
+        <div class="quote-card">
+            <div class="quote-icon">💡</div>
+            <div class="date-badge">
+                <i class="fas fa-calendar"></i> Bugun
+            </div>
+            
+            <p class="quote-text">{{ quote.quote }}</p>
+            
+            <p class="quote-author">— {{ quote.author }}</p>
+            
+            {% if quote.book_title or quote.book %}
+            <p class="quote-book">
+                {% if quote.book %}
+                <a href="{% url 'book_detail' quote.book.id %}"><i class="fas fa-book"></i> {{ quote.book.title }}</a>
+                {% else %}
+                <i class="fas fa-book"></i> {{ quote.book_title }}
+                {% endif %}
+            </p>
+            {% endif %}
+            
+            <div class="share-buttons">
+                <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text={{ quote.quote|urlencode }}%20—%20{{ quote.author|urlencode }}" 
+                   target="_blank" class="share-btn telegram" onclick="trackShare({{ quote.id }}, 'telegram')">
+                    <i class="fab fa-telegram"></i> Telegram
+                </a>
+                <a href="https://wa.me/?text={{ quote.quote|urlencode }}%20—%20{{ quote.author|urlencode }}" 
+                   target="_blank" class="share-btn whatsapp" onclick="trackShare({{ quote.id }}, 'whatsapp')">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://twitter.com/intent/tweet?text={{ quote.quote|urlencode|slice:':200' }}...%20—%20{{ quote.author|urlencode }}" 
+                   target="_blank" class="share-btn twitter" onclick="trackShare({{ quote.id }}, 'twitter')">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <button class="share-btn copy" onclick="copyQuote()">
+                    <i class="fas fa-copy"></i> Nusxalash
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="quote-card">
+            <div class="quote-icon">📚</div>
+            <p class="quote-text">Hozircha iqtiboslar yo'q</p>
+            <p style="color: #64748b;">Tez orada yangi iqtiboslar qo'shiladi!</p>
+        </div>
+        {% endif %}
+        
+        <div class="nav-quotes">
+            <a href="{% url 'all_books' %}" class="nav-btn">
+                <i class="fas fa-book"></i> Kitoblar
+            </a>
+            <a href="{% url 'subscription_plans' %}" class="nav-btn">
+                <i class="fas fa-crown"></i> Premium
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+function trackShare(quoteId, platform) {
+    fetch('/api/share-quote/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: `quote_id=${quoteId}&platform=${platform}`
+    });
+}
+
+function copyQuote() {
+    const quote = `"{{ quote.quote }}" — {{ quote.author }}`;
+    navigator.clipboard.writeText(quote).then(() => {
+        alert('Iqtibos nusxalandi!');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

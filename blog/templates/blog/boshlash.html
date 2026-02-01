@@ -1,28 +1,80 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>{% block title %}Cloudstore{% endblock %}</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}Cloudstore - O'zbek tilidagi eng yaxshi elektron kitoblar kutubxonasi. Minglab kitoblarni bepul o'qing!{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}kitoblar, elektron kitob, o'zbek kitoblari, bepul kitob, kutubxona, adabiyot{% endblock %}">
+    <meta name="author" content="Cloudstore">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}Cloudstore - Elektron Kutubxona{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}O'zbek tilidagi eng yaxshi elektron kitoblar kutubxonasi{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}/static/blog/og-image.jpg{% endblock %}">
+    <meta property="og:locale" content="uz_UZ">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Cloudstore{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}O'zbek tilidagi elektron kitoblar{% endblock %}">
+    
+    <!-- PWA / Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" href="/static/icons/favicon.png">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Cloudstore",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "description": "O'zbek tilidagi elektron kitoblar kutubxonasi",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ request.scheme }}://{{ request.get_host }}/search/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    {% block structured_data %}{% endblock %}
+    
+    <title>{% block title %}Cloudstore - Elektron Kutubxona{% endblock %}</title>
     <link rel="stylesheet" href="/static/blog/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Font Awesome - Multiple CDN fallback -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Backup CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    
     <style>
         :root {
-            --bg-color: #f8f9fa;
-            --card-bg: #fff;
-            --text-color: #333;
-            --text-secondary: #666;
-            --border-color: #eee;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --text-secondary: #65676b;
+            --border-color: #e4e6eb;
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --sidebar-width: 280px;
         }
         
         body.dark-mode {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-secondary: #aaa;
-            --border-color: #333;
+            --bg-color: #18191a;
+            --card-bg: #242526;
+            --text-color: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --border-color: #3e4042;
         }
         
         * {
@@ -30,1225 +82,862 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
             background: var(--bg-color);
-            transition: background 0.3s, color 0.3s;
-        }
-        
-        body.dark-mode header nav.navbar {
-            background: rgba(30, 30, 30, 0.95);
-        }
-        
-        body.dark-mode .nav-buttons a {
-            background: rgba(50, 50, 50, 0.8);
-            color: #e0e0e0;
-            border-color: #444;
-        }
-        
-        body.dark-mode .upload-container,
-        body.dark-mode .upload-card {
-            background: var(--card-bg);
-        }
-        
-        body.dark-mode .upload-card h2,
-        body.dark-mode .upload-card p {
             color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
         }
         
-        /* Dark Mode Toggle */
-        .dark-mode-toggle {
-            background: none;
-            border: 2px solid #667eea;
-            color: #667eea;
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .dark-mode-toggle:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        body.dark-mode .dark-mode-toggle {
-            border-color: #fbbf24;
-            color: #fbbf24;
-        }
-        
-        body.dark-mode .dark-mode-toggle:hover {
-            background: #fbbf24;
-            color: #1e1e1e;
-        }
-        
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
-            display: none;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            z-index: 10002;
-        }
-        
-        /* Nav Links Dropdown */
-        .nav-dropdown {
-            position: relative;
-        }
-        
-        .nav-dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--card-bg, white);
-            min-width: 200px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            border-radius: 10px;
-            padding: 10px 0;
-            z-index: 10003;
-        }
-        
-        .nav-dropdown:hover .nav-dropdown-content {
-            display: block;
-        }
-        
-        .nav-dropdown.active .nav-dropdown-content {
-            display: block;
-        }
-        
-        .nav-dropdown-content a {
-            display: block;
-            padding: 10px 20px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-        
-        .nav-dropdown-content a:hover {
-            background: rgba(102, 126, 234, 0.1);
-        }
-        
-        .nav-dropdown-content a i {
-            width: 25px;
-            color: #667eea;
-        }
-
-        /* Navigation */
-        header nav.navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10001;
-            padding: 15px 20px;
+        /* ========== TELEGRAM STYLE LAYOUT ========== */
+        .app-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-buttons a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-buttons a:hover {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .nav-links a:hover {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 120px 20px 80px;
-            text-align: center;
-            position: relative;
+            height: 100vh;
             overflow: hidden;
         }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.1;
-        }
-
-        .hero-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 50px;
-        }
-
-        .hero-text {
-            flex: 1;
-        }
-
-        .hero-image {
-            flex: 1;
-            text-align: center;
-        }
-
-        .hero-image i {
-            font-size: 12rem;
-            color: rgba(255, 255, 255, 0.8);
-            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Upload Container */
-        .upload-container {
-            padding: 80px 20px;
-            background: white;
-        }
-
-        .upload-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-        }
-
-        .upload-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .upload-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        }
-
-        .upload-card h2 {
-            color: #333;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .upload-card p {
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .upload-form {
+        
+        /* ========== LEFT SIDEBAR ========== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            flex-shrink: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
-
-        .file-input-wrapper {
-            position: relative;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            border: 2px dashed #667eea;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9ff;
-        }
-
-        .file-label:hover {
-            border-color: #764ba2;
-            background: #f0f0ff;
-            transform: scale(1.02);
-        }
-
-        .file-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #667eea;
-        }
-
-        .file-text {
-            font-size: 1.1rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn-upload {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-upload:active {
-            transform: translateY(0);
-        }
-
-        /* About Section */
-        .about-section {
-            padding: 80px 20px;
+        
+        /* Sidebar Header */
+        .sidebar-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
             color: white;
-            text-align: center;
-            position: relative;
         }
-
-        .about-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="20" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="80" r="0.8" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="60" r="0.6" fill="rgba(255,255,255,0.1)"/></svg>');
-        }
-
-        .about-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .about-header h2 {
-            font-size: 2.8rem;
-            margin-bottom: 20px;
-            font-weight: 700;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .about-header p {
-            font-size: 1.3rem;
-            margin-bottom: 60px;
-            opacity: 0.9;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 35px 25px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .feature-card:nth-child(2) { animation-delay: 0.6s; }
-        .feature-card:nth-child(3) { animation-delay: 0.8s; }
-        .feature-card:nth-child(4) { animation-delay: 1s; }
-        .feature-card:nth-child(5) { animation-delay: 1.2s; }
-        .feature-card:nth-child(6) { animation-delay: 1.4s; }
-
-        .feature-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: #ffd700;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
-
-        .feature-card h3 {
-            font-size: 1.6rem;
+        
+        .sidebar-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
-            font-weight: 600;
         }
-
-        .feature-card p {
-            font-size: 1rem;
-            opacity: 0.9;
-            line-height: 1.6;
+        
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
         }
-
-        .about-stats {
+        
+        .header-actions {
             display: flex;
-            justify-content: center;
-            gap: 80px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-            animation: fadeInUp 1s ease-out 1.6s both;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #ffd700;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .stat-label {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        /* Feedback Section */
-        .feedback-section {
-            padding: 60px 0;
-            background: #f8f9fa;
-        }
-
-        .feedback-card {
-            background: white;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .feedback-card h2 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-
-        .feedback-card p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .feedback-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-group {
-            text-align: left;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .feedback-form .btn {
-            align-self: center;
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .feedback-form .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 40px 20px 20px;
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        .footer-logo h3 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .footer-link {
-            color: #bdc3c7;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: #667eea;
-        }
-
-        .aloqa {
-            display: flex;
-            flex-direction: column;
             gap: 10px;
         }
-
-        .aloqa i {
+        
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-details h3 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        
+        .user-details span {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        /* Sidebar Search */
+        .sidebar-search {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+        }
+        
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 20px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        
+        .search-input-wrapper input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+        
+        .search-input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        /* Sidebar Menu */
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .sidebar-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 3px;
+        }
+        
+        .menu-section {
+            margin-bottom: 10px;
+        }
+        
+        .menu-section-title {
+            padding: 10px 20px 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .menu-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: var(--primary);
+        }
+        
+        .menu-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .menu-item.active i {
+            color: var(--primary);
+        }
+        
+        .menu-item i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        .menu-item span {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .menu-item .badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 10px 15px;
+        }
+        
+        /* Special Menu Items */
+        .menu-item.premium {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), transparent);
+        }
+        
+        .menu-item.premium i {
+            color: #f59e0b;
+        }
+        
+        .menu-item.ai {
+            background: linear-gradient(90deg, rgba(16, 163, 127, 0.1), transparent);
+        }
+        
+        .menu-item.ai i {
+            color: #10a37f;
+        }
+        
+        .menu-item.messages {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+        }
+        
+        .menu-item.messages i {
             color: #667eea;
-            margin-right: 10px;
         }
-
-        .footer-bottom {
-            border-top: 1px solid #34495e;
-            padding-top: 20px;
-            color: #95a5a6;
+        
+        /* ========== MAIN CONTENT AREA ========== */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-color);
+            padding: 0;
         }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        
+        .main-content::-webkit-scrollbar {
+            width: 8px;
         }
-
-        /* Responsive - Tablet */
-        @media (max-width: 992px) {
-            .hero-content {
-                flex-direction: column;
-                text-align: center;
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+        }
+        
+        /* Page Header */
+        .page-header {
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .page-title .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        /* Content Area */
+        .content-area {
+            padding: 25px;
+        }
+        
+        {% block extra_styles %}{% endblock %}
+        
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+                z-index: 1000;
             }
             
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .sidebar.open {
+                transform: translateX(0);
             }
-        }
-
-        /* Responsive - Mobile */
-        @media (max-width: 768px) {
-            header nav.navbar {
-                padding: 10px 15px;
-                flex-wrap: wrap;
+            
+            .sidebar-overlay {
+                display: none;
                 position: fixed;
-                z-index: 10001;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+            }
+            
+            .sidebar-overlay.show {
+                display: block;
             }
             
             .mobile-menu-btn {
-                display: block;
-                order: 2;
-            }
-            
-            .navbar .logo {
-                font-size: 1.4rem;
-                order: 1;
-            }
-            
-            .nav-buttons {
-                display: none;
-                width: 100%;
-                flex-direction: column;
-                gap: 8px;
-                padding-top: 15px;
-                order: 3;
-            }
-            
-            .nav-buttons.active {
                 display: flex;
-            }
-            
-            .nav-buttons a, .nav-buttons button {
-                padding: 12px 15px;
-                font-size: 0.95rem;
-                width: 100%;
-                text-align: center;
-                border-radius: 10px;
-            }
-            
-            .nav-dropdown {
-                width: 100%;
-            }
-            
-            .nav-dropdown > a {
-                width: 100%;
-                display: block;
-            }
-            
-            .nav-dropdown-content {
-                position: static;
-                width: 100%;
-                box-shadow: none;
-                background: rgba(102, 126, 234, 0.05);
-                border-radius: 10px;
-                margin-top: 5px;
-            }
-            
-            .dark-mode-toggle {
-                order: 0;
-                margin-right: auto;
-            }
-            
-            .hero {
-                padding: 90px 15px 50px;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .hero-content {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-
-            .hero-image i {
-                font-size: 6rem;
-            }
-
-            .upload-section {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 40px 15px;
-            }
-            
-            .upload-card {
-                padding: 25px 15px;
-                border-radius: 15px;
-            }
-            
-            .upload-card h2 {
-                font-size: 1.5rem;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .feature-card {
-                padding: 25px 20px;
-            }
-            
-            .feature-icon {
-                font-size: 2.5rem;
-            }
-
-            .about-stats {
-                gap: 30px;
-                flex-direction: column;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 20px;
-            }
-            
-            .feedback-card {
-                padding: 20px 15px;
-            }
-            
-            .about-section {
-                padding: 50px 15px;
-            }
-            
-            .about-header h2 {
-                font-size: 2rem;
-            }
-            
-            .about-header p {
-                font-size: 1rem;
-            }
-        }
-
-        /* Responsive - Small Mobile */
-        @media (max-width: 480px) {
-            header nav.navbar {
-                padding: 8px 10px;
-            }
-            
-            .navbar .logo {
-                font-size: 1.2rem;
-            }
-            
-            .nav-buttons {
-                width: 100%;
+                align-items: center;
                 justify-content: center;
-                margin-top: 10px;
             }
             
-            .nav-buttons a, .nav-buttons button {
-                padding: 5px 10px;
-                font-size: 0.75rem;
+            .main-content {
+                width: 100%;
             }
             
-            .hero {
-                padding: 80px 10px 40px;
-            }
-
-            .hero h1 {
-                font-size: 1.6rem;
-            }
-            
-            .hero p {
-                font-size: 0.9rem;
-            }
-            
-            .hero-image i {
-                font-size: 4rem;
-            }
-
-            .upload-card {
-                padding: 20px 10px;
-            }
-            
-            .upload-card h2 {
-                font-size: 1.3rem;
-            }
-            
-            .file-label {
-                padding: 25px 15px;
-            }
-            
-            .file-icon {
-                font-size: 2rem;
-            }
-            
-            .btn-upload {
-                padding: 12px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .feature-card h3 {
-                font-size: 1.2rem;
-            }
-            
-            .stat-number {
-                font-size: 1.8rem;
+            .content-area {
+                padding: 15px;
             }
         }
     </style>
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Navigatsiya paneli -->
-    <header>
-        <nav class="navbar">
-            <div class="logo">Cloudstore</div>
-            
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars" id="mobileMenuIcon"></i>
-            </button>
-            
-            <div class="nav-buttons" id="navButtons">
-                <!-- Dark Mode Toggle -->
-                <button class="dark-mode-toggle" onclick="toggleDarkMode()" title="Tungi rejim">
-                    <i class="fas fa-moon" id="darkModeIcon"></i>
-                </button>
-                
-                <!-- Kitoblar dropdown - HAMMAGA ko'rinadi -->
-                <div class="nav-dropdown" onclick="toggleDropdown(this)">
-                    <a href="{% url 'all_books' %}" class="btn" onclick="event.stopPropagation()"><i class="fas fa-book"></i> Kitoblar</a>
-                    <div class="nav-dropdown-content">
-                        <a href="{% url 'all_books' %}"><i class="fas fa-book"></i> Barcha kitoblar</a>
-                        <a href="{% url 'categories' %}"><i class="fas fa-folder-open"></i> Kategoriyalar</a>
-                        <a href="{% url 'new_books' %}"><i class="fas fa-sparkles"></i> Yangi kitoblar</a>
-                        <a href="{% url 'top_books' %}"><i class="fas fa-trophy"></i> TOP kitoblar</a>
-                        <a href="{% url 'kitob_yuklash' %}"><i class="fas fa-upload"></i> Kitob yuklash</a>
-                    </div>
-                </div>
-                
-                {% if not user.is_authenticated %}
-                <a href="{% url 'login' %}" class="btn btn-primary">Kirish</a>
-                <a href="{% url 'register' %}" class="btn">Ro'yxatdan o'tish</a>
-                {% else %}
-                <!-- Fayllar va Rasmlar - faqat login qilganlarga -->
-                <a href="{% url 'preview' %}" class="btn">Fayllar</a>
-                <a href="{% url 'image_list' %}" class="btn">Rasmlar</a>
-                <a href="{% url 'ai_chat' %}" class="btn" style="background: linear-gradient(45deg, #10a37f, #1a7f5a); color: white;"><i class="fas fa-robot"></i> AI</a>
-                
-                <!-- Profil dropdown -->
-                <div class="nav-dropdown">
-                    <a href="{% url 'profile' %}" class="btn"><i class="fas fa-user"></i> {{ user.username }}</a>
-                    <div class="nav-dropdown-content">
-                        <a href="{% url 'profile' %}"><i class="fas fa-user"></i> Profilim</a>
-                        <a href="{% url 'favorites' %}"><i class="fas fa-heart"></i> Sevimlilar</a>
-                        <form method="post" action="{% url 'logout' %}" style="margin:0">
-                            {% csrf_token %}
-                            <button type="submit" style="width:100%; text-align:left; padding:10px 20px; background:none; border:none; cursor:pointer; color:var(--text-color);">
-                                <i class="fas fa-sign-out-alt" style="width:25px; color:#667eea"></i> Chiqish
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </nav>
-    </header>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;">Asosiy kontentga o'tish</a>
     
-    {% block content %}
-
-    {% if messages %}
-    <div class="messages" style="position: fixed; top: 80px; right: 20px; z-index: 1000;">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- Hero bo‘limi -->
-    <section class="hero">
-        <div class="container" style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Cloudstore</h1>
-                    <p>Fayllar va rasmlarni osongina yuklash, ko'rish va boshqarish uchun zamonaviy platforma</p>
+    <div class="app-container" role="application">
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()" aria-hidden="true"></div>
+        
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Asosiy navigatsiya">
+            <!-- Header with User Info -->
+            <div class="sidebar-header">
+                <div class="sidebar-header-top">
+                    <div class="sidebar-logo" role="banner">☁️ Cloudstore</div>
+                    <div class="header-actions">
+                        <button class="header-btn" onclick="toggleDarkMode()" title="Tungi rejim" aria-label="Tungi rejimni yoqish/o'chirish">
+                            <i class="fas fa-moon" id="darkModeIcon" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="hero-image">
-                    <i class="fas fa-cloud-upload-alt"></i>
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="user-info" style="text-decoration: none; color: white;" aria-label="{{ user.username }} profili">
+                    <div class="user-avatar" role="img" aria-label="{{ user.username }} avatari">
+                        {% if user.social_profile.avatar %}
+                        <img src="{{ user.social_profile.avatar.url }}" alt="{{ user.username }} profil rasmi">
+                        {% else %}
+                        {{ user.username|first|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ user.first_name|default:user.username }}</h3>
+                        <span>@{{ user.username }}</span>
+                    </div>
+                </a>
+                {% else %}
+                <div class="user-info">
+                    <div class="user-avatar" role="img" aria-label="Mehmon avatari">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                    </div>
+                    <div class="user-details">
+                        <h3>Mehmon</h3>
+                        <span>Tizimga kiring</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Search -->
+            <div class="sidebar-search">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Qidirish..." id="globalSearch" onkeyup="handleGlobalSearch(event)">
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Yuklangan fayl haqida ma’lumot -->
-    <section class="file-info">
-        {% if file_name %}
-            <div class="info-card">
-                <h2>✅ Fayl muvaffaqiyatli yuklandi</h2>
-                <div class="file-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Fayl nomi:</span>
-                        <span class="detail-value">{{ file_name }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Hajmi:</span>
-                        <span class="detail-value">{{ file_size }} KB</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Turi:</span>
-                        <span class="detail-value">{{ file_type }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Havola:</span>
-                        <a href="{{ file_url }}" target="_blank" class="detail-link">Faylni ochish</a>
-                    </div>
+            
+            <!-- Menu Items -->
+            <nav class="sidebar-menu">
+                <!-- Tez harakatlar (Eng ko'p ishlatiladigan) -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Tez harakatlar</div>
+                    <a href="{% url 'boshlash' %}" class="menu-item {% if request.resolver_match.url_name == 'boshlash' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        <span>Bosh sahifa</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'telegram_chat' %}" class="menu-item messages">
+                        <i class="fas fa-comments"></i>
+                        <span>Xabarlar</span>
+                        <span class="badge" id="sidebarUnreadBadge" style="display: none;">0</span>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'all_books' %}" class="menu-item {% if 'book' in request.path %}active{% endif %}">
+                        <i class="fas fa-book"></i>
+                        <span>Kitoblar</span>
+                    </a>
+                    <a href="{% url 'ai_chat' %}" class="menu-item ai">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Yordamchi</span>
+                        <span class="badge">Yangi</span>
+                    </a>
                 </div>
-
-
-
-                {% if csv_rows %}
-                    <div class="content-preview">
-                        <h3>📊 CSV fayl jadvali:</h3>
-                        <div class="table-container">
-                            <table>
-                                {% for row in csv_rows %}
-                                    <tr>
-                                        {% for cell in row %}
-                                            <td>{{ cell }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </div>
-                {% endif %}
-
-                {% if excel_head %}
-                    <div class="content-preview">
-                        <h3>📈 Excel fayl (birinchi satrlar):</h3>
-                        <div class="excel-preview">
-                            {{ excel_head|safe }}
-                        </div>
-                    </div>
-                {% endif %}
-
-                {% if json_data %}
-                    <div class="content-preview">
-                        <h3>🔧 JSON fayl ma’lumotlari:</h3>
-                        <div class="json-preview">
-                            <pre>{{ json_data|safe }}</pre>
-                        </div>
-                    </div>
-                {% endif %}
-
-                {% if pdf_text %}
-                    <div class="content-preview">
-                        <h3>📕 PDF fayl matni:</h3>
-                        <div class="pdf-preview">
-                            <pre>{{ pdf_text|truncatechars:500 }}</pre>
-                            {% if pdf_text|length > 500 %}
-                                <p class="truncated-note">... (to'liq ko'rish uchun faylni oching)</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-
-                {% if file_type and file_type|slice:":6" == "image/" %}
-                    <div class="content-preview">
-                        <h3>🖼️ Rasm preview:</h3>
-                        <div class="image-preview">
-                            <img src="{{ file_url }}" alt="{{ file_name }}" class="preview-image">
-                        </div>
-                    </div>
-                {% endif %}
-
-                <div class="action-buttons">
-                    <a href="{% url 'boshlash' %}" class="btn btn-primary">Orqaga qaytish</a>
+                
+                <div class="menu-divider"></div>
+                
+                <!-- Kitoblar -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Kitoblar</div>
+                    <a href="{% url 'categories' %}" class="menu-item">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Kategoriyalar</span>
+                    </a>
+                    <a href="{% url 'top_books' %}" class="menu-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>TOP kitoblar</span>
+                    </a>
+                    <a href="{% url 'new_books' %}" class="menu-item">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>Yangi kitoblar</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'favorites' %}" class="menu-item">
+                        <i class="fas fa-star"></i>
+                        <span>Sevimlilar</span>
+                    </a>
+                    {% endif %}
                 </div>
-            </div>
-        {% else %}
-            <!-- Saytimiz haqida bo'limi -->
-            <section class="about-section">
-                <div class="about-container">
-                    <div class="about-header">
-                        <h2>Saytimiz haqida</h2>
-                        <p>Cloudstore - fayllarni osongina yuklash, ko'rish va boshqarish uchun mo'ljallangan zamonaviy platforma</p>
+                
+                <div class="menu-divider"></div>
+                
+                <!-- Ijtimoiy -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Ijtimoiy tarmoq</div>
+                    <a href="{% url 'search_users' %}" class="menu-item">
+                        <i class="fas fa-search"></i>
+                        <span>Odamlarni qidirish</span>
+                    </a>
+                    <a href="{% url 'discover_users' %}" class="menu-item">
+                        <i class="fas fa-compass"></i>
+                        <span>Yangi odamlar</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'my_followers' %}" class="menu-item">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Kuzatuvchilar</span>
+                    </a>
+                    <a href="{% url 'my_following' %}" class="menu-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Kuzatayotganlar</span>
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="menu-divider"></div>
+                
+                <!-- Premium -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Premium</div>
+                    <a href="{% url 'subscription_plans' %}" class="menu-item premium">
+                        <i class="fas fa-crown"></i>
+                        <span>Obuna</span>
+                    </a>
+                    <a href="{% url 'leaderboard' %}" class="menu-item">
+                        <i class="fas fa-medal"></i>
+                        <span>Liderlar</span>
+                    </a>
+                    <a href="{% url 'daily_quote' %}" class="menu-item">
+                        <i class="fas fa-quote-left"></i>
+                        <span>Kunlik iqtibos</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'my_badges' %}" class="menu-item">
+                        <i class="fas fa-award"></i>
+                        <span>Yutuqlarim</span>
+                    </a>
+                    <a href="{% url 'referral' %}" class="menu-item">
+                        <i class="fas fa-gift"></i>
+                        <span>Do'stlarni taklif</span>
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="menu-divider"></div>
+                
+                <!-- Asboblar -->
+                {% if user.is_authenticated %}
+                <div class="menu-section">
+                    <div class="menu-section-title">Asboblar</div>
+                    <a href="{% url 'preview' %}" class="menu-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Fayllar</span>
+                    </a>
+                    <a href="{% url 'image_list' %}" class="menu-item">
+                        <i class="fas fa-images"></i>
+                        <span>Rasmlar</span>
+                    </a>
+                    <a href="{% url 'kitob_yuklash' %}" class="menu-item">
+                        <i class="fas fa-upload"></i>
+                        <span>Kitob yuklash</span>
+                    </a>
+                </div>
+                
+                <div class="menu-divider"></div>
+                {% endif %}
+                
+                <!-- Profil -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Profil</div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="menu-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profilim</span>
+                    </a>
+                    <a href="{% url 'my_subscription' %}" class="menu-item">
+                        <i class="fas fa-gem"></i>
+                        <span>Obunalarim</span>
+                    </a>
+                    <a href="{% url 'edit_profile' %}" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Sozlamalar</span>
+                    </a>
+                    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="menu-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left;">
+                            <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+                            <span style="color: #ef4444;">Chiqish</span>
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="menu-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Kirish</span>
+                    </a>
+                    <a href="{% url 'register' %}" class="menu-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Ro'yxatdan o'tish</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content" id="main-content" role="main">
+            <!-- Page Header -->
+            <header class="page-header" role="banner">
+                <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Menyuni ochish" aria-expanded="false" aria-controls="sidebar">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                <div class="page-title">
+                    <h1>{% block page_title %}Bosh sahifa{% endblock %}</h1>
+                </div>
+                <div></div>
+            </header>
+            
+            <!-- Content -->
+            <div class="content-area">
+                {% if messages %}
+                <div class="messages-container" style="margin-bottom: 20px;">
+                    {% for message in messages %}
+                    <div class="alert" style="background: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% block content %}
+                <!-- Default Home Content -->
+                <div class="home-content">
+                    <!-- Welcome Banner -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; color: white; margin-bottom: 30px; position: relative; overflow: hidden;">
+                        <div style="position: relative; z-index: 1;">
+                            <h2 style="font-size: 2rem; margin-bottom: 10px;">Xush kelibsiz! 👋</h2>
+                            <p style="opacity: 0.9; font-size: 1.1rem; max-width: 500px;">
+                                Minglab kitoblarni bepul o'qing, AI yordamchisi bilan qidiring va do'stlaringiz bilan ulashing!
+                            </p>
+                            <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                                <a href="{% url 'all_books' %}" style="background: white; color: #667eea; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 600;">
+                                    <i class="fas fa-book"></i> Kitoblarni ko'rish
+                                </a>
+                                <a href="{% url 'ai_chat' %}" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.3);">
+                                    <i class="fas fa-robot"></i> AI bilan suhbat
+                                </a>
+                            </div>
+                        </div>
+                        <div style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); font-size: 8rem; opacity: 0.15;">
+                            📚
+                        </div>
                     </div>
                     
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                            </div>
-                            <h3>Tez yuklash</h3>
-                            <p>Fayllarni bir necha soniyada yuklang va saqlang</p>
+                    <!-- Quick Stats -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">📖</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #667eea;">1000+</div>
+                            <div style="color: var(--text-secondary);">Kitoblar</div>
                         </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-eye"></i>
-                            </div>
-                            <h3>Preview</h3>
-                            <p>Fayllarning ichidagi ma'lumotlarni to'g'ridan-to'g'ri ko'ring</p>
+                        <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">👥</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #10b981;">500+</div>
+                            <div style="color: var(--text-secondary);">Foydalanuvchilar</div>
                         </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-exchange-alt"></i>
-                            </div>
-                            <h3>Format o'zgartirish</h3>
-                            <p>Rasmlarni turli formatlarga o'zgartirib yuklab oling</p>
+                        <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">🤖</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #f59e0b;">AI</div>
+                            <div style="color: var(--text-secondary);">Yordamchi</div>
                         </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-trash-alt"></i>
-                            </div>
-                            <h3>Oson boshqarish</h3>
-                            <p>Fayllarni o'chirish va tahrirlash imkoniyati</p>
+                        <div style="background: var(--card-bg); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">💬</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #764ba2;">Chat</div>
+                            <div style="color: var(--text-secondary);">Suhbatlar</div>
                         </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-file-alt"></i>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-bolt" style="color: #f59e0b;"></i> Tez harakatlar
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <a href="{% url 'all_books' %}" style="background: var(--card-bg); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                <i class="fas fa-search"></i>
                             </div>
-                            <h3>Ko'p formatlar</h3>
-                            <p>TXT, PDF, DOCX, XLSX, JSON, CSV va boshqa fayllarni qo'llab-quvvatlaydi</p>
-                        </div>
-                        
-                        <div class="feature-card">
-                            <div class="feature-icon">
-                                <i class="fas fa-images"></i>
+                            <div>
+                                <div style="font-weight: 600;">Kitob qidirish</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Minglab kitoblardan tanlang</div>
                             </div>
-                            <h3>Rasm galereyasi</h3>
-                            <p>Yuklangan rasmlarni galereya ko'rinishida ko'ring</p>
-                        </div>
+                        </a>
                         
-                        <div class="feature-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                            <div class="feature-icon" style="background: rgba(255,255,255,0.2); color: white;">
+                        <a href="{% url 'telegram_chat' %}" style="background: var(--card-bg); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Xabarlar</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Do'stlaringiz bilan suhbat</div>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'ai_chat' %}" style="background: var(--card-bg); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #10a37f, #1a7f5a); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
                                 <i class="fas fa-robot"></i>
                             </div>
-                            <h3>🤖 AI Yordamchi</h3>
-                            <p>Sun'iy intellekt yordamida fayllar mazmunini tahlil qiling va savol-javob qiling</p>
-                        </div>
-                    </div>
-                    
-                    <div class="about-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">100+</div>
-                            <div class="stat-label">Fayl turlari</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">∞</div>
-                            <div class="stat-label">Cheksiz saqlash</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">24/7</div>
-                            <div class="stat-label">Doimiy ish</div>
-                        </div>
+                            <div>
+                                <div style="font-weight: 600;">AI Yordamchi</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Kitob haqida so'rang</div>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'subscription_plans' %}" style="background: var(--card-bg); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">Premium</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Maxsus imkoniyatlar</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-            </section>
-        {% endif %}
-    </section>
-
-    <!-- Fikr qoldirish bo'limi -->
-    <section class="feedback-section">
-        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-            <div class="feedback-card">
-                <h2>Sayt haqida fikringiz</h2>
-                <p>Loyiha kelajagi uchun o'z fikringizni qoshing</p>
-                <form method="post" action="{% url 'submit_feedback' %}" class="feedback-form">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <input type="text" name="name" placeholder="Ismingiz (ixtiyoriy)" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <textarea name="message" placeholder="Fikringizni yozing..." required class="form-control" rows="4"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Fikrni yuborish</button>
-                </form>
+                {% endblock %}
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <h3><i class="fas fa-cloud"></i> Cloudstore</h3>
-                <p>Fayllarni osongina yuklash va boshqarish</p>
-            </div>
-            <div class="footer-right">
-                <div class="footer-links">
-                    <a href="#" class="footer-link">Sayt haqida</a>
-                    <a href="#" class="footer-link">Yordam</a>
-                    <input type="password" id="feedback-password" placeholder="Parol" style="padding: 5px; margin: 0 10px; border: 1px solid #ddd; border-radius: 3px; font-size: 0.8rem;">
-                    <a href="#" onclick="checkFeedbackPassword()" class="footer-link" style="font-size: 0.9rem;">Fikrlar</a>
-                </div>
-               
-                
-                <div class="aloqa">
-                    <p><i class="fas fa-envelope"></i> akobirsadiloyev8@gmail.com</p>
-                    <p><i class="fas fa-phone"></i> +998976080115</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Cloudstore. Barcha huquqlar himoyalangan.</p>
-        </div>
-    
-    {% endblock %}
+        </main>
+    </div>
     
     <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const navButtons = document.getElementById('navButtons');
-            const menuIcon = document.getElementById('mobileMenuIcon');
-            navButtons.classList.toggle('active');
-            
-            if (navButtons.classList.contains('active')) {
-                menuIcon.className = 'fas fa-times';
-            } else {
-                menuIcon.className = 'fas fa-bars';
-            }
-        }
-        
-        // Dropdown toggle for mobile
-        function toggleDropdown(element) {
-            if (window.innerWidth <= 768) {
-                element.classList.toggle('active');
-            }
-        }
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const navbar = document.querySelector('.navbar');
-            const navButtons = document.getElementById('navButtons');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (navButtons && !navbar.contains(e.target)) {
-                navButtons.classList.remove('active');
-                const menuIcon = document.getElementById('mobileMenuIcon');
-                if (menuIcon) menuIcon.className = 'fas fa-bars';
-            }
-        });
-        
-        // Dark Mode Toggle
+        // Dark Mode
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            updateDarkModeIcon();
-        }
-        
-        function updateDarkModeIcon() {
             const icon = document.getElementById('darkModeIcon');
-            if (icon) {
-                if (document.body.classList.contains('dark-mode')) {
-                    icon.className = 'fas fa-sun';
-                } else {
-                    icon.className = 'fas fa-moon';
-                }
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('darkMode', 'false');
             }
         }
         
         // Load dark mode preference
-        document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeIcon').classList.replace('fa-moon', 'fa-sun');
+        }
+        
+        // Mobile Sidebar
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('show');
+        }
+        
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+        
+        // Global Search
+        function handleGlobalSearch(event) {
+            if (event.key === 'Enter') {
+                const query = document.getElementById('globalSearch').value.trim();
+                if (query) {
+                    window.location.href = '/kitoblar/?q=' + encodeURIComponent(query);
+                }
             }
-            updateDarkModeIcon();
+        }
+        
+        // Check unread messages
+        function checkUnreadMessages() {
+            {% if user.is_authenticated %}
+            fetch('/api/online-status/')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('sidebarUnreadBadge');
+                    if (badge && data.unread_count > 0) {
+                        badge.textContent = data.unread_count > 99 ? '99+' : data.unread_count;
+                        badge.style.display = 'inline-block';
+                    } else if (badge) {
+                        badge.style.display = 'none';
+                    }
+                })
+                .catch(err => console.log('Unread check error:', err));
+            {% endif %}
+        }
+        
+        // Check every 30 seconds
+        {% if user.is_authenticated %}
+        checkUnreadMessages();
+        setInterval(checkUnreadMessages, 30000);
+        {% endif %}
+        
+        // ========== MOBILE TOUCH GESTURES ==========
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 80;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const sidebar = document.getElementById('sidebar');
+            
+            // Right swipe - open sidebar (only from left edge)
+            if (swipeDistance > swipeThreshold && touchStartX < 50) {
+                openSidebar();
+            }
+            
+            // Left swipe - close sidebar
+            if (swipeDistance < -swipeThreshold && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        }
+        
+        // ========== KEYBOARD NAVIGATION ==========
+        document.addEventListener('keydown', e => {
+            // ESC - close sidebar
+            if (e.key === 'Escape') {
+                closeSidebar();
+            }
+            
+            // Ctrl+K or Cmd+K - focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.getElementById('globalSearch');
+                if (searchInput) searchInput.focus();
+            }
         });
         
-        // File input handlers
-        const fileInput = document.getElementById('file-input');
-        if (fileInput) {
-            fileInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    document.querySelector('.file-text').textContent = file.name;
-                } else {
-                    document.querySelector('.file-text').textContent = 'Fayl tanlang';
-                }
-            });
-        }
-
-        const imageInput = document.getElementById('image-input');
-        if (imageInput) {
-            imageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const label = this.nextElementSibling;
-                    label.querySelector('.file-text').textContent = file.name;
-                } else {
-                    const label = this.nextElementSibling;
-                    label.querySelector('.file-text').textContent = 'Rasm tanlang';
-                }
-            });
-        }
-
-        function checkFeedbackPassword() {
-            const password = document.getElementById('feedback-password').value;
-            if (password === 'Akobir05') {
-                window.location.href = '{% url "feedback_list" %}?password=' + password;
-            } else {
-                alert('Parol noto\'g\'ri!');
+        // ========== PULL TO REFRESH ==========
+        let pullStartY = 0;
+        let pullMoveY = 0;
+        let isPulling = false;
+        
+        document.addEventListener('touchstart', e => {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+                isPulling = true;
             }
+        }, { passive: true });
+        
+        document.addEventListener('touchmove', e => {
+            if (!isPulling) return;
+            pullMoveY = e.touches[0].clientY;
+            const pullDistance = pullMoveY - pullStartY;
+            
+            if (pullDistance > 100 && window.scrollY === 0) {
+                // Visual feedback
+                document.body.style.transform = `translateY(${Math.min(pullDistance * 0.3, 50)}px)`;
+            }
+        }, { passive: true });
+        
+        document.addEventListener('touchend', e => {
+            if (!isPulling) return;
+            const pullDistance = pullMoveY - pullStartY;
+            
+            if (pullDistance > 120 && window.scrollY === 0) {
+                // Refresh page
+                window.location.reload();
+            }
+            
+            document.body.style.transform = '';
+            isPulling = false;
+        }, { passive: true });
+        
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(() => console.log('SW registered'))
+                .catch(err => console.log('SW error:', err));
         }
     </script>
+    
+    {% block scripts %}{% endblock %}
 </body>
 </html>

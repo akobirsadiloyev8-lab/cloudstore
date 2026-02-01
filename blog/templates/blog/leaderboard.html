@@ -1,0 +1,398 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Liderlar - TOP O'quvchilar | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .leaderboard-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .leaderboard-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .leaderboard-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .leaderboard-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .leaderboard-header p {
+        color: #64748b;
+    }
+    
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: var(--card-bg);
+        color: var(--text-color);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .tab-btn.active {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .tab-btn:hover:not(.active) {
+        transform: translateY(-2px);
+    }
+    
+    .leaderboard-table {
+        background: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .leader-row {
+        display: flex;
+        align-items: center;
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.3s;
+    }
+    
+    .leader-row:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .leader-row:last-child {
+        border-bottom: none;
+    }
+    
+    .leader-rank {
+        width: 60px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .rank-1 { color: #f59e0b; }
+    .rank-2 { color: #94a3b8; }
+    .rank-3 { color: #b45309; }
+    
+    .leader-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-right: 15px;
+    }
+    
+    .leader-info {
+        flex: 1;
+    }
+    
+    .leader-name {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 3px;
+    }
+    
+    .leader-stats {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    
+    .leader-points {
+        text-align: right;
+    }
+    
+    .points-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .points-label {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    /* Top 3 special styling */
+    .top-3 {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+    
+    .top-3-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        width: 200px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .top-3-card.first {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+    
+    .top-3-card .crown {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
+    }
+    
+    .top-3-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0 auto 15px;
+        border: 4px solid white;
+    }
+    
+    .top-3-card.first .top-3-avatar {
+        background: white;
+        color: #f59e0b;
+    }
+    
+    .top-3-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .top-3-points {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    /* Streak leaders */
+    .streak-section {
+        margin-top: 50px;
+    }
+    
+    .streak-section h3 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+    }
+    
+    .streak-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .streak-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .streak-fire {
+        font-size: 2rem;
+    }
+    
+    .streak-info {
+        flex: 1;
+    }
+    
+    .streak-name {
+        font-weight: 600;
+    }
+    
+    .streak-days {
+        color: #f59e0b;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .top-3-card.first {
+            transform: scale(1);
+        }
+        
+        .top-3 {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<section class="leaderboard-section">
+    <div class="leaderboard-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: white; border-radius: 10px; text-decoration: none; color: #667eea; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="leaderboard-header">
+            <h1>🏆 TOP O'quvchilar</h1>
+            <p>Eng faol o'quvchilar reytingi</p>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('weekly')">📅 Haftalik</button>
+            <button class="tab-btn" onclick="showTab('alltime')">🌟 Umumiy</button>
+            <button class="tab-btn" onclick="showTab('streak')">🔥 Streak</button>
+        </div>
+        
+        <!-- Top 3 -->
+        <div class="top-3" id="top3Weekly">
+            {% for stats in weekly_leaders|slice:":3" %}
+            <div class="top-3-card {% if forloop.first %}first{% endif %}">
+                {% if forloop.first %}<div class="crown">👑</div>{% endif %}
+                <div class="top-3-avatar">
+                    {{ stats.user.username|slice:":1"|upper }}
+                </div>
+                <div class="top-3-name">{{ stats.user.username }}</div>
+                <div class="top-3-points">{{ stats.total_points }} ball</div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: #64748b;">Hozircha ma'lumot yo'q</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-table" id="weeklyTable">
+            {% for stats in weekly_leaders %}
+            {% if forloop.counter > 3 %}
+            <div class="leader-row">
+                <div class="leader-rank">{{ forloop.counter }}</div>
+                <div class="leader-avatar">{{ stats.user.username|slice:":1"|upper }}</div>
+                <div class="leader-info">
+                    <div class="leader-name">{{ stats.user.username }}</div>
+                    <div class="leader-stats">
+                        📚 {{ stats.total_books_read }} kitob | 🔥 {{ stats.current_streak }} kun streak
+                    </div>
+                </div>
+                <div class="leader-points">
+                    <div class="points-number">{{ stats.total_points }}</div>
+                    <div class="points-label">ball</div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        
+        <!-- All Time Table (hidden by default) -->
+        <div class="leaderboard-table" id="alltimeTable" style="display: none;">
+            {% for stats in all_time_leaders %}
+            <div class="leader-row">
+                <div class="leader-rank {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                    {% if forloop.counter == 1 %}🥇
+                    {% elif forloop.counter == 2 %}🥈
+                    {% elif forloop.counter == 3 %}🥉
+                    {% else %}{{ forloop.counter }}{% endif %}
+                </div>
+                <div class="leader-avatar">{{ stats.user.username|slice:":1"|upper }}</div>
+                <div class="leader-info">
+                    <div class="leader-name">{{ stats.user.username }}</div>
+                    <div class="leader-stats">
+                        📚 {{ stats.total_books_read }} kitob | 📖 {{ stats.total_pages_read }} sahifa
+                    </div>
+                </div>
+                <div class="leader-points">
+                    <div class="points-number">{{ stats.total_points }}</div>
+                    <div class="points-label">ball</div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 40px; color: #64748b;">
+                Hozircha ma'lumot yo'q
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Streak Table (hidden by default) -->
+        <div class="streak-section" id="streakTable" style="display: none;">
+            <h3>🔥 Eng uzun Streak</h3>
+            <div class="streak-grid">
+                {% for stats in streak_leaders %}
+                <div class="streak-card">
+                    <div class="streak-fire">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-name">{{ stats.user.username }}</div>
+                        <div class="streak-days">{{ stats.current_streak }} kun ketma-ket</div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: #64748b; grid-column: 1/-1;">Hozircha ma'lumot yo'q</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function showTab(tab) {
+    // Hide all
+    document.getElementById('top3Weekly').style.display = 'none';
+    document.getElementById('weeklyTable').style.display = 'none';
+    document.getElementById('alltimeTable').style.display = 'none';
+    document.getElementById('streakTable').style.display = 'none';
+    
+    // Remove active class
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected
+    if (tab === 'weekly') {
+        document.getElementById('top3Weekly').style.display = 'flex';
+        document.getElementById('weeklyTable').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    } else if (tab === 'alltime') {
+        document.getElementById('alltimeTable').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    } else if (tab === 'streak') {
+        document.getElementById('streakTable').style.display = 'block';
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+    }
+}
+</script>
+{% endblock %}

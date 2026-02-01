@@ -1,0 +1,480 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Do'stingizni taklif qiling | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .referral-section {
+        min-height: 100vh;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .referral-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .referral-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+    }
+    
+    .referral-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .referral-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .reward-banner {
+        background: rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 30px;
+        color: white;
+    }
+    
+    .reward-icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        margin: 20px 0;
+    }
+    
+    .reward-item {
+        text-align: center;
+    }
+    
+    .reward-item .icon {
+        width: 70px;
+        height: 70px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 10px;
+    }
+    
+    .reward-arrow {
+        font-size: 2rem;
+        opacity: 0.7;
+    }
+    
+    .referral-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    body.dark-mode .referral-card {
+        background: #2d2d2d;
+    }
+    
+    .share-section h3 {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .referral-code-display {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .referral-code-display .code {
+        flex: 1;
+        text-align: center;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+    
+    .copy-btn {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .copy-btn:hover {
+        transform: scale(1.05);
+    }
+    
+    .share-link-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    
+    .share-link-input {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+    
+    .share-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .share-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .share-btn.telegram {
+        background: #0088cc;
+        color: white;
+    }
+    
+    .share-btn.whatsapp {
+        background: #25d366;
+        color: white;
+    }
+    
+    .share-btn.facebook {
+        background: #1877f2;
+        color: white;
+    }
+    
+    .share-btn.twitter {
+        background: #1da1f2;
+        color: white;
+    }
+    
+    /* Stats */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        color: white;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    
+    .stat-label {
+        opacity: 0.9;
+        margin-top: 5px;
+    }
+    
+    /* Invites Table */
+    .invites-section h3 {
+        margin-bottom: 20px;
+    }
+    
+    .invites-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .invites-table th,
+    .invites-table td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    body.dark-mode .invites-table th,
+    body.dark-mode .invites-table td {
+        border-color: #444;
+    }
+    
+    .invites-table th {
+        background: #f8fafc;
+        font-weight: 600;
+    }
+    
+    body.dark-mode .invites-table th {
+        background: #333;
+    }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    
+    .status-badge.converted {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    /* How it works */
+    .how-it-works {
+        margin-top: 40px;
+    }
+    
+    .how-it-works h3 {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+    }
+    
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .step-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        color: white;
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        background: white;
+        color: #667eea;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0 auto 15px;
+    }
+    
+    .step-card h4 {
+        margin-bottom: 10px;
+    }
+    
+    .step-card p {
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+</style>
+
+<!-- Navigatsiya tugmalari -->
+<div style="display: flex; gap: 10px; padding: 100px 20px 20px; max-width: 900px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <a href="javascript:history.back()" style="padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
+    <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: white; border-radius: 10px; text-decoration: none; color: #667eea; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-home"></i> Bosh sahifa
+    </a>
+</div>
+
+<section class="referral-section" style="padding-top: 20px;">
+    <div class="referral-container">
+        <div class="referral-header">
+            <h1>👥 Do'stingizni taklif qiling</h1>
+            <p>Har bir do'stingiz uchun 7 kun bepul Premium oling!</p>
+        </div>
+        
+        <!-- Reward Banner -->
+        <div class="reward-banner">
+            <h3>🎁 Taklif mukofotlari</h3>
+            <div class="reward-icons">
+                <div class="reward-item">
+                    <div class="icon">👤</div>
+                    <div>Siz taklif qilasiz</div>
+                </div>
+                <div class="reward-arrow">→</div>
+                <div class="reward-item">
+                    <div class="icon">👥</div>
+                    <div>Do'st ro'yxatdan o'tadi</div>
+                </div>
+                <div class="reward-arrow">→</div>
+                <div class="reward-item">
+                    <div class="icon">🎉</div>
+                    <div>Ikkalangiz bonus olasiz!</div>
+                </div>
+            </div>
+            <p>Sizga: <strong>7 kun bepul Premium</strong> | Do'stingizga: <strong>3 kun bepul Premium</strong></p>
+        </div>
+        
+        <!-- Share Section -->
+        <div class="referral-card share-section">
+            <h3>📤 Ulashing</h3>
+            
+            <div class="referral-code-display">
+                <div class="code" id="refCode">{{ referral_code.code }}</div>
+                <button class="copy-btn" onclick="copyCode()">
+                    <i class="fas fa-copy"></i> Nusxalash
+                </button>
+            </div>
+            
+            <div class="share-link-box">
+                <input type="text" class="share-link-input" id="shareLink" value="{{ share_link }}" readonly>
+                <button class="copy-btn" onclick="copyLink()">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+            
+            <div class="share-buttons">
+                <a href="https://t.me/share/url?url={{ share_link|urlencode }}&text=Cloudstore%20-%20Bepul%20kitoblar%20kutubxonasi!%20Mening%20referral%20kodim:%20{{ referral_code.code }}" 
+                   target="_blank" class="share-btn telegram">
+                    <i class="fab fa-telegram"></i> Telegram
+                </a>
+                <a href="https://wa.me/?text=Cloudstore%20-%20Bepul%20kitoblar%20kutubxonasi!%20{{ share_link }}" 
+                   target="_blank" class="share-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_link|urlencode }}" 
+                   target="_blank" class="share-btn facebook">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?text=Cloudstore%20-%20Bepul%20kitoblar!&url={{ share_link|urlencode }}" 
+                   target="_blank" class="share-btn twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ referral_code.total_invites }}</div>
+                <div class="stat-label">Jami takliflar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ referral_code.successful_invites }}</div>
+                <div class="stat-label">Muvaffaqiyatli</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ referral_code.earned_days }}</div>
+                <div class="stat-label">Yutilgan kunlar</div>
+            </div>
+        </div>
+        
+        <!-- Invites List -->
+        {% if invites %}
+        <div class="referral-card invites-section">
+            <h3>📋 Takliflaringiz tarixi</h3>
+            <table class="invites-table">
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi</th>
+                        <th>Sana</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invite in invites %}
+                    <tr>
+                        <td>{{ invite.invited_user.username }}</td>
+                        <td>{{ invite.created_at|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if invite.converted_at %}
+                            <span class="status-badge converted">Premium bo'ldi ✓</span>
+                            {% else %}
+                            <span class="status-badge pending">Kutilmoqda</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        
+        <!-- How it works -->
+        <div class="how-it-works">
+            <h3>Qanday ishlaydi?</h3>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Havolani ulashing</h4>
+                    <p>Referral havolanngizni do'stlaringizga yuboring</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Do'st ro'yxatdan o'tadi</h4>
+                    <p>Do'stingiz havola orqali ro'yxatdan o'tadi</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Bonus oling!</h4>
+                    <p>Do'stingiz Premium olsa, sizga 7 kun bonus!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function copyCode() {
+    const code = document.getElementById('refCode').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Kod nusxalandi: ' + code);
+    });
+}
+
+function copyLink() {
+    const link = document.getElementById('shareLink').value;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('Havola nusxalandi!');
+    });
+}
+</script>
+{% endblock %}

@@ -3591,3 +3591,8 @@ def user_profile(request):
         'password_change_error': password_change_error,
     }
     return render(request, 'blog/profile.html', context)
+
+
+def offline_page(request):
+    """Offline sahifa (PWA uchun)"""
+    return render(request, 'blog/offline.html')

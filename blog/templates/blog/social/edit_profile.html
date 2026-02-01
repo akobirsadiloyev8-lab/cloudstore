@@ -1,0 +1,311 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Profilni tahrirlash | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .edit-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .edit-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .edit-header {
+        margin-bottom: 30px;
+    }
+    
+    .edit-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .edit-form {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #667eea;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: var(--bg-color);
+        color: var(--text-color);
+        transition: all 0.3s;
+    }
+    
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .avatar-upload {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .current-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #667eea;
+    }
+    
+    .current-avatar.default {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    
+    .avatar-actions {
+        flex: 1;
+    }
+    
+    .avatar-input {
+        margin-top: 10px;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        background: var(--bg-color);
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #667eea;
+    }
+    
+    .checkbox-group label {
+        margin: 0;
+        flex: 1;
+    }
+    
+    .checkbox-group span {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .helper-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 5px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .avatar-upload {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<section class="edit-section">
+    <div class="edit-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="edit-header">
+            <h1><i class="fas fa-user-edit" style="color: #667eea;"></i> Profilni tahrirlash</h1>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+            
+            <!-- Avatar Section -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-image"></i> Profil rasmi</div>
+                <div class="avatar-upload">
+                    {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="Avatar" class="current-avatar">
+                    {% else %}
+                    <div class="current-avatar default">{{ user.username|first|upper }}</div>
+                    {% endif %}
+                    <div class="avatar-actions">
+                        <p>Yangi rasm yuklang</p>
+                        <input type="file" name="avatar" accept="image/*" class="avatar-input">
+                        <p class="helper-text">JPG, PNG. Maksimum 2MB</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Basic Info -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-user"></i> Asosiy ma'lumotlar</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">Ism</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Familiya</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" maxlength="30">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" name="bio" maxlength="500" placeholder="O'zingiz haqingizda qisqacha...">{{ profile.bio }}</textarea>
+                    <p class="helper-text">500 ta belgigacha</p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location">Joylashuv</label>
+                        <input type="text" id="location" name="location" value="{{ profile.location }}" placeholder="Masalan: Toshkent">
+                    </div>
+                    <div class="form-group">
+                        <label for="website">Veb sayt</label>
+                        <input type="url" id="website" name="website" value="{{ profile.website }}" placeholder="https://...">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reading Preferences -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-book"></i> Kitob qiziqishlari</div>
+                
+                <div class="form-group">
+                    <label for="favorite_genres">Sevimli janrlar</label>
+                    <input type="text" id="favorite_genres" name="favorite_genres" value="{{ profile.favorite_genres }}" placeholder="Fantastika, Tarixiy, Psixologiya...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="favorite_author">Sevimli muallif</label>
+                    <input type="text" id="favorite_author" name="favorite_author" value="{{ profile.favorite_author }}" placeholder="Alisher Navoiy">
+                </div>
+            </div>
+            
+            <!-- Privacy Settings -->
+            <div class="form-section">
+                <div class="section-title"><i class="fas fa-lock"></i> Maxfiylik sozlamalari</div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="is_public" name="is_public" {% if profile.is_public %}checked{% endif %}>
+                    <div>
+                        <label for="is_public">Profil ochiq</label>
+                        <span>Barchaga ko'rinadi</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="show_reading_activity" name="show_reading_activity" {% if profile.show_reading_activity %}checked{% endif %}>
+                    <div>
+                        <label for="show_reading_activity">O'qish faoliyatini ko'rsatish</label>
+                        <span>Qaysi kitoblarni o'qiyotganingiz</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="allow_messages" name="allow_messages" {% if profile.allow_messages %}checked{% endif %}>
+                    <div>
+                        <label for="allow_messages">Xabarlarga ruxsat</label>
+                        <span>Boshqalar sizga yozishi mumkin</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="show_online_status" name="show_online_status" {% if profile.show_online_status %}checked{% endif %}>
+                    <div>
+                        <label for="show_online_status">Online statusni ko'rsatish</label>
+                        <span>Boshqalarga online ekanligingiz ko'rinadi</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-save"></i> Saqlash
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

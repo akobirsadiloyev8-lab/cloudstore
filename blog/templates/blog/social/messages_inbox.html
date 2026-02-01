@@ -1,0 +1,199 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Xabarlar | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .messages-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .messages-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .messages-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .messages-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .search-users-btn {
+        padding: 12px 25px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .search-users-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .chat-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .chat-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: var(--card-bg);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .chat-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .chat-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .chat-avatar.default {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    
+    .chat-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .chat-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .chat-preview {
+        color: #64748b;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .chat-meta {
+        text-align: right;
+    }
+    
+    .chat-time {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+    
+    .unread-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+    
+    .empty-messages {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+    }
+    
+    .empty-messages i {
+        font-size: 4rem;
+        opacity: 0.3;
+        margin-bottom: 20px;
+    }
+</style>
+
+<section class="messages-section">
+    <div class="messages-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="messages-header">
+            <h1><i class="fas fa-comments" style="color: #667eea;"></i> Xabarlar</h1>
+            <a href="{% url 'search_users' %}" class="search-users-btn">
+                <i class="fas fa-user-plus"></i> Yangi suhbat
+            </a>
+        </div>
+        
+        {% if chats %}
+        <ul class="chat-list">
+            {% for chat in chats %}
+            <a href="{% url 'chat' chat.user.username %}" class="chat-item">
+                {% if chat.profile.avatar %}
+                <img src="{{ chat.profile.avatar.url }}" alt="{{ chat.user.username }}" class="chat-avatar">
+                {% else %}
+                <div class="chat-avatar default">{{ chat.user.username|first|upper }}</div>
+                {% endif %}
+                
+                <div class="chat-info">
+                    <div class="chat-name">{{ chat.user.first_name|default:chat.user.username }} {{ chat.user.last_name }}</div>
+                    <div class="chat-preview">
+                        {% if chat.last_message %}
+                            {% if chat.last_message.sender == user %}Siz: {% endif %}
+                            {{ chat.last_message.content|truncatechars:50 }}
+                        {% else %}
+                            Yangi suhbat boshlang
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="chat-meta">
+                    {% if chat.last_message %}
+                    <div class="chat-time">{{ chat.last_message.created_at|timesince }} oldin</div>
+                    {% endif %}
+                    {% if chat.unread_count > 0 %}
+                    <span class="unread-badge">{{ chat.unread_count }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-messages">
+            <i class="fas fa-inbox"></i>
+            <h3>Xabarlar yo'q</h3>
+            <p>Boshqa kitobxonlar bilan bog'laning!</p>
+            <a href="{% url 'search_users' %}" style="color: #667eea; text-decoration: none; margin-top: 15px; display: inline-block;">
+                <i class="fas fa-search"></i> Foydalanuvchilarni qidirish →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

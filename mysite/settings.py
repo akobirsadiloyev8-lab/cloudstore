@@ -80,6 +80,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Custom middleware
+    'blog.middleware.RequestLoggingMiddleware',
+    'blog.middleware.OnlineStatusMiddleware',
+    'blog.middleware.SecurityHeadersMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -94,6 +98,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'blog.views_subscription.subscription_context_processor',  # Premium obuna
             ],
         },
     },
@@ -228,23 +233,49 @@ if not DEBUG:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
+            'maxBytes': 5 * 1024 * 1024,  # 5MB
+            'backupCount': 3,
+            'formatter': 'verbose',
         },
     },
     'root': {
         'handlers': ['console'],
-        'level': 'ERROR',  # Faqat xatolarni yozish (RAM tejash)
+        'level': 'WARNING',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'ERROR',  # Minimal logging
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'blog': {
+            'handlers': ['console', 'file'] if not DEBUG else ['console'],
+            'level': 'INFO',
             'propagate': False,
         },
     },
 }
+
+# Log papkasini yaratish
+os.makedirs(os.path.join(BASE_DIR, 'logs'), exist_ok=True)
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

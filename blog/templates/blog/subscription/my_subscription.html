@@ -1,0 +1,450 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Mening Obunalarim | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .subscription-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .subscription-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .subscription-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .subscription-header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Current Plan Card */
+    .current-plan {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 25px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .current-plan::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255,255,255,0.05);
+        transform: rotate(30deg);
+    }
+    
+    .plan-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .plan-name {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .plan-icon {
+        font-size: 3rem;
+    }
+    
+    .plan-expires {
+        opacity: 0.9;
+        margin-bottom: 25px;
+    }
+    
+    .plan-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .plan-feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.1);
+        padding: 12px 20px;
+        border-radius: 10px;
+    }
+    
+    .plan-feature i {
+        color: #10b981;
+    }
+    
+    .plan-actions {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .plan-btn {
+        padding: 12px 30px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .plan-btn.primary {
+        background: white;
+        color: #667eea;
+    }
+    
+    .plan-btn.secondary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .plan-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Usage Stats */
+    .usage-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .usage-title {
+        font-size: 1.3rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .usage-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .usage-item {
+        text-align: center;
+    }
+    
+    .usage-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(#667eea var(--percent, 0%), #e2e8f0 0%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        position: relative;
+    }
+    
+    .usage-circle::before {
+        content: '';
+        width: 100px;
+        height: 100px;
+        background: var(--card-bg);
+        border-radius: 50%;
+        position: absolute;
+    }
+    
+    .usage-value {
+        position: relative;
+        z-index: 1;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .usage-label {
+        color: #64748b;
+    }
+    
+    /* Payment History */
+    .payments-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .payments-title {
+        font-size: 1.3rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .payment-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .payment-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .payment-item:last-child {
+        border-bottom: none;
+    }
+    
+    .payment-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .payment-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+    
+    .payment-details h4 {
+        margin: 0 0 5px;
+        color: var(--text-color);
+    }
+    
+    .payment-details span {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .payment-amount {
+        text-align: right;
+    }
+    
+    .payment-amount .amount {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text-color);
+    }
+    
+    .payment-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .payment-status.completed {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .payment-status.pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    
+    .empty-payments {
+        text-align: center;
+        padding: 40px;
+        color: #64748b;
+    }
+    
+    @media (max-width: 768px) {
+        .plan-name {
+            font-size: 1.8rem;
+        }
+        
+        .plan-actions {
+            flex-direction: column;
+        }
+        
+        .plan-btn {
+            text-align: center;
+        }
+    }
+</style>
+
+<section class="subscription-section">
+    <div class="subscription-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="subscription-header">
+            <h1><i class="fas fa-crown" style="color: #f59e0b;"></i> Mening Obunalarim</h1>
+        </div>
+        
+        <!-- Current Plan -->
+        <div class="current-plan">
+            <div class="plan-badge">
+                {% if subscription.is_premium %}PREMIUM OBUNA{% else %}BEPUL REJA{% endif %}
+            </div>
+            
+            <div class="plan-name">
+                <span class="plan-icon">
+                    {% if subscription.plan.plan_type == 'vip' %}👑
+                    {% elif subscription.plan.plan_type == 'premium' %}💎
+                    {% elif subscription.plan.plan_type == 'standard' %}⭐
+                    {% else %}📚{% endif %}
+                </span>
+                {{ subscription.plan.name|default:"Bepul" }}
+            </div>
+            
+            <p class="plan-expires">
+                {% if subscription.expires_at %}
+                    <i class="fas fa-calendar"></i> 
+                    Muddati: {{ subscription.expires_at|date:"d.m.Y" }} 
+                    ({{ subscription.days_remaining }} kun qoldi)
+                {% else %}
+                    <i class="fas fa-infinity"></i> Cheksiz
+                {% endif %}
+            </p>
+            
+            <div class="plan-features">
+                <div class="plan-feature">
+                    <i class="fas fa-check"></i>
+                    Kuniga {{ subscription.plan.daily_book_limit|default:2 }} ta kitob
+                </div>
+                <div class="plan-feature">
+                    <i class="fas fa-check"></i>
+                    Kuniga {{ subscription.plan.daily_ai_limit|default:3 }} ta AI so'rov
+                </div>
+                {% if subscription.plan.can_download %}
+                <div class="plan-feature">
+                    <i class="fas fa-check"></i>
+                    Yuklab olish
+                </div>
+                {% endif %}
+                {% if subscription.plan.ads_free %}
+                <div class="plan-feature">
+                    <i class="fas fa-check"></i>
+                    Reklmasiz
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="plan-actions">
+                <a href="{% url 'subscription_plans' %}" class="plan-btn primary">
+                    <i class="fas fa-arrow-up"></i> Rejani yangilash
+                </a>
+                <a href="{% url 'referral' %}" class="plan-btn secondary">
+                    <i class="fas fa-gift"></i> Bonus oling
+                </a>
+            </div>
+        </div>
+        
+        <!-- Usage Stats -->
+        <div class="usage-section">
+            <h3 class="usage-title"><i class="fas fa-chart-pie" style="color: #667eea;"></i> Bugungi foydalanish</h3>
+            
+            <div class="usage-grid">
+                <div class="usage-item">
+                    {% with book_percent=subscription.daily_books_read|default:0 %}
+                    {% with limit=subscription.plan.daily_book_limit|default:2 %}
+                    <div class="usage-circle" style="--percent: {% widthratio book_percent limit 100 %}%;">
+                        <span class="usage-value">{{ subscription.daily_books_read|default:0 }}/{{ limit }}</span>
+                    </div>
+                    {% endwith %}
+                    {% endwith %}
+                    <div class="usage-label">Kitoblar o'qildi</div>
+                </div>
+                
+                <div class="usage-item">
+                    {% with ai_percent=subscription.daily_ai_requests|default:0 %}
+                    {% with limit=subscription.plan.daily_ai_limit|default:3 %}
+                    <div class="usage-circle" style="--percent: {% widthratio ai_percent limit 100 %}%;">
+                        <span class="usage-value">{{ subscription.daily_ai_requests|default:0 }}/{{ limit }}</span>
+                    </div>
+                    {% endwith %}
+                    {% endwith %}
+                    <div class="usage-label">AI so'rovlar</div>
+                </div>
+                
+                <div class="usage-item">
+                    <div class="usage-circle" style="--percent: 100%;">
+                        <span class="usage-value">{{ subscription.bonus_days|default:0 }}</span>
+                    </div>
+                    <div class="usage-label">Bonus kunlar</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment History -->
+        <div class="payments-section">
+            <h3 class="payments-title"><i class="fas fa-history" style="color: #667eea;"></i> To'lovlar tarixi</h3>
+            
+            {% if payments %}
+            <ul class="payment-list">
+                {% for payment in payments %}
+                <li class="payment-item">
+                    <div class="payment-info">
+                        <div class="payment-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-details">
+                            <h4>{{ payment.plan.name }}</h4>
+                            <span>{{ payment.created_at|date:"d.m.Y H:i" }} • {{ payment.get_payment_method_display }}</span>
+                        </div>
+                    </div>
+                    <div class="payment-amount">
+                        <div class="amount">{{ payment.amount|floatformat:0 }} so'm</div>
+                        <div class="payment-status {{ payment.status }}">
+                            {% if payment.status == 'completed' %}✓ Yakunlangan
+                            {% elif payment.status == 'pending' %}⏳ Kutilmoqda
+                            {% else %}{{ payment.get_status_display }}{% endif %}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-payments">
+                <i class="fas fa-receipt" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                <p>Hozircha to'lovlar yo'q</p>
+                <a href="{% url 'subscription_plans' %}" style="color: #667eea; text-decoration: none;">
+                    Premium obunaga o'tish →
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

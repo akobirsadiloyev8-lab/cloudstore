@@ -1,0 +1,395 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Mening Yutuqlarim | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .badges-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .badges-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .badges-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .badges-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    /* Stats Cards */
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .stat-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    /* Badges Grid */
+    .badges-section-title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .badge-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .badge-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .badge-card.earned {
+        border: 2px solid #667eea;
+    }
+    
+    .badge-card.locked {
+        opacity: 0.6;
+    }
+    
+    .badge-card.locked::after {
+        content: '🔒';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .badge-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+    
+    .badge-card.earned .badge-icon {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    .badge-card.locked .badge-icon {
+        background: #e2e8f0;
+    }
+    
+    .badge-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: var(--text-color);
+    }
+    
+    .badge-info p {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    .badge-date {
+        font-size: 0.8rem;
+        color: #667eea;
+        margin-top: 5px;
+    }
+    
+    /* Earned Badges Section */
+    .earned-section {
+        margin-bottom: 50px;
+    }
+    
+    .earned-badges-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .earned-badge {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .earned-badge .icon {
+        font-size: 1.5rem;
+    }
+    
+    /* Progress */
+    .progress-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-top: 40px;
+    }
+    
+    .progress-section h3 {
+        margin-bottom: 20px;
+    }
+    
+    .progress-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .progress-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .progress-icon {
+        font-size: 1.5rem;
+        width: 50px;
+        text-align: center;
+    }
+    
+    .progress-info {
+        flex: 1;
+    }
+    
+    .progress-label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .progress-bar {
+        background: #e2e8f0;
+        height: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.5s;
+    }
+    
+    .progress-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 5px;
+    }
+    
+    @media (max-width: 768px) {
+        .badges-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="badges-section">
+    <div class="badges-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="badges-header">
+            <h1>🏅 Mening Yutuqlarim</h1>
+            <p style="color: #64748b;">Yig'ilgan badge'lar va statistika</p>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">{{ stats.total_points|default:0 }}</div>
+                <div class="stat-label">Jami ball</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number">{{ stats.total_books_read|default:0 }}</div>
+                <div class="stat-label">O'qilgan kitoblar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-number">{{ stats.current_streak|default:0 }}</div>
+                <div class="stat-label">Joriy streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-number">{{ badges.count }}</div>
+                <div class="stat-label">Yutuqlar</div>
+            </div>
+        </div>
+        
+        <!-- Earned Badges -->
+        {% if badges %}
+        <div class="earned-section">
+            <h3 class="badges-section-title">🎖️ Yutilgan Badge'lar</h3>
+            <div class="earned-badges-list">
+                {% for badge in badges %}
+                <div class="earned-badge">
+                    <span class="icon">
+                        {% if badge.badge_type == 'reader_1' %}📖
+                        {% elif badge.badge_type == 'reader_10' %}📚
+                        {% elif badge.badge_type == 'reader_50' %}🏆
+                        {% elif badge.badge_type == 'reader_100' %}👑
+                        {% elif badge.badge_type == 'sharer' %}🔗
+                        {% elif badge.badge_type == 'reviewer' %}✍️
+                        {% elif badge.badge_type == 'inviter_5' %}👥
+                        {% elif badge.badge_type == 'inviter_20' %}🌟
+                        {% elif badge.badge_type == 'streak_7' %}🔥
+                        {% elif badge.badge_type == 'streak_30' %}💪
+                        {% elif badge.badge_type == 'first_premium' %}💎
+                        {% elif badge.badge_type == 'vip' %}👑
+                        {% else %}🏅{% endif %}
+                    </span>
+                    {{ badge.get_badge_type_display }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- All Badges -->
+        <h3 class="badges-section-title">🎯 Barcha Yutuqlar</h3>
+        <div class="badges-grid">
+            {% for badge_type, badge_name in all_badges.items %}
+            <div class="badge-card {% if badge_type in earned_types %}earned{% else %}locked{% endif %}">
+                <div class="badge-icon">
+                    {% if badge_type == 'reader_1' %}📖
+                    {% elif badge_type == 'reader_10' %}📚
+                    {% elif badge_type == 'reader_50' %}🏆
+                    {% elif badge_type == 'reader_100' %}👑
+                    {% elif badge_type == 'sharer' %}🔗
+                    {% elif badge_type == 'reviewer' %}✍️
+                    {% elif badge_type == 'inviter_5' %}👥
+                    {% elif badge_type == 'inviter_20' %}🌟
+                    {% elif badge_type == 'streak_7' %}🔥
+                    {% elif badge_type == 'streak_30' %}💪
+                    {% elif badge_type == 'first_premium' %}💎
+                    {% elif badge_type == 'vip' %}👑
+                    {% else %}🏅{% endif %}
+                </div>
+                <div class="badge-info">
+                    <h4>{{ badge_name }}</h4>
+                    <p>
+                        {% if badge_type == 'reader_1' %}Birinchi kitobingizni o'qing
+                        {% elif badge_type == 'reader_10' %}10 ta kitob o'qing
+                        {% elif badge_type == 'reader_50' %}50 ta kitob o'qing
+                        {% elif badge_type == 'reader_100' %}100 ta kitob o'qing
+                        {% elif badge_type == 'sharer' %}20 marta ulashing
+                        {% elif badge_type == 'reviewer' %}10 ta sharh yozing
+                        {% elif badge_type == 'inviter_5' %}5 do'st taklif qiling
+                        {% elif badge_type == 'inviter_20' %}20 do'st taklif qiling
+                        {% elif badge_type == 'streak_7' %}7 kun ketma-ket kiring
+                        {% elif badge_type == 'streak_30' %}30 kun ketma-ket kiring
+                        {% elif badge_type == 'first_premium' %}Premium obunaga o'ting
+                        {% elif badge_type == 'vip' %}VIP a'zo bo'ling
+                        {% endif %}
+                    </p>
+                    {% if badge_type in earned_types %}
+                    <div class="badge-date">✓ Yutilgan</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Progress to Next Badges -->
+        <div class="progress-section">
+            <h3>📊 Keyingi maqsadlarga</h3>
+            
+            <div class="progress-item">
+                <div class="progress-icon">📚</div>
+                <div class="progress-info">
+                    <div class="progress-label">Kitob o'qish</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio stats.total_books_read 10 100 %}%"></div>
+                    </div>
+                    <div class="progress-text">{{ stats.total_books_read|default:0 }} / 10 kitob (10 ta kitob badge)</div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-icon">🔥</div>
+                <div class="progress-info">
+                    <div class="progress-label">Streak</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio stats.current_streak 7 100 %}%"></div>
+                    </div>
+                    <div class="progress-text">{{ stats.current_streak|default:0 }} / 7 kun (Haftalik streak badge)</div>
+                </div>
+            </div>
+            
+            <div class="progress-item">
+                <div class="progress-icon">✍️</div>
+                <div class="progress-info">
+                    <div class="progress-label">Sharhlar</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {% widthratio stats.total_reviews 10 100 %}%"></div>
+                    </div>
+                    <div class="progress-text">{{ stats.total_reviews|default:0 }} / 10 sharh (Sharh ustasi badge)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

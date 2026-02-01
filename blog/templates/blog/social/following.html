@@ -1,0 +1,258 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Kuzatayotganlarim | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .followers-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .followers-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .followers-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .followers-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .followers-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        background: var(--card-bg);
+        border-radius: 15px;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: all 0.3s;
+    }
+    
+    .tab.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .followers-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .follower-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: var(--card-bg);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+    
+    .follower-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .follower-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .follower-avatar.default {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .follower-info {
+        flex: 1;
+    }
+    
+    .follower-name {
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+    
+    .follower-name a {
+        color: var(--text-color);
+        text-decoration: none;
+    }
+    
+    .follower-username {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .follower-date {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+    
+    .follower-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-unfollow {
+        padding: 10px 20px;
+        border-radius: 20px;
+        border: 2px solid #ef4444;
+        background: transparent;
+        color: #ef4444;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-unfollow:hover {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-message {
+        padding: 10px 20px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .btn-message:hover {
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        opacity: 0.3;
+        margin-bottom: 20px;
+    }
+</style>
+
+<section class="followers-section">
+    <div class="followers-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <div class="followers-header">
+            <h1><i class="fas fa-heart" style="color: #ef4444;"></i> Kuzatayotganlarim</h1>
+            <span class="followers-count">{{ count }}</span>
+        </div>
+        
+        <div class="tabs">
+            <a href="{% url 'my_followers' %}" class="tab">
+                <i class="fas fa-users"></i> Kuzatuvchilar
+            </a>
+            <a href="{% url 'my_following' %}" class="tab active">
+                <i class="fas fa-heart"></i> Kuzatayotganlar
+            </a>
+        </div>
+        
+        {% if following %}
+        <ul class="followers-list">
+            {% for item in following %}
+            <li class="follower-item">
+                {% if item.profile.avatar %}
+                <img src="{{ item.profile.avatar.url }}" alt="{{ item.user.username }}" class="follower-avatar">
+                {% else %}
+                <div class="follower-avatar default">{{ item.user.username|first|upper }}</div>
+                {% endif %}
+                
+                <div class="follower-info">
+                    <div class="follower-name">
+                        <a href="{% url 'user_profile' item.user.username %}">
+                            {{ item.user.first_name|default:item.user.username }} {{ item.user.last_name }}
+                        </a>
+                    </div>
+                    <div class="follower-username">@{{ item.user.username }}</div>
+                    <div class="follower-date">{{ item.followed_at|timesince }} oldin kuzata boshladingiz</div>
+                </div>
+                
+                <div class="follower-actions">
+                    <a href="{% url 'chat' item.user.username %}" class="btn-message">
+                        <i class="fas fa-comment"></i> Xabar
+                    </a>
+                    <button class="btn-unfollow" onclick="toggleFollow('{{ item.user.username }}', this)">
+                        <i class="fas fa-user-minus"></i> Bekor qilish
+                    </button>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-user-plus"></i>
+            <h3>Hech kimni kuzatmayapsiz</h3>
+            <p>Qiziqarli kitobxonlarni toping va kuzating!</p>
+            <a href="{% url 'search_users' %}" style="color: #667eea; text-decoration: none; margin-top: 15px; display: inline-block;">
+                <i class="fas fa-search"></i> Foydalanuvchilarni qidirish →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function toggleFollow(username, btn) {
+    fetch(`/users/${username}/follow/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

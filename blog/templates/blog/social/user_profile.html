@@ -1,0 +1,578 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} profili | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .profile-section {
+        min-height: 100vh;
+        padding: 100px 20px 60px;
+        background: var(--bg-color);
+    }
+    
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    /* Profile Header */
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 25px;
+        padding: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255,255,255,0.05);
+        transform: rotate(30deg);
+    }
+    
+    .profile-header-content {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .profile-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .profile-avatar-large.default {
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+    }
+    
+    .profile-info {
+        flex: 1;
+    }
+    
+    .profile-name {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .profile-username {
+        opacity: 0.9;
+        margin-bottom: 10px;
+    }
+    
+    .profile-bio {
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+    
+    .profile-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .profile-meta span i {
+        margin-right: 5px;
+    }
+    
+    .profile-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 20px;
+    }
+    
+    .profile-stat {
+        text-align: center;
+    }
+    
+    .profile-stat strong {
+        display: block;
+        font-size: 1.5rem;
+    }
+    
+    .profile-stat span {
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+    
+    .profile-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .profile-btn {
+        padding: 12px 30px;
+        border-radius: 25px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .profile-btn.primary {
+        background: white;
+        color: #667eea;
+    }
+    
+    .profile-btn.secondary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    /* Content Sections */
+    .profile-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+    
+    .content-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .section-title i {
+        color: #667eea;
+    }
+    
+    /* Activity List */
+    .activity-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .activity-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-book-cover {
+        width: 50px;
+        height: 70px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .activity-info h4 {
+        margin: 0 0 5px;
+    }
+    
+    .activity-status {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+    
+    .activity-status.reading {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+    
+    .activity-status.completed {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    /* Reviews */
+    .review-item {
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+    }
+    
+    .review-book {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .review-rating {
+        color: #f59e0b;
+        margin-bottom: 8px;
+    }
+    
+    .review-content {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+    
+    /* Followers Grid */
+    .followers-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+    
+    .follower-item {
+        text-align: center;
+    }
+    
+    .follower-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 5px;
+    }
+    
+    .follower-avatar.default {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .follower-name {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        text-decoration: none;
+    }
+    
+    /* Mutual Books */
+    .mutual-books {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .mutual-book {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg-color);
+        padding: 10px 15px;
+        border-radius: 10px;
+    }
+    
+    .mutual-book img {
+        width: 30px;
+        height: 40px;
+        border-radius: 5px;
+        object-fit: cover;
+    }
+    
+    /* Private Profile */
+    .private-profile {
+        text-align: center;
+        padding: 60px;
+        color: #64748b;
+    }
+    
+    .private-profile i {
+        font-size: 4rem;
+        opacity: 0.3;
+        margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-stats, .profile-meta {
+            justify-content: center;
+        }
+        
+        .profile-actions {
+            justify-content: center;
+        }
+        
+        .profile-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .followers-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+
+<section class="profile-section">
+    <div class="profile-container">
+        <!-- Navigatsiya tugmalari -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" style="padding: 10px 20px; background: var(--card-bg); border-radius: 10px; text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Orqaga
+            </a>
+            <a href="{% url 'boshlash' %}" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-home"></i> Bosh sahifa
+            </a>
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-header-content">
+                {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="{{ profile_user.username }}" class="profile-avatar-large">
+                {% else %}
+                <div class="profile-avatar-large default">
+                    {{ profile_user.username|first|upper }}
+                </div>
+                {% endif %}
+                
+                <div class="profile-info">
+                    <h1 class="profile-name">
+                        {{ profile_user.first_name|default:profile_user.username }} {{ profile_user.last_name }}
+                    </h1>
+                    <div class="profile-username">@{{ profile_user.username }}</div>
+                    
+                    {% if profile.bio %}
+                    <p class="profile-bio">{{ profile.bio }}</p>
+                    {% endif %}
+                    
+                    <div class="profile-meta">
+                        {% if profile.location %}
+                        <span><i class="fas fa-map-marker-alt"></i> {{ profile.location }}</span>
+                        {% endif %}
+                        {% if profile.website %}
+                        <span><i class="fas fa-link"></i> <a href="{{ profile.website }}" target="_blank" style="color: white;">{{ profile.website|truncatechars:30 }}</a></span>
+                        {% endif %}
+                        <span><i class="fas fa-calendar"></i> {{ profile_user.date_joined|date:"M Y" }} dan beri</span>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <strong>{{ followers_count }}</strong>
+                            <span>Kuzatuvchi</span>
+                        </div>
+                        <div class="profile-stat">
+                            <strong>{{ following_count }}</strong>
+                            <span>Kuzatyapti</span>
+                        </div>
+                        <div class="profile-stat">
+                            <strong>{{ profile.books_read }}</strong>
+                            <span>Kitob</span>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        {% if is_owner %}
+                        <a href="{% url 'edit_profile' %}" class="profile-btn primary">
+                            <i class="fas fa-edit"></i> Tahrirlash
+                        </a>
+                        {% else %}
+                            {% if user.is_authenticated %}
+                            <button class="profile-btn primary" id="followBtn" onclick="toggleFollow()">
+                                {% if is_following %}
+                                <i class="fas fa-user-check"></i> Kuzatyapsiz
+                                {% else %}
+                                <i class="fas fa-user-plus"></i> Kuzatish
+                                {% endif %}
+                            </button>
+                            {% if profile.allow_messages %}
+                            <a href="{% url 'chat' profile_user.username %}" class="profile-btn secondary">
+                                <i class="fas fa-comment"></i> Xabar
+                            </a>
+                            {% endif %}
+                            {% else %}
+                            <a href="{% url 'login' %}" class="profile-btn primary">
+                                <i class="fas fa-sign-in-alt"></i> Kuzatish uchun kiring
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if can_view %}
+        <div class="profile-content">
+            <div class="main-content">
+                <!-- Reading Activity -->
+                {% if reading_activities %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-book-open"></i> O'qish faoliyati</h3>
+                    <ul class="activity-list">
+                        {% for activity in reading_activities %}
+                        <li class="activity-item">
+                            {% if activity.book.cover_image %}
+                            <img src="{{ activity.book.cover_image.url }}" alt="{{ activity.book.title }}" class="activity-book-cover">
+                            {% endif %}
+                            <div class="activity-info">
+                                <h4><a href="{% url 'book_detail' activity.book.id %}" style="color: inherit; text-decoration: none;">{{ activity.book.title }}</a></h4>
+                                <span class="activity-status {{ activity.status }}">
+                                    {% if activity.status == 'reading' %}📖 O'qiyapman
+                                    {% elif activity.status == 'completed' %}✅ Tugatdim
+                                    {% elif activity.status == 'want_to_read' %}📚 O'qimoqchiman
+                                    {% else %}⏸️ To'xtatilgan{% endif %}
+                                </span>
+                                {% if activity.progress > 0 %}
+                                <span style="color: #64748b; font-size: 0.9rem; margin-left: 10px;">{{ activity.progress }}%</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Reviews -->
+                {% if reviews %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-star"></i> Sharhlar</h3>
+                    {% for review in reviews %}
+                    <div class="review-item">
+                        <div class="review-book">{{ review.book.title }}</div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="review-content">{{ review.content|truncatechars:200 }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Mutual Books -->
+                {% if mutual_books %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-heart"></i> O'xshash kitoblar</h3>
+                    <p style="color: #64748b; margin-bottom: 15px;">Siz ham, {{ profile_user.first_name|default:profile_user.username }} ham o'qigan</p>
+                    <div class="mutual-books">
+                        {% for book in mutual_books %}
+                        <a href="{% url 'book_detail' book.id %}" class="mutual-book">
+                            {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                            {% endif %}
+                            <span>{{ book.title|truncatechars:25 }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- Favorite Info -->
+                {% if profile.favorite_genres or profile.favorite_author %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-heart"></i> Qiziqishlar</h3>
+                    {% if profile.favorite_genres %}
+                    <p><strong>Sevimli janrlar:</strong><br>{{ profile.favorite_genres }}</p>
+                    {% endif %}
+                    {% if profile.favorite_author %}
+                    <p><strong>Sevimli muallif:</strong><br>{{ profile.favorite_author }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Followers -->
+                {% if followers %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-users"></i> Kuzatuvchilar</h3>
+                    <div class="followers-grid">
+                        {% for follow in followers %}
+                        <a href="{% url 'user_profile' follow.follower.username %}" class="follower-item">
+                            <div class="follower-avatar default">{{ follow.follower.username|first|upper }}</div>
+                            <div class="follower-name">{{ follow.follower.username|truncatechars:10 }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Following -->
+                {% if following_list %}
+                <div class="content-section">
+                    <h3 class="section-title"><i class="fas fa-user-friends"></i> Kuzatyapti</h3>
+                    <div class="followers-grid">
+                        {% for follow in following_list %}
+                        <a href="{% url 'user_profile' follow.following.username %}" class="follower-item">
+                            <div class="follower-avatar default">{{ follow.following.username|first|upper }}</div>
+                            <div class="follower-name">{{ follow.following.username|truncatechars:10 }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <!-- Private Profile -->
+        <div class="content-section private-profile">
+            <i class="fas fa-lock"></i>
+            <h3>Bu profil yopiq</h3>
+            <p>Profilni ko'rish uchun kuzating</p>
+            {% if user.is_authenticated and not is_following %}
+            <button class="profile-btn primary" onclick="toggleFollow()" style="margin-top: 20px;">
+                <i class="fas fa-user-plus"></i> Kuzatish
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function toggleFollow() {
+    fetch(`/users/{{ profile_user.username }}/follow/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.getElementById('followBtn');
+            if (data.is_following) {
+                btn.innerHTML = '<i class="fas fa-user-check"></i> Kuzatyapsiz';
+            } else {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Kuzatish';
+            }
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

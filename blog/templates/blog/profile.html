@@ -250,6 +250,87 @@
         </div>
         <h1 class="profile-name">{{ user.first_name|default:user.username }}</h1>
         <p class="profile-email">{{ user.email }}</p>
+        
+        <!-- Obuna Badge -->
+        {% if user_subscription and user_subscription.is_premium %}
+        <div style="margin-top: 15px;">
+            <span style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 8px 20px; border-radius: 20px; font-weight: 600;">
+                <i class="fas fa-crown"></i> 
+                {% if user_subscription.plan.plan_type == 'vip' %}VIP
+                {% elif user_subscription.plan.plan_type == 'premium' %}Premium
+                {% else %}{{ user_subscription.plan.name }}{% endif %} A'zo
+            </span>
+        </div>
+        {% else %}
+        <div style="margin-top: 15px;">
+            <a href="{% url 'subscription_plans' %}" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 10px 25px; border-radius: 20px; font-weight: 600; text-decoration: none; display: inline-block;">
+                <i class="fas fa-crown"></i> Premium bo'ling!
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Obuna holati -->
+    <div class="section" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+        <h2 class="section-title" style="color: white;">
+            <i class="fas fa-crown" style="color: #fbbf24;"></i> Obuna holati
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">
+                    {% if user_subscription.plan.plan_type == 'vip' %}👑
+                    {% elif user_subscription.plan.plan_type == 'premium' %}💎
+                    {% elif user_subscription.plan.plan_type == 'standard' %}⭐
+                    {% else %}📚{% endif %}
+                </div>
+                <div style="font-weight: 600;">{{ user_subscription.plan.name|default:"Bepul" }}</div>
+                <div style="font-size: 0.85rem; opacity: 0.8;">Joriy reja</div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📖</div>
+                <div style="font-weight: 600;">
+                    {{ user_subscription.daily_books_read|default:0 }} / {{ user_subscription.plan.daily_book_limit|default:2 }}
+                </div>
+                <div style="font-size: 0.85rem; opacity: 0.8;">Bugungi kitoblar</div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🤖</div>
+                <div style="font-weight: 600;">
+                    {{ user_subscription.daily_ai_requests|default:0 }} / {{ user_subscription.plan.daily_ai_limit|default:3 }}
+                </div>
+                <div style="font-size: 0.85rem; opacity: 0.8;">AI so'rovlar</div>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">⏰</div>
+                <div style="font-weight: 600;">
+                    {% if user_subscription.expires_at %}
+                        {{ user_subscription.days_remaining }} kun
+                    {% else %}
+                        ∞
+                    {% endif %}
+                </div>
+                <div style="font-size: 0.85rem; opacity: 0.8;">Qolgan muddat</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            {% if not user_subscription.is_premium %}
+            <a href="{% url 'subscription_plans' %}" style="background: #fbbf24; color: #1e1e1e; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block;">
+                <i class="fas fa-arrow-up"></i> Rejani yangilash
+            </a>
+            {% else %}
+            <a href="{% url 'my_subscription' %}" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; border: 2px solid rgba(255,255,255,0.3);">
+                <i class="fas fa-cog"></i> Obunani boshqarish
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'referral' %}" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; margin-left: 10px; border: 2px solid rgba(255,255,255,0.3);">
+                <i class="fas fa-gift"></i> Bonus oling
+            </a>
+        </div>
     </div>
     
     <!-- Password Change Form -->

@@ -1,0 +1,528 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Obuna Rejalari - Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .nav-buttons-top {
+        display: flex;
+        gap: 10px;
+        padding: 100px 20px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .nav-buttons-top a {
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pricing-section {
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    .pricing-header {
+        text-align: center;
+        margin-bottom: 50px;
+        color: white;
+    }
+    
+    .pricing-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .pricing-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .pricing-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .pricing-card.popular {
+        border: 3px solid #667eea;
+        transform: scale(1.05);
+    }
+    
+    .pricing-card.popular:hover {
+        transform: scale(1.05) translateY(-10px);
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 20px;
+        right: -35px;
+        background: linear-gradient(45deg, #f59e0b, #f97316);
+        color: white;
+        padding: 5px 40px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transform: rotate(45deg);
+    }
+    
+    .plan-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+    
+    .plan-icon.free { background: linear-gradient(135deg, #94a3b8, #64748b); }
+    .plan-icon.standard { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .plan-icon.premium { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .plan-icon.vip { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    
+    .plan-name {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #1e293b;
+    }
+    
+    .plan-price {
+        margin-bottom: 30px;
+    }
+    
+    .price-amount {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+    
+    .price-period {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #94a3b8;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+    
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px;
+        text-align: left;
+    }
+    
+    .plan-features li {
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .plan-features li:last-child {
+        border-bottom: none;
+    }
+    
+    .feature-check {
+        color: #10b981;
+        font-size: 1.2rem;
+    }
+    
+    .feature-x {
+        color: #ef4444;
+        font-size: 1.2rem;
+    }
+    
+    .plan-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .plan-btn.free-btn {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+    
+    .plan-btn.standard-btn {
+        background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+        color: white;
+    }
+    
+    .plan-btn.premium-btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+    }
+    
+    .plan-btn.vip-btn {
+        background: linear-gradient(45deg, #f59e0b, #d97706);
+        color: white;
+    }
+    
+    .plan-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .plan-btn.current {
+        background: #10b981 !important;
+        cursor: default;
+    }
+    
+    /* Guarantee Section */
+    .guarantee-section {
+        text-align: center;
+        margin-top: 60px;
+        color: white;
+    }
+    
+    .guarantee-badges {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+    
+    .guarantee-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1rem;
+    }
+    
+    .guarantee-badge i {
+        font-size: 1.5rem;
+    }
+    
+    /* FAQ */
+    .faq-section {
+        max-width: 800px;
+        margin: 60px auto 0;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+    }
+    
+    .faq-section h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #1e293b;
+    }
+    
+    .faq-item {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 15px 0;
+    }
+    
+    .faq-question {
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .faq-answer {
+        padding-top: 10px;
+        color: #64748b;
+        display: none;
+    }
+    
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+    
+    /* Referral Banner */
+    .referral-banner {
+        max-width: 800px;
+        margin: 40px auto;
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        color: white;
+    }
+    
+    .referral-banner h3 {
+        margin-bottom: 10px;
+    }
+    
+    .referral-code-box {
+        background: white;
+        color: #667eea;
+        padding: 15px 30px;
+        border-radius: 10px;
+        display: inline-block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 15px 0;
+        cursor: pointer;
+    }
+    
+    .referral-code-box:hover {
+        transform: scale(1.05);
+    }
+    
+    @media (max-width: 768px) {
+        .pricing-card.popular {
+            transform: scale(1);
+        }
+        
+        .pricing-card.popular:hover {
+            transform: translateY(-10px);
+        }
+        
+        .guarantee-badges {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<!-- Navigatsiya tugmalari -->
+<div class="nav-buttons-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <a href="javascript:history.back()" style="background: rgba(255,255,255,0.2); color: white;">
+        <i class="fas fa-arrow-left"></i> Orqaga
+    </a>
+    <a href="{% url 'boshlash' %}" style="background: white; color: #667eea;">
+        <i class="fas fa-home"></i> Bosh sahifa
+    </a>
+</div>
+
+<section class="pricing-section" style="padding-top: 20px;">
+    <div class="pricing-header">
+        <h1>🚀 Obuna Rejalarini Tanlang</h1>
+        <p>O'zingizga mos rejani tanlang va cheksiz kitoblar dunyosiga sho'ng'ing!</p>
+    </div>
+    
+    <div class="pricing-grid">
+        {% for plan in plans %}
+        <div class="pricing-card {% if plan.is_popular %}popular{% endif %}">
+            {% if plan.is_popular %}
+            <div class="popular-badge">MASHHUR</div>
+            {% endif %}
+            
+            <div class="plan-icon {{ plan.plan_type }}">
+                {% if plan.plan_type == 'free' %}📚
+                {% elif plan.plan_type == 'standard' %}⭐
+                {% elif plan.plan_type == 'premium' %}💎
+                {% elif plan.plan_type == 'vip' %}👑
+                {% endif %}
+            </div>
+            
+            <h3 class="plan-name">{{ plan.name }}</h3>
+            
+            <div class="plan-price">
+                {% if plan.original_price > plan.price %}
+                <span class="original-price">{{ plan.original_price|floatformat:0 }} so'm</span>
+                {% endif %}
+                <div class="price-amount">
+                    {% if plan.price == 0 %}
+                        Bepul
+                    {% else %}
+                        {{ plan.price|floatformat:0 }} so'm
+                    {% endif %}
+                </div>
+                <div class="price-period">
+                    {% if plan.price > 0 %}/ {{ plan.get_duration_type_display }}{% endif %}
+                </div>
+            </div>
+            
+            <ul class="plan-features">
+                <li>
+                    <span class="feature-check">✓</span>
+                    Kuniga {{ plan.daily_book_limit }} ta kitob
+                </li>
+                <li>
+                    <span class="feature-check">✓</span>
+                    Kuniga {{ plan.daily_ai_limit }} ta AI so'rov
+                </li>
+                <li>
+                    {% if plan.can_download %}
+                    <span class="feature-check">✓</span>
+                    {% else %}
+                    <span class="feature-x">✗</span>
+                    {% endif %}
+                    Yuklab olish
+                </li>
+                <li>
+                    {% if plan.can_read_premium %}
+                    <span class="feature-check">✓</span>
+                    {% else %}
+                    <span class="feature-x">✗</span>
+                    {% endif %}
+                    Premium kitoblar
+                </li>
+                <li>
+                    {% if plan.ads_free %}
+                    <span class="feature-check">✓</span>
+                    {% else %}
+                    <span class="feature-x">✗</span>
+                    {% endif %}
+                    Reklmasiz tajriba
+                </li>
+                <li>
+                    {% if plan.offline_reading %}
+                    <span class="feature-check">✓</span>
+                    {% else %}
+                    <span class="feature-x">✗</span>
+                    {% endif %}
+                    Offline o'qish
+                </li>
+            </ul>
+            
+            {% if user_subscription and user_subscription.plan == plan %}
+                <button class="plan-btn current" disabled>
+                    <i class="fas fa-check"></i> Joriy reja
+                </button>
+            {% else %}
+                <a href="{% url 'checkout' plan.id %}" class="plan-btn {{ plan.plan_type }}-btn">
+                    {% if plan.price == 0 %}
+                        Boshlash
+                    {% else %}
+                        Xarid qilish
+                    {% endif %}
+                </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Garantiya -->
+    <div class="guarantee-section">
+        <h3>🛡️ Kafolatlarimiz</h3>
+        <div class="guarantee-badges">
+            <div class="guarantee-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>7 kunlik pul qaytarish</span>
+            </div>
+            <div class="guarantee-badge">
+                <i class="fas fa-lock"></i>
+                <span>Xavfsiz to'lov</span>
+            </div>
+            <div class="guarantee-badge">
+                <i class="fas fa-headset"></i>
+                <span>24/7 yordam</span>
+            </div>
+            <div class="guarantee-badge">
+                <i class="fas fa-sync"></i>
+                <span>Istalgan vaqt bekor qilish</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Referral Banner -->
+    {% if user.is_authenticated %}
+    <div class="referral-banner">
+        <h3>👥 Do'stingizni taklif qiling - 7 kun bepul oling!</h3>
+        <p>Sizning referral kodingiz:</p>
+        <div class="referral-code-box" onclick="copyReferralCode()" id="refCode">
+            {% if user.referral_code %}{{ user.referral_code.code }}{% else %}REF...{% endif %}
+        </div>
+        <p style="font-size: 0.9rem; opacity: 0.8;">
+            Har bir do'stingiz Premium obunaga o'tganda, sizga 7 kun bepul qo'shiladi!
+        </p>
+    </div>
+    {% endif %}
+    
+    <!-- FAQ -->
+    <div class="faq-section">
+        <h2>❓ Ko'p so'raladigan savollar</h2>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                Obunani qanday bekor qilsam bo'ladi?
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Profilingizdan "Obuna" bo'limiga o'ting va "Bekor qilish" tugmasini bosing. Obuna muddati tugagunicha xizmatdan foydalanishda davom etasiz.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                Qaysi to'lov usullarini qo'llab-quvvatlaysiz?
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Biz Click, Payme va Uzum Bank orqali to'lovni qabul qilamiz. Xalqaro kartalar uchun Stripe ham mavjud.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                Rejani o'zgartirsa bo'ladimi?
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Ha, istalgan vaqtda rejangizni yangilashingiz mumkin. Agar yuqori rejaga o'tsangiz, farq hisoblab olinadi.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+                Bepul sinov muddati bormi?
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                Do'stingizni taklif qilsangiz, 7 kun bepul Premium olasiz! Bundan tashqari, vaqti-vaqti bilan maxsus aksiyalar o'tkazamiz.
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleFaq(element) {
+    const faqItem = element.parentElement;
+    faqItem.classList.toggle('active');
+}
+
+function copyReferralCode() {
+    const code = document.getElementById('refCode').textContent.trim();
+    const shareLink = window.location.origin + '/register/?ref=' + code;
+    
+    navigator.clipboard.writeText(shareLink).then(() => {
+        const box = document.getElementById('refCode');
+        const originalText = box.textContent;
+        box.textContent = 'Nusxalandi! ✓';
+        setTimeout(() => {
+            box.textContent = originalText;
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "blog/boshlash.html" %}
+{% load static %}
+
+{% block title %}Offline - Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    .offline-container {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .offline-icon {
+        font-size: 6rem;
+        margin-bottom: 30px;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .offline-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #667eea;
+    }
+    
+    .offline-text {
+        color: #64748b;
+        margin-bottom: 30px;
+        max-width: 400px;
+    }
+    
+    .retry-btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .retry-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .offline-tips {
+        margin-top: 50px;
+        padding: 30px;
+        background: #f8fafc;
+        border-radius: 15px;
+        max-width: 500px;
+    }
+    
+    body.dark-mode .offline-tips {
+        background: #2d2d2d;
+    }
+    
+    .offline-tips h4 {
+        margin-bottom: 15px;
+    }
+    
+    .offline-tips ul {
+        text-align: left;
+        color: #64748b;
+    }
+    
+    .offline-tips li {
+        margin-bottom: 8px;
+    }
+</style>
+
+<div class="offline-container">
+    <div class="offline-icon">📡</div>
+    <h1 class="offline-title">Internet aloqasi yo'q</h1>
+    <p class="offline-text">
+        Hozirda internet bilan aloqa yo'q ko'rinadi. 
+        Iltimos, ulanishingizni tekshiring va qaytadan urinib ko'ring.
+    </p>
+    
+    <button class="retry-btn" onclick="window.location.reload()">
+        <i class="fas fa-redo"></i> Qayta urinish
+    </button>
+    
+    <div class="offline-tips">
+        <h4>💡 Maslahatlar</h4>
+        <ul>
+            <li>Wi-Fi yoki mobil ma'lumotlar yoqilganligini tekshiring</li>
+            <li>Samolyot rejimi o'chirilganligini tekshiring</li>
+            <li>Router yoki modemni qayta ishga tushiring</li>
+            <li>Premium obunada offline o'qish mavjud!</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Internet qaytganini tekshirish
+window.addEventListener('online', () => {
+    window.location.reload();
+});
+</script>
+{% endblock %}

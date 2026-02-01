@@ -4,6 +4,9 @@ from django import forms
 from .models import (Image, File, Feedback, Author, Book, BookPage, 
                      Category, BookRating, Favorite, ReadingProgress, SearchQuery, BookSummary)
 
+# Premium Obuna Admin'larini import qilish
+from .admin_subscription import *
+
 # Register your models here.
 
 class BookCategoryInline(admin.TabularInline):
