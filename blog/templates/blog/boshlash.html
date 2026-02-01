@@ -1061,14 +1061,14 @@
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('Ilova o\'rnatildi');
+                        console.log('Ilova ornatildi');
                         hideInstallButtons();
                     }
                     deferredPrompt = null;
                 });
             } else {
                 // iOS yoki boshqa brauzerlar uchun ko'rsatma
-                alert('Ilovani o\\'rnatish uchun:\\n\\n📱 iPhone/iPad: Share → Add to Home Screen\\n🤖 Android: Menu → Add to Home Screen\\n💻 Kompyuter: Manzil satridagi + belgisi');
+                alert("Ilovani o'rnatish uchun:\n\n📱 iPhone/iPad: Share → Add to Home Screen\n🤖 Android: Menu → Add to Home Screen\n💻 Kompyuter: Manzil satridagi + belgisi yoki ⋮ → Install App");
             }
         }
         
@@ -1087,7 +1087,7 @@
         
         // Agar allaqachon o'rnatilgan bo'lsa, ko'rsatmaslik
         window.addEventListener('appinstalled', () => {
-            console.log('Ilova o\'rnatildi!');
+            console.log('Ilova ornatildi!');
             hideInstallButtons();
         });
         
