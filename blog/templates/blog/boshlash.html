@@ -653,6 +653,10 @@
                         <i class="fas fa-info-circle"></i>
                         <span>Biz haqimizda</span>
                     </a>
+                    <a href="#" onclick="installApp(); return false;" class="menu-item" id="sidebarInstallBtn" style="display: none;">
+                        <i class="fas fa-download" style="color: #10b981;"></i>
+                        <span style="color: #10b981;">Ilovani o'rnatish</span>
+                    </a>
                 </div>
                 
                 <div class="menu-divider"></div>
@@ -753,6 +757,9 @@
                                 </a>
                                 <a href="{% url 'image_list' %}" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 12px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(245,158,11,0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(245,158,11,0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(245,158,11,0.4)';">
                                     <i class="fas fa-image"></i> Rasm yuklash
+                                </a>
+                                <a href="#" onclick="installApp(); return false;" id="heroInstallBtn" style="display: none; background: linear-gradient(135deg, #ec4899, #be185d); color: white; padding: 12px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; align-items: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(236,72,153,0.4); animation: pulse 2s infinite;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(236,72,153,0.5)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 15px rgba(236,72,153,0.4)';">
+                                    <i class="fas fa-mobile-alt"></i> Ilovani yuklab olish
                                 </a>
                             </div>
                         </div>
@@ -1028,8 +1035,9 @@
         
         // PWA Install Prompt
         let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
         const installBanner = document.getElementById('installBanner');
+        const sidebarInstallBtn = document.getElementById('sidebarInstallBtn');
+        const heroInstallBtn = document.getElementById('heroInstallBtn');
         
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -1037,6 +1045,14 @@
             // Banner ko'rsatish
             if (installBanner) {
                 installBanner.style.display = 'flex';
+            }
+            // Sidebar tugmasini ko'rsatish
+            if (sidebarInstallBtn) {
+                sidebarInstallBtn.style.display = 'flex';
+            }
+            // Hero tugmasini ko'rsatish
+            if (heroInstallBtn) {
+                heroInstallBtn.style.display = 'inline-flex';
             }
         });
         
@@ -1046,17 +1062,25 @@
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
                         console.log('Ilova o\'rnatildi');
-                        if (installBanner) installBanner.style.display = 'none';
+                        hideInstallButtons();
                     }
                     deferredPrompt = null;
                 });
+            } else {
+                // iOS yoki boshqa brauzerlar uchun ko'rsatma
+                alert('Ilovani o\\'rnatish uchun:\\n\\n📱 iPhone/iPad: Share → Add to Home Screen\\n🤖 Android: Menu → Add to Home Screen\\n💻 Kompyuter: Manzil satridagi + belgisi');
             }
+        }
+        
+        function hideInstallButtons() {
+            if (installBanner) installBanner.style.display = 'none';
+            if (sidebarInstallBtn) sidebarInstallBtn.style.display = 'none';
+            if (heroInstallBtn) heroInstallBtn.style.display = 'none';
         }
         
         function closeInstallBanner() {
             if (installBanner) {
                 installBanner.style.display = 'none';
-                // 1 hafta so'ng qayta ko'rsatish
                 localStorage.setItem('installBannerClosed', Date.now());
             }
         }
@@ -1064,8 +1088,14 @@
         // Agar allaqachon o'rnatilgan bo'lsa, ko'rsatmaslik
         window.addEventListener('appinstalled', () => {
             console.log('Ilova o\'rnatildi!');
-            if (installBanner) installBanner.style.display = 'none';
+            hideInstallButtons();
         });
+        
+        // iOS uchun - har doim ko'rsatish (chunki beforeinstallprompt ishlamaydi)
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+            if (sidebarInstallBtn) sidebarInstallBtn.style.display = 'flex';
+            if (heroInstallBtn) heroInstallBtn.style.display = 'inline-flex';
+        }
     </script>
     
     {% block scripts %}{% endblock %}
