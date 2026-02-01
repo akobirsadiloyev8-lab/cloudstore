@@ -3541,3 +3541,83 @@ def terms_of_service(request):
 def about(request):
     """Biz haqimizda sahifasi"""
     return render(request, 'blog/about.html')
+
+
+# ===== PWA (Progressive Web App) =====
+from django.http import HttpResponse
+import json
+
+def pwa_manifest(request):
+    """PWA manifest.json - root'dan xizmat qilish"""
+    manifest = {
+        "name": "Cloudstore - Kutubxona",
+        "short_name": "Cloudstore",
+        "description": "Bepul elektron kitoblar kutubxonasi",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#667eea",
+        "theme_color": "#667eea",
+        "orientation": "portrait-primary",
+        "scope": "/",
+        "lang": "uz",
+        "icons": [
+            {"src": "/static/icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable"},
+            {"src": "/static/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+        ]
+    }
+    return HttpResponse(json.dumps(manifest), content_type='application/manifest+json')
+
+
+def pwa_service_worker(request):
+    """PWA Service Worker - root'dan xizmat qilish"""
+    sw_content = '''
+const CACHE_NAME = 'cloudstore-v2';
+const OFFLINE_URL = '/offline/';
+
+const STATIC_ASSETS = [
+    '/',
+    '/offline/',
+    '/static/blog/style.css'
+];
+
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(STATIC_ASSETS))
+            .then(() => self.skipWaiting())
+    );
+});
+
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames
+                    .filter(name => name !== CACHE_NAME)
+                    .map(name => caches.delete(name))
+            );
+        }).then(() => self.clients.claim())
+    );
+});
+
+self.addEventListener('fetch', event => {
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => caches.match(OFFLINE_URL))
+        );
+    }
+});
+'''
+    return HttpResponse(sw_content.strip(), content_type='application/javascript')
+
+
+def pwa_offline(request):
+    """Offline sahifa"""
+    return render(request, 'blog/offline.html')

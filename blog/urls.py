@@ -79,6 +79,11 @@ urlpatterns = [
     # Profil
     path('profil/tahrirlash/', views_social.edit_profile, name='edit_profile'),
     
+    # ===== PWA =====
+    path('manifest.json', views.pwa_manifest, name='pwa_manifest'),
+    path('sw.js', views.pwa_service_worker, name='pwa_sw'),
+    path('offline/', views.pwa_offline, name='pwa_offline'),
+    
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),
     path('foydalanish-shartlari/', views.terms_of_service, name='terms_of_service'),

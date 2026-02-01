@@ -28,10 +28,10 @@
     <meta name="twitter:description" content="{% block twitter_description %}O'zbek tilidagi elektron kitoblar{% endblock %}">
     
     <!-- PWA / Manifest -->
-    <link rel="manifest" href="/static/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#667eea">
     <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
-    <link rel="icon" type="image/png" href="/static/icons/favicon.png">
+    <link rel="icon" type="image/png" href="/static/icons/icon-192x192.png">
     
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -1026,9 +1026,9 @@
             isPulling = false;
         }, { passive: true });
         
-        // Service Worker
+        // Service Worker - root'dan register qilish (PWA uchun muhim!)
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/static/sw.js')
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
                 .then(() => console.log('SW registered'))
                 .catch(err => console.log('SW error:', err));
         }
