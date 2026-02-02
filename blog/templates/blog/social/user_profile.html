@@ -408,7 +408,7 @@
                                 {% endif %}
                             </button>
                             {% if profile.allow_messages %}
-                            <a href="{% url 'chat' profile_user.username %}" class="profile-btn secondary">
+                            <a href="{% url 'telegram_chat_with_user' profile_user.username %}" class="profile-btn secondary">
                                 <i class="fas fa-comment"></i> Xabar
                             </a>
                             {% endif %}
