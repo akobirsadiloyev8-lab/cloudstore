@@ -1,6 +1,78 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
+import random
+import string
+from django.utils import timezone
+from datetime import timedelta
+
+
+class EmailVerification(models.Model):
+    """Email tasdiqlash modeli"""
+    email = models.EmailField(verbose_name="Email")
+    code = models.CharField(max_length=6, verbose_name="Tasdiqlash kodi")
+    username = models.CharField(max_length=150, verbose_name="Foydalanuvchi nomi")
+    password = models.CharField(max_length=255, verbose_name="Parol (hashed)")
+    first_name = models.CharField(max_length=100, blank=True, verbose_name="Ism")
+    last_name = models.CharField(max_length=100, blank=True, verbose_name="Familiya")
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(verbose_name="Amal qilish muddati")
+    is_verified = models.BooleanField(default=False, verbose_name="Tasdiqlandi")
+    attempts = models.IntegerField(default=0, verbose_name="Urinishlar soni")
+    
+    class Meta:
+        verbose_name = "Email tasdiqlash"
+        verbose_name_plural = "Email tasdiqlashlar"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.email} - {self.code}"
+    
+    @classmethod
+    def generate_code(cls):
+        """6 xonali tasodifiy kod yaratish"""
+        return ''.join(random.choices(string.digits, k=6))
+    
+    @classmethod
+    def create_verification(cls, email, username, password, first_name='', last_name=''):
+        """Yangi tasdiqlash yaratish"""
+        # Eski so'rovlarni o'chirish
+        cls.objects.filter(email=email, is_verified=False).delete()
+        
+        code = cls.generate_code()
+        expires_at = timezone.now() + timedelta(minutes=15)  # 15 daqiqa
+        
+        return cls.objects.create(
+            email=email,
+            code=code,
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            expires_at=expires_at
+        )
+    
+    def is_expired(self):
+        """Kod muddati tugaganmi"""
+        return timezone.now() > self.expires_at
+    
+    def verify(self, code):
+        """Kodni tekshirish"""
+        self.attempts += 1
+        self.save()
+        
+        if self.attempts > 5:
+            return False, "Juda ko'p urinish. Qaytadan ro'yxatdan o'ting."
+        
+        if self.is_expired():
+            return False, "Tasdiqlash kodi muddati tugagan. Qaytadan ro'yxatdan o'ting."
+        
+        if self.code == code:
+            self.is_verified = True
+            self.save()
+            return True, "Email tasdiqlandi!"
+        
+        return False, f"Noto'g'ri kod. {5 - self.attempts} ta urinish qoldi."
 
 
 class Category(models.Model):

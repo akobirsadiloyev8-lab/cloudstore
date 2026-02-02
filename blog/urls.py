@@ -19,6 +19,8 @@ urlpatterns = [
     path('feedback/', views.feedback_list, name='feedback_list'),
     path('submit_feedback/', views.submit_feedback, name='submit_feedback'),
     path('register/', views.register, name='register'),
+    path('verify-email/<int:verification_id>/', views.verify_email, name='verify_email'),
+    path('resend-code/<int:verification_id>/', views.resend_verification_code, name='resend_code'),
     path('login/', views.user_login, name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     

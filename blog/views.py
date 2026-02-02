@@ -2514,15 +2514,47 @@ def submit_feedback(request):
 
 
 def register(request):
+    from django.core.mail import send_mail
+    from django.contrib.auth.hashers import make_password
+    from .models import EmailVerification
+    import re
+    
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
         
         errors = []
         
+        # Ism va familiya tekshirish
+        if not first_name:
+            errors.append('Ismingizni kiriting')
+        elif len(first_name) < 2:
+            errors.append('Ism kamida 2 ta harfdan iborat bo\'lishi kerak')
+            
+        if not last_name:
+            errors.append('Familiyangizni kiriting')
+        elif len(last_name) < 2:
+            errors.append('Familiya kamida 2 ta harfdan iborat bo\'lishi kerak')
+        
+        # Email tekshirish
+        if not email:
+            errors.append('Email manzilingizni kiriting')
+        elif not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            errors.append('Noto\'g\'ri email formati')
+        elif User.objects.filter(email__iexact=email).exists():
+            errors.append('Bu email allaqachon ro\'yxatdan o\'tgan')
+        
         if not username:
             errors.append('Foydalanuvchi nomini kiriting')
+        elif len(username) < 3:
+            errors.append('Foydalanuvchi nomi kamida 3 ta belgidan iborat bo\'lishi kerak')
+        elif User.objects.filter(username__iexact=username).exists():
+            errors.append('Bu foydalanuvchi nomi band. Boshqa nom tanlang')
+            
         if not password1:
             errors.append('Parolni kiriting')
         if not password2:
@@ -2532,30 +2564,191 @@ def register(request):
             errors.append('Parollar bir xil emas')
         
         if password1 and len(password1) < 4:
-            errors.append('Parol kamida 4 ta belgidan iborat bolishi kerak')
-        
-        if username and User.objects.filter(username__iexact=username).exists():
-            errors.append('Bu foydalanuvchi nomi band. Boshqa nom tanlang')
+            errors.append('Parol kamida 4 ta belgidan iborat bo\'lishi kerak')
         
         if errors:
             return render(request, 'registration/register.html', {
                 'errors': errors,
-                'username': username
+                'username': username,
+                'email': email,
+                'first_name': first_name,
+                'last_name': last_name
             })
         
         try:
-            user = User.objects.create_user(username=username, password=password1)
-            login(request, user)
-            messages.success(request, f"Xush kelibsiz, {username}!")
-            return redirect('boshlash')
+            # Parolni hash qilish
+            hashed_password = make_password(password1)
+            
+            # Email tasdiqlash yaratish
+            verification = EmailVerification.create_verification(
+                email=email,
+                username=username,
+                password=hashed_password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
+            # Email yuborish
+            try:
+                send_mail(
+                    subject='Cloudstore - Email tasdiqlash kodi',
+                    message=f'''Assalomu alaykum, {first_name}!
+
+Cloudstore'da ro'yxatdan o'tish uchun tasdiqlash kodingiz:
+
+🔐 {verification.code}
+
+Bu kod 15 daqiqa ichida amal qiladi.
+
+Agar siz ro'yxatdan o'tmagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
+
+Hurmat bilan,
+Cloudstore jamoasi
+''',
+                    from_email=None,  # DEFAULT_FROM_EMAIL ishlatiladi
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Email yuborishda xatolik bo'lsa
+                verification.delete()
+                errors.append(f'Email yuborishda xatolik: {str(e)}')
+                return render(request, 'registration/register.html', {
+                    'errors': errors,
+                    'username': username,
+                    'email': email,
+                    'first_name': first_name,
+                    'last_name': last_name
+                })
+            
+            # Tasdiqlash sahifasiga yo'naltirish
+            return redirect('verify_email', verification_id=verification.id)
+            
         except Exception as e:
             errors.append(f'Xatolik: {str(e)}')
             return render(request, 'registration/register.html', {
                 'errors': errors,
-                'username': username
+                'username': username,
+                'email': email,
+                'first_name': first_name,
+                'last_name': last_name
             })
     
     return render(request, 'registration/register.html')
+
+
+def verify_email(request, verification_id):
+    """Email tasdiqlash sahifasi"""
+    from .models import EmailVerification
+    from django.contrib.auth.hashers import check_password
+    
+    try:
+        verification = EmailVerification.objects.get(id=verification_id, is_verified=False)
+    except EmailVerification.DoesNotExist:
+        messages.error(request, 'Tasdiqlash so\'rovi topilmadi yoki allaqachon tasdiqlangan.')
+        return redirect('register')
+    
+    # Muddati tugagan tekshirish
+    if verification.is_expired():
+        verification.delete()
+        messages.error(request, 'Tasdiqlash kodi muddati tugagan. Qaytadan ro\'yxatdan o\'ting.')
+        return redirect('register')
+    
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip()
+        
+        if not code:
+            return render(request, 'registration/verify_email.html', {
+                'verification': verification,
+                'error': 'Tasdiqlash kodini kiriting',
+                'email': verification.email
+            })
+        
+        success, message = verification.verify(code)
+        
+        if success:
+            # Foydalanuvchi yaratish
+            try:
+                user = User.objects.create(
+                    username=verification.username,
+                    email=verification.email,
+                    first_name=verification.first_name,
+                    last_name=verification.last_name,
+                    password=verification.password  # Allaqachon hash qilingan
+                )
+                
+                # Avtomatik kirish
+                login(request, user)
+                messages.success(request, f"Xush kelibsiz, {verification.first_name}! Email muvaffaqiyatli tasdiqlandi. 🎉")
+                
+                # Tasdiqlash yozuvini o'chirish
+                verification.delete()
+                
+                return redirect('boshlash')
+                
+            except Exception as e:
+                return render(request, 'registration/verify_email.html', {
+                    'verification': verification,
+                    'error': f'Foydalanuvchi yaratishda xatolik: {str(e)}',
+                    'email': verification.email
+                })
+        else:
+            return render(request, 'registration/verify_email.html', {
+                'verification': verification,
+                'error': message,
+                'email': verification.email
+            })
+    
+    return render(request, 'registration/verify_email.html', {
+        'verification': verification,
+        'email': verification.email
+    })
+
+
+def resend_verification_code(request, verification_id):
+    """Tasdiqlash kodini qayta yuborish"""
+    from django.core.mail import send_mail
+    from .models import EmailVerification
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    try:
+        verification = EmailVerification.objects.get(id=verification_id, is_verified=False)
+    except EmailVerification.DoesNotExist:
+        messages.error(request, 'Tasdiqlash so\'rovi topilmadi.')
+        return redirect('register')
+    
+    # Yangi kod yaratish
+    verification.code = EmailVerification.generate_code()
+    verification.expires_at = timezone.now() + timedelta(minutes=15)
+    verification.attempts = 0
+    verification.save()
+    
+    # Email yuborish
+    try:
+        send_mail(
+            subject='Cloudstore - Yangi tasdiqlash kodi',
+            message=f'''Assalomu alaykum, {verification.first_name}!
+
+Yangi tasdiqlash kodingiz:
+
+🔐 {verification.code}
+
+Bu kod 15 daqiqa ichida amal qiladi.
+
+Hurmat bilan,
+Cloudstore jamoasi
+''',
+            from_email=None,
+            recipient_list=[verification.email],
+            fail_silently=False,
+        )
+        messages.success(request, 'Yangi tasdiqlash kodi yuborildi!')
+    except Exception as e:
+        messages.error(request, f'Email yuborishda xatolik: {str(e)}')
+    
+    return redirect('verify_email', verification_id=verification.id)
+
 
 def user_login(request):
     if request.method == 'POST':
