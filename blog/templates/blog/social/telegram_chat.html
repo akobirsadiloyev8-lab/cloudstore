@@ -7,11 +7,7 @@
 
 {% block extra_styles %}
     /* ========== HIDE MAIN SIDEBAR ========== */
-    .sidebar {
-        display: none !important;
-    }
-    
-    .sidebar-overlay {
+    .sidebar, .sidebar-overlay, .menu-toggle-btn, .page-header, .messages-container {
         display: none !important;
     }
     
@@ -24,22 +20,22 @@
         margin-left: 0 !important;
         padding: 0 !important;
         overflow: hidden !important;
-    }
-    
-    .page-header {
-        display: none !important;
+        height: 100vh !important;
     }
     
     .content-area {
         padding: 0 !important;
-        height: 100vh;
+        margin: 0 !important;
+        height: 100vh !important;
+        overflow: hidden !important;
     }
     
     /* ========== TELEGRAM CHAT LAYOUT ========== */
     .telegram-chat-container {
         display: flex;
-        height: calc(100vh - 0px);
+        height: 100vh;
         background: var(--bg-color);
+        overflow: hidden;
     }
     
     /* ========== CHAT SIDEBAR (Foydalanuvchilar ro'yxati) ========== */
@@ -274,7 +270,8 @@
         flex-direction: column;
         background: var(--bg-color);
         position: relative;
-        height: 100%;
+        height: 100vh;
+        min-height: 0;
         overflow: hidden;
     }
     
@@ -387,6 +384,7 @@
         flex-direction: column;
         gap: 8px;
         z-index: 1;
+        min-height: 0;
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -479,27 +477,91 @@
     
     /* ========== INPUT AREA ========== */
     .chat-input-area {
-        padding: 12px 20px 15px;
+        padding: 10px 15px;
         background: var(--card-bg);
         border-top: 1px solid var(--border-color);
-        z-index: 10;
+        z-index: 100;
         flex-shrink: 0;
-        position: sticky;
-        bottom: 0;
+    }
+    
+    /* File Preview */
+    .file-preview-container {
+        display: none;
+        padding: 10px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        margin-bottom: 10px;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .file-preview-container.show {
+        display: flex;
+    }
+    
+    .file-preview-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+    .file-preview-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    
+    .file-preview-info {
+        flex: 1;
+    }
+    
+    .file-preview-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+        word-break: break-all;
+    }
+    
+    .file-preview-size {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    .file-preview-remove {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(239, 68, 68, 0.1);
+        border: none;
+        color: #ef4444;
+        cursor: pointer;
+        font-size: 1rem;
     }
     
     .input-container {
         display: flex;
         align-items: flex-end;
-        gap: 10px;
+        gap: 8px;
         background: var(--bg-color);
         border-radius: 24px;
-        padding: 6px;
+        padding: 5px 8px;
+    }
+    
+    .input-actions {
+        display: flex;
+        align-items: center;
     }
     
     .input-btn {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: none;
         border: none;
@@ -508,10 +570,14 @@
         cursor: pointer;
         transition: all 0.2s;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .input-btn:hover {
         color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
     }
     
     .chat-textarea {
@@ -524,6 +590,7 @@
         resize: none;
         max-height: 100px;
         line-height: 1.4;
+        min-height: 36px;
     }
     
     .chat-textarea:focus {
@@ -543,12 +610,111 @@
         color: white;
         font-size: 1rem;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.2s;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .send-btn:hover {
         transform: scale(1.05);
+    }
+    
+    .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Message Media Styles */
+    .message-image {
+        max-width: 250px;
+        max-height: 300px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .message-image:hover {
+        transform: scale(1.02);
+    }
+    
+    .message-video {
+        max-width: 300px;
+        max-height: 250px;
+        border-radius: 12px;
+    }
+    
+    .message-file {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .message-file-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    .message-file-info {
+        flex: 1;
+    }
+    
+    .message-file-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    
+    .message-file-size {
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+    
+    /* Image Viewer Modal */
+    .image-viewer {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.95);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-viewer.show {
+        display: flex;
+    }
+    
+    .image-viewer img {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+    }
+    
+    .image-viewer-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
     }
     
     /* ========== EMPTY CHAT STATE ========== */
@@ -731,10 +897,25 @@
             z-index: 999;
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-main-area.active {
             transform: translateX(0);
+        }
+        
+        .chat-input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 15px 15px;
+            z-index: 1001;
+        }
+        
+        .chat-messages {
+            padding-bottom: 80px;
         }
         
         .back-btn {
@@ -895,7 +1076,19 @@
         <div class="chat-messages" id="chatMessages">
             {% for message in messages %}
             <div class="message-bubble {% if message.sender == user %}sent{% else %}received{% endif %}" data-id="{{ message.id }}">
-                <div class="message-content">{{ message.content }}</div>
+                {% if message.message_type == 'image' and message.file %}
+                <img src="{{ message.file.url }}" class="message-image" onclick="openFile({{ message.id }}, '{{ message.file.url }}', '{{ message.file_name }}', {{ message.file_size }})" alt="Rasm">
+                {% elif message.message_type == 'file' and message.file %}
+                <div class="message-file" onclick="openFile({{ message.id }}, '{{ message.file.url }}', '{{ message.file_name }}', {{ message.file_size }})" style="cursor: pointer;">
+                    <div class="message-file-icon"><i class="fas fa-file"></i></div>
+                    <div class="message-file-info">
+                        <div class="message-file-name">{{ message.file_name }}</div>
+                        <div class="message-file-size">{{ message.file_size|filesizeformat }}</div>
+                    </div>
+                    <i class="fas fa-download"></i>
+                </div>
+                {% endif %}
+                {% if message.content %}<div class="message-content">{{ message.content }}</div>{% endif %}
                 <div class="message-footer">
                     <span>{{ message.created_at|time:"H:i" }}</span>
                     {% if message.sender == user %}
@@ -926,11 +1119,29 @@
         
         <!-- Input Area -->
         <div class="chat-input-area">
-            <div class="input-container">
-                <button class="input-btn" onclick="document.getElementById('fileInput').click()" title="Fayl yuklash">
-                    <i class="fas fa-paperclip"></i>
+            <!-- File Preview -->
+            <div class="file-preview-container" id="filePreview">
+                <div id="filePreviewContent"></div>
+                <div class="file-preview-info">
+                    <div class="file-preview-name" id="filePreviewName"></div>
+                    <div class="file-preview-size" id="filePreviewSize"></div>
+                </div>
+                <button class="file-preview-remove" onclick="removeSelectedFile()">
+                    <i class="fas fa-times"></i>
                 </button>
-                <input type="file" id="fileInput" style="display: none;" accept="image/*,.pdf,.doc,.docx">
+            </div>
+            
+            <div class="input-container">
+                <div class="input-actions">
+                    <button class="input-btn" onclick="document.getElementById('fileInput').click()" title="Rasm/Fayl">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="input-btn" onclick="document.getElementById('imageInput').click()" title="Rasm">
+                        <i class="fas fa-image"></i>
+                    </button>
+                </div>
+                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt,.zip,.rar">
+                <input type="file" id="imageInput" style="display: none;" accept="image/*,video/*">
                 
                 <textarea class="chat-textarea" id="messageInput" placeholder="Xabar yozing..." rows="1"></textarea>
                 
@@ -966,6 +1177,12 @@
             </div>
         </div>
         
+        <!-- Image Viewer Modal -->
+        <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
+            <button class="image-viewer-close"><i class="fas fa-times"></i></button>
+            <img id="viewerImage" src="" alt="Katta rasm">
+        </div>
+        
         {% else %}
         <!-- Empty State -->
         <div class="empty-chat">
@@ -982,6 +1199,194 @@
 let lastMessageId = {% if messages %}{{ messages.last.id|default:0 }}{% else %}0{% endif %};
 let activeUsername = '{% if active_user %}{{ active_user.username }}{% endif %}';
 let typingTimeout = null;
+
+// ========== INDEXED DB - LOCAL FILE STORAGE ==========
+let chatDB = null;
+const DB_NAME = 'CloudstoreChatFiles';
+const DB_VERSION = 1;
+
+function initIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            chatDB = request.result;
+            resolve(chatDB);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Fayllar uchun store
+            if (!db.objectStoreNames.contains('files')) {
+                const fileStore = db.createObjectStore('files', { keyPath: 'id' });
+                fileStore.createIndex('messageId', 'messageId', { unique: false });
+                fileStore.createIndex('chatUsername', 'chatUsername', { unique: false });
+            }
+            
+            // Metadata uchun store (fayl hajmi, nomi va h.k.)
+            if (!db.objectStoreNames.contains('metadata')) {
+                db.createObjectStore('metadata', { keyPath: 'id' });
+            }
+        };
+    });
+}
+
+// Faylni local'ga saqlash
+async function saveFileLocally(messageId, fileUrl, fileName, fileSize, chatUsername) {
+    if (!chatDB) await initIndexedDB();
+    
+    try {
+        // Fayl mavjudligini tekshirish
+        const existing = await getLocalFile(messageId);
+        if (existing) return existing;
+        
+        // Faylni serverdan yuklash
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        
+        const fileData = {
+            id: `file_${messageId}`,
+            messageId: messageId,
+            chatUsername: chatUsername,
+            fileName: fileName,
+            fileSize: fileSize,
+            fileType: blob.type,
+            blob: blob,
+            savedAt: new Date().toISOString()
+        };
+        
+        return new Promise((resolve, reject) => {
+            const transaction = chatDB.transaction(['files'], 'readwrite');
+            const store = transaction.objectStore('files');
+            const request = store.put(fileData);
+            
+            request.onsuccess = () => {
+                console.log(`📁 Fayl qurilmaga saqlandi: ${fileName}`);
+                resolve(fileData);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    } catch (error) {
+        console.error('Faylni saqlashda xatolik:', error);
+        return null;
+    }
+}
+
+// Local'dan faylni olish
+async function getLocalFile(messageId) {
+    if (!chatDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = chatDB.transaction(['files'], 'readonly');
+        const store = transaction.objectStore('files');
+        const request = store.get(`file_${messageId}`);
+        
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// Faylni ochish (local yoki serverdan)
+async function openFile(messageId, fileUrl, fileName, fileSize) {
+    // Avval local'dan qidirish
+    let fileData = await getLocalFile(messageId);
+    
+    if (fileData) {
+        console.log(`📂 Local'dan ochildi: ${fileName}`);
+        const url = URL.createObjectURL(fileData.blob);
+        downloadOrOpen(url, fileName, fileData.fileType);
+        return;
+    }
+    
+    // Local'da yo'q - serverdan yuklab, local'ga saqlash
+    console.log(`⬇️ Serverdan yuklanmoqda: ${fileName}`);
+    fileData = await saveFileLocally(messageId, fileUrl, fileName, fileSize, activeUsername);
+    
+    if (fileData) {
+        const url = URL.createObjectURL(fileData.blob);
+        downloadOrOpen(url, fileName, fileData.fileType);
+    } else {
+        // Fallback - to'g'ridan-to'g'ri serverdan
+        window.open(fileUrl, '_blank');
+    }
+}
+
+function downloadOrOpen(url, fileName, fileType) {
+    if (fileType && fileType.startsWith('image/')) {
+        openImageViewer(url);
+    } else {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+    }
+}
+
+// Chat uchun barcha local fayllarni olish
+async function getChatLocalFiles(chatUsername) {
+    if (!chatDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = chatDB.transaction(['files'], 'readonly');
+        const store = transaction.objectStore('files');
+        const index = store.index('chatUsername');
+        const request = index.getAll(chatUsername);
+        
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// Local storage hajmini hisoblash
+async function getLocalStorageSize() {
+    if (!chatDB) await initIndexedDB();
+    
+    return new Promise((resolve) => {
+        let totalSize = 0;
+        const transaction = chatDB.transaction(['files'], 'readonly');
+        const store = transaction.objectStore('files');
+        const request = store.openCursor();
+        
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                if (cursor.value.blob) {
+                    totalSize += cursor.value.blob.size;
+                }
+                cursor.continue();
+            } else {
+                resolve(totalSize);
+            }
+        };
+        request.onerror = () => resolve(0);
+    });
+}
+
+// Eski fayllarni tozalash (30 kundan eski)
+async function cleanOldFiles() {
+    if (!chatDB) await initIndexedDB();
+    
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const transaction = chatDB.transaction(['files'], 'readwrite');
+    const store = transaction.objectStore('files');
+    const request = store.openCursor();
+    
+    request.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+            const savedAt = new Date(cursor.value.savedAt);
+            if (savedAt < thirtyDaysAgo) {
+                cursor.delete();
+                console.log(`🗑️ Eski fayl o'chirildi: ${cursor.value.fileName}`);
+            }
+            cursor.continue();
+        }
+    };
+}
 
 // ========== EMOJI DATA ==========
 const emojiData = {
@@ -1003,11 +1408,20 @@ const stickerData = [
 let currentEmojiCategory = 'smileys';
 
 // ========== INIT ==========
-document.addEventListener('DOMContentLoaded', function() {
+let selectedFile = null;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // IndexedDB ni ishga tushirish
+    await initIndexedDB();
+    
+    // Eski fayllarni tozalash
+    cleanOldFiles();
+    
     scrollToBottom();
     initEmojis();
     initTextarea();
     initMobileNav();
+    initFileUpload();
     
     if (activeUsername) {
         setInterval(pollNewMessages, 2000);
@@ -1028,6 +1442,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// ========== FILE UPLOAD ==========
+function initFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const imageInput = document.getElementById('imageInput');
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileSelect);
+    }
+    if (imageInput) {
+        imageInput.addEventListener('change', handleFileSelect);
+    }
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Max 10MB
+    if (file.size > 10 * 1024 * 1024) {
+        alert('Fayl hajmi 10MB dan oshmasligi kerak');
+        return;
+    }
+    
+    selectedFile = file;
+    showFilePreview(file);
+}
+
+function showFilePreview(file) {
+    const preview = document.getElementById('filePreview');
+    const previewContent = document.getElementById('filePreviewContent');
+    const previewName = document.getElementById('filePreviewName');
+    const previewSize = document.getElementById('filePreviewSize');
+    
+    previewName.textContent = file.name;
+    previewSize.textContent = formatFileSize(file.size);
+    
+    // Rasm yoki video
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewContent.innerHTML = `<img src="${e.target.result}" class="file-preview-image">`;
+        };
+        reader.readAsDataURL(file);
+    } else if (file.type.startsWith('video/')) {
+        previewContent.innerHTML = `<div class="file-preview-icon"><i class="fas fa-video"></i></div>`;
+    } else {
+        const ext = file.name.split('.').pop().toLowerCase();
+        let icon = 'fa-file';
+        if (['pdf'].includes(ext)) icon = 'fa-file-pdf';
+        else if (['doc', 'docx'].includes(ext)) icon = 'fa-file-word';
+        else if (['xls', 'xlsx'].includes(ext)) icon = 'fa-file-excel';
+        else if (['zip', 'rar'].includes(ext)) icon = 'fa-file-archive';
+        previewContent.innerHTML = `<div class="file-preview-icon"><i class="fas ${icon}"></i></div>`;
+    }
+    
+    preview.classList.add('show');
+}
+
+function removeSelectedFile() {
+    selectedFile = null;
+    document.getElementById('filePreview').classList.remove('show');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('imageInput').value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// ========== IMAGE VIEWER ==========
+function openImageViewer(src) {
+    const viewer = document.getElementById('imageViewer');
+    const img = document.getElementById('viewerImage');
+    img.src = src;
+    viewer.classList.add('show');
+}
+
+function closeImageViewer() {
+    document.getElementById('imageViewer').classList.remove('show');
+}
 
 // ========== MOBILE NAVIGATION ==========
 function initMobileNav() {
@@ -1104,36 +1601,79 @@ function sendMessage() {
     const input = document.getElementById('messageInput');
     const content = input.value.trim();
     
-    if (!content || !activeUsername) return;
+    if (!content && !selectedFile) return;
+    if (!activeUsername) return;
     
-    document.getElementById('sendBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    sendBtn.disabled = true;
     
-    fetch(`/users/${activeUsername}/message/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content: content })
-    })
-    .then(r => r.json())
-    .then(data => {
-        document.getElementById('sendBtn').innerHTML = '<i class="fas fa-paper-plane"></i>';
+    // FormData uchun (fayl bilan)
+    if (selectedFile) {
+        const formData = new FormData();
+        formData.append('content', content);
+        formData.append('file', selectedFile);
         
-        if (data.success) {
-            appendMessage(data.message, true);
-            input.value = '';
-            input.style.height = 'auto';
-            scrollToBottom();
-            lastMessageId = data.message.id;
-        } else {
-            alert(data.error || 'Xatolik!');
-        }
-    })
-    .catch(err => {
-        document.getElementById('sendBtn').innerHTML = '<i class="fas fa-paper-plane"></i>';
-        console.error(err);
-    });
+        fetch(`/users/${activeUsername}/message/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+            
+            if (data.success) {
+                appendMessage(data.message, true);
+                input.value = '';
+                input.style.height = 'auto';
+                removeSelectedFile();
+                scrollToBottom();
+                lastMessageId = data.message.id;
+            } else {
+                alert(data.error || 'Xatolik!');
+            }
+        })
+        .catch(err => {
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+            console.error(err);
+            alert('Yuborishda xatolik!');
+        });
+    } else {
+        // Oddiy matn xabar
+        fetch(`/users/${activeUsername}/message/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: content })
+        })
+        .then(r => r.json())
+        .then(data => {
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+            
+            if (data.success) {
+                appendMessage(data.message, true);
+                input.value = '';
+                input.style.height = 'auto';
+                scrollToBottom();
+                lastMessageId = data.message.id;
+            } else {
+                alert(data.error || 'Xatolik!');
+            }
+        })
+        .catch(err => {
+            sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+            console.error(err);
+        });
+    }
 }
 
 function appendMessage(msg, isMine) {
@@ -1143,8 +1683,30 @@ function appendMessage(msg, isMine) {
     const div = document.createElement('div');
     div.className = `message-bubble ${isMine ? 'sent' : 'received'}`;
     div.dataset.id = msg.id;
+    
+    let mediaHtml = '';
+    if (msg.message_type === 'image' && msg.file_url) {
+        mediaHtml = `<img src="${msg.file_url}" class="message-image" onclick="openFile(${msg.id}, '${msg.file_url}', '${msg.file_name || 'image'}', ${msg.file_size_bytes || 0})" alt="Rasm">`;
+        // Avtomatik local'ga saqlash
+        saveFileLocally(msg.id, msg.file_url, msg.file_name, msg.file_size_bytes, activeUsername);
+    } else if (msg.message_type === 'file' && msg.file_url) {
+        mediaHtml = `
+            <div class="message-file" onclick="openFile(${msg.id}, '${msg.file_url}', '${msg.file_name || 'file'}', ${msg.file_size_bytes || 0})" style="cursor: pointer;">
+                <div class="message-file-icon"><i class="fas fa-file"></i></div>
+                <div class="message-file-info">
+                    <div class="message-file-name">${msg.file_name || 'Fayl'}</div>
+                    <div class="message-file-size">${msg.file_size || ''}</div>
+                </div>
+                <i class="fas fa-download"></i>
+            </div>
+        `;
+        // Avtomatik local'ga saqlash
+        saveFileLocally(msg.id, msg.file_url, msg.file_name, msg.file_size_bytes, activeUsername);
+    }
+    
     div.innerHTML = `
-        <div class="message-content">${msg.content}</div>
+        ${mediaHtml}
+        ${msg.content ? `<div class="message-content">${msg.content}</div>` : ''}
         <div class="message-footer">
             <span>${msg.created_at}</span>
             ${isMine ? '<span class="message-status"><i class="fas fa-check"></i></span>' : ''}

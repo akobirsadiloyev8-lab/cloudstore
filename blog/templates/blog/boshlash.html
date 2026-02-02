@@ -722,9 +722,12 @@
                 {% if messages %}
                 <div class="messages-container" style="margin-bottom: 20px;">
                     {% for message in messages %}
-                    <div class="alert" style="background: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
-                        {{ message }}
+                    <div class="alert" style="background: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                        <button onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #666; padding: 0 5px;">&times;</button>
                     </div>
                     {% endfor %}
                 </div>

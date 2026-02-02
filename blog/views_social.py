@@ -486,6 +486,7 @@ def send_message(request, username):
             'file_url': message.file.url if message.file else None,
             'file_name': message.file_name,
             'file_size': message.format_file_size() if message.file else None,
+            'file_size_bytes': message.file_size,  # Local saqlash uchun
             'is_image': message.is_image(),
             'created_at': message.created_at.strftime('%H:%M'),
         }

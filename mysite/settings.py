@@ -182,6 +182,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'files'), exist_ok=True)
 os.makedirs(os.path.join(MEDIA_ROOT, 'images'), exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'chat_files'), exist_ok=True)  # Chat fayllari uchun
 
 # Vaqtinchalik fayllar uchun maxsus papka (media/tmp)
 import tempfile
