@@ -3685,10 +3685,48 @@ def barcode_lookup(request):
                     'country': product.country,
                     'weight': product.weight,
                     'image': product.image.url if product.image else None,
+                    'image_url': product.image_url,
                     'ingredients': product.ingredients,
-                    'nutrition_info': product.nutrition_info,
                     'expiry_info': product.expiry_info,
                     'scan_count': product.scan_count,
+                    
+                    # Ozuqaviy qiymatlar
+                    'calories': product.calories,
+                    'fat': product.fat,
+                    'saturated_fat': product.saturated_fat,
+                    'carbohydrates': product.carbohydrates,
+                    'sugars': product.sugars,
+                    'fiber': product.fiber,
+                    'proteins': product.proteins,
+                    'salt': product.salt,
+                    'sodium': product.sodium,
+                    
+                    # Vitaminlar
+                    'vitamin_a': product.vitamin_a,
+                    'vitamin_c': product.vitamin_c,
+                    'vitamin_d': product.vitamin_d,
+                    'vitamin_e': product.vitamin_e,
+                    'vitamin_b1': product.vitamin_b1,
+                    'vitamin_b2': product.vitamin_b2,
+                    'vitamin_b6': product.vitamin_b6,
+                    'vitamin_b12': product.vitamin_b12,
+                    
+                    # Minerallar
+                    'calcium': product.calcium,
+                    'iron': product.iron,
+                    'magnesium': product.magnesium,
+                    'zinc': product.zinc,
+                    'potassium': product.potassium,
+                    
+                    # Sog'liq ko'rsatkichlari
+                    'nutriscore_grade': product.nutriscore_grade,
+                    'nova_group': product.nova_group,
+                    'ecoscore_grade': product.ecoscore_grade,
+                    
+                    # Allergenlar va ogohlantirishlar
+                    'allergens': product.allergens,
+                    'additives': product.additives,
+                    'warnings': product.warnings,
                 }
             })
         except Product.DoesNotExist:
@@ -3696,7 +3734,7 @@ def barcode_lookup(request):
             external_data = fetch_from_external_api(barcode)
             
             if external_data:
-                # Yangi mahsulot yaratish
+                # Yangi mahsulot yaratish to'liq ma'lumotlar bilan
                 product = Product.objects.create(
                     barcode=barcode,
                     name=external_data.get('name', f'Mahsulot {barcode}'),
@@ -3705,8 +3743,46 @@ def barcode_lookup(request):
                     category=external_data.get('category', ''),
                     country=external_data.get('country', ''),
                     ingredients=external_data.get('ingredients', ''),
-                    nutrition_info=external_data.get('nutrition_info', ''),
                     weight=external_data.get('weight', ''),
+                    image_url=external_data.get('image_url', ''),
+                    
+                    # Ozuqaviy qiymatlar
+                    calories=external_data.get('calories'),
+                    fat=external_data.get('fat'),
+                    saturated_fat=external_data.get('saturated_fat'),
+                    carbohydrates=external_data.get('carbohydrates'),
+                    sugars=external_data.get('sugars'),
+                    fiber=external_data.get('fiber'),
+                    proteins=external_data.get('proteins'),
+                    salt=external_data.get('salt'),
+                    sodium=external_data.get('sodium'),
+                    
+                    # Vitaminlar
+                    vitamin_a=external_data.get('vitamin_a'),
+                    vitamin_c=external_data.get('vitamin_c'),
+                    vitamin_d=external_data.get('vitamin_d'),
+                    vitamin_e=external_data.get('vitamin_e'),
+                    vitamin_b1=external_data.get('vitamin_b1'),
+                    vitamin_b2=external_data.get('vitamin_b2'),
+                    vitamin_b6=external_data.get('vitamin_b6'),
+                    vitamin_b12=external_data.get('vitamin_b12'),
+                    
+                    # Minerallar
+                    calcium=external_data.get('calcium'),
+                    iron=external_data.get('iron'),
+                    magnesium=external_data.get('magnesium'),
+                    zinc=external_data.get('zinc'),
+                    potassium=external_data.get('potassium'),
+                    
+                    # Sog'liq ko'rsatkichlari
+                    nutriscore_grade=external_data.get('nutriscore_grade', ''),
+                    nova_group=external_data.get('nova_group'),
+                    ecoscore_grade=external_data.get('ecoscore_grade', ''),
+                    
+                    # Allergenlar
+                    allergens=external_data.get('allergens', ''),
+                    additives=external_data.get('additives', ''),
+                    warnings=external_data.get('warnings', ''),
                 )
                 
                 if request.user.is_authenticated:
@@ -3725,8 +3801,32 @@ def barcode_lookup(request):
                         'category': product.category,
                         'country': product.country,
                         'ingredients': product.ingredients,
-                        'nutrition_info': product.nutrition_info,
                         'weight': product.weight,
+                        'image_url': product.image_url,
+                        
+                        # Ozuqaviy qiymatlar
+                        'calories': product.calories,
+                        'fat': product.fat,
+                        'saturated_fat': product.saturated_fat,
+                        'carbohydrates': product.carbohydrates,
+                        'sugars': product.sugars,
+                        'fiber': product.fiber,
+                        'proteins': product.proteins,
+                        'salt': product.salt,
+                        
+                        # Vitaminlar
+                        'vitamin_a': product.vitamin_a,
+                        'vitamin_c': product.vitamin_c,
+                        'vitamin_d': product.vitamin_d,
+                        
+                        # Sog'liq ko'rsatkichlari
+                        'nutriscore_grade': product.nutriscore_grade,
+                        'nova_group': product.nova_group,
+                        
+                        # Allergenlar va ogohlantirishlar
+                        'allergens': product.allergens,
+                        'additives': product.additives,
+                        'warnings': product.warnings,
                     }
                 })
             
@@ -3756,6 +3856,28 @@ def fetch_from_external_api(barcode):
             data = response.json()
             if data.get('status') == 1:
                 product = data.get('product', {})
+                nutriments = product.get('nutriments', {})
+                
+                # Allergenlarni olish
+                allergens_tags = product.get('allergens_tags', [])
+                allergens = ', '.join([a.replace('en:', '').replace('-', ' ').title() for a in allergens_tags])
+                
+                # Qo'shimchalarni olish (E raqamlar)
+                additives_tags = product.get('additives_tags', [])
+                additives = ', '.join([a.replace('en:', '').upper() for a in additives_tags])
+                
+                # Ogohlantirishlar
+                warnings_list = []
+                if nutriments.get('sugars_100g', 0) and nutriments.get('sugars_100g', 0) > 22.5:
+                    warnings_list.append("⚠️ Shakar miqdori yuqori")
+                if nutriments.get('salt_100g', 0) and nutriments.get('salt_100g', 0) > 1.5:
+                    warnings_list.append("⚠️ Tuz miqdori yuqori")
+                if nutriments.get('saturated-fat_100g', 0) and nutriments.get('saturated-fat_100g', 0) > 5:
+                    warnings_list.append("⚠️ To'yingan yog' miqdori yuqori")
+                nova = product.get('nova_group')
+                if nova and nova == 4:
+                    warnings_list.append("⚠️ Yuqori darajada qayta ishlangan mahsulot")
+                
                 return {
                     'name': product.get('product_name', '') or product.get('product_name_en', ''),
                     'description': product.get('generic_name', ''),
@@ -3763,9 +3885,46 @@ def fetch_from_external_api(barcode):
                     'category': product.get('categories', ''),
                     'country': product.get('countries', ''),
                     'ingredients': product.get('ingredients_text', ''),
-                    'nutrition_info': str(product.get('nutriments', {})),
                     'weight': product.get('quantity', ''),
                     'image_url': product.get('image_url', ''),
+                    
+                    # Asosiy ozuqaviy qiymatlar
+                    'calories': nutriments.get('energy-kcal_100g'),
+                    'fat': nutriments.get('fat_100g'),
+                    'saturated_fat': nutriments.get('saturated-fat_100g'),
+                    'carbohydrates': nutriments.get('carbohydrates_100g'),
+                    'sugars': nutriments.get('sugars_100g'),
+                    'fiber': nutriments.get('fiber_100g'),
+                    'proteins': nutriments.get('proteins_100g'),
+                    'salt': nutriments.get('salt_100g'),
+                    'sodium': nutriments.get('sodium_100g'),
+                    
+                    # Vitaminlar
+                    'vitamin_a': nutriments.get('vitamin-a_100g'),
+                    'vitamin_c': nutriments.get('vitamin-c_100g'),
+                    'vitamin_d': nutriments.get('vitamin-d_100g'),
+                    'vitamin_e': nutriments.get('vitamin-e_100g'),
+                    'vitamin_b1': nutriments.get('vitamin-b1_100g'),
+                    'vitamin_b2': nutriments.get('vitamin-b2_100g'),
+                    'vitamin_b6': nutriments.get('vitamin-b6_100g'),
+                    'vitamin_b12': nutriments.get('vitamin-b12_100g'),
+                    
+                    # Minerallar
+                    'calcium': nutriments.get('calcium_100g'),
+                    'iron': nutriments.get('iron_100g'),
+                    'magnesium': nutriments.get('magnesium_100g'),
+                    'zinc': nutriments.get('zinc_100g'),
+                    'potassium': nutriments.get('potassium_100g'),
+                    
+                    # Sog'liq baholari
+                    'nutriscore_grade': product.get('nutriscore_grade', '').upper(),
+                    'nova_group': product.get('nova_group'),
+                    'ecoscore_grade': product.get('ecoscore_grade', '').upper(),
+                    
+                    # Allergenlar va ogohlantirishlar
+                    'allergens': allergens,
+                    'additives': additives,
+                    'warnings': '\n'.join(warnings_list),
                 }
     except Exception:
         pass

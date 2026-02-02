@@ -419,9 +419,47 @@ class Product(models.Model):
     country = models.CharField(max_length=100, blank=True, verbose_name="Ishlab chiqarilgan mamlakat")
     weight = models.CharField(max_length=50, blank=True, verbose_name="Og'irligi")
     image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Rasm")
+    image_url = models.URLField(max_length=500, blank=True, verbose_name="Rasm URL")
     ingredients = models.TextField(blank=True, verbose_name="Tarkibi")
     nutrition_info = models.TextField(blank=True, verbose_name="Ozuqaviy qiymati")
     expiry_info = models.CharField(max_length=100, blank=True, verbose_name="Yaroqlilik muddati")
+    
+    # Ozuqaviy qiymatlar (100g uchun)
+    calories = models.FloatField(null=True, blank=True, verbose_name="Kaloriya (kcal)")
+    fat = models.FloatField(null=True, blank=True, verbose_name="Yog' (g)")
+    saturated_fat = models.FloatField(null=True, blank=True, verbose_name="To'yingan yog' (g)")
+    carbohydrates = models.FloatField(null=True, blank=True, verbose_name="Uglevodlar (g)")
+    sugars = models.FloatField(null=True, blank=True, verbose_name="Shakar (g)")
+    fiber = models.FloatField(null=True, blank=True, verbose_name="Kletchatka (g)")
+    proteins = models.FloatField(null=True, blank=True, verbose_name="Oqsillar (g)")
+    salt = models.FloatField(null=True, blank=True, verbose_name="Tuz (g)")
+    sodium = models.FloatField(null=True, blank=True, verbose_name="Natriy (mg)")
+    
+    # Vitaminlar va minerallar
+    vitamin_a = models.FloatField(null=True, blank=True, verbose_name="Vitamin A (µg)")
+    vitamin_c = models.FloatField(null=True, blank=True, verbose_name="Vitamin C (mg)")
+    vitamin_d = models.FloatField(null=True, blank=True, verbose_name="Vitamin D (µg)")
+    vitamin_e = models.FloatField(null=True, blank=True, verbose_name="Vitamin E (mg)")
+    vitamin_b1 = models.FloatField(null=True, blank=True, verbose_name="Vitamin B1 (mg)")
+    vitamin_b2 = models.FloatField(null=True, blank=True, verbose_name="Vitamin B2 (mg)")
+    vitamin_b6 = models.FloatField(null=True, blank=True, verbose_name="Vitamin B6 (mg)")
+    vitamin_b12 = models.FloatField(null=True, blank=True, verbose_name="Vitamin B12 (µg)")
+    calcium = models.FloatField(null=True, blank=True, verbose_name="Kaltsiy (mg)")
+    iron = models.FloatField(null=True, blank=True, verbose_name="Temir (mg)")
+    magnesium = models.FloatField(null=True, blank=True, verbose_name="Magniy (mg)")
+    zinc = models.FloatField(null=True, blank=True, verbose_name="Sink (mg)")
+    potassium = models.FloatField(null=True, blank=True, verbose_name="Kaliy (mg)")
+    
+    # Sog'liq ko'rsatkichlari
+    nutriscore_grade = models.CharField(max_length=1, blank=True, verbose_name="Nutri-Score (A-E)")
+    nova_group = models.IntegerField(null=True, blank=True, verbose_name="NOVA guruhi (1-4)")
+    ecoscore_grade = models.CharField(max_length=1, blank=True, verbose_name="Eco-Score (A-E)")
+    
+    # Allergenlar va ogohlantirishlar
+    allergens = models.TextField(blank=True, verbose_name="Allergenlar")
+    additives = models.TextField(blank=True, verbose_name="Qo'shimchalar (E raqamlar)")
+    warnings = models.TextField(blank=True, verbose_name="Ogohlantirishlar")
+    
     is_active = models.BooleanField(default=True, verbose_name="Faol")
     scan_count = models.PositiveIntegerField(default=0, verbose_name="Skanerlangan soni")
     created_at = models.DateTimeField(auto_now_add=True)

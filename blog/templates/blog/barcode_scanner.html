@@ -1,526 +1,790 @@
-{% extends 'blog/base.html' %}
+{% extends 'blog/boshlash.html' %}
 {% load static %}
 
-{% block title %}Shtrix Kod Skaneri - Cloudstore AI{% endblock %}
+{% block title %}QR & Barcode Skaner - Cloudstore AI{% endblock %}
 
-{% block extra_css %}
-<style>
-    .scanner-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    #scanner-video {
-        width: 100%;
-        max-width: 500px;
-        border-radius: 15px;
-        border: 3px solid #667eea;
-        margin: 20px auto;
-        display: block;
-    }
-    
-    .scanner-overlay {
-        position: relative;
-    }
-    
-    .scan-line {
-        position: absolute;
-        width: 80%;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
-        left: 10%;
-        animation: scan 2s infinite;
-    }
-    
-    @keyframes scan {
-        0% { top: 20%; }
-        50% { top: 80%; }
-        100% { top: 20%; }
-    }
-    
-    .result-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 25px;
-        color: white;
-        margin-top: 20px;
-        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-    }
-    
-    .product-image {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 15px;
-        border: 3px solid white;
-    }
-    
-    .barcode-input {
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        padding: 15px;
-        font-size: 18px;
-        text-align: center;
-        letter-spacing: 2px;
-    }
-    
-    .btn-scan {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        padding: 15px 40px;
-        font-size: 18px;
-        border-radius: 30px;
-        color: white;
-        cursor: pointer;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .btn-scan:hover {
-        transform: scale(1.05);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-    
-    .feature-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
-    
-    .scan-history-item {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    
-    .scan-history-item:hover {
-        background: #e9ecef;
-    }
-    
-    .add-product-form {
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 25px;
-        margin-top: 20px;
-        display: none;
-    }
-    
-    .nutrition-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        margin: 3px;
-        background: rgba(255,255,255,0.2);
-    }
-</style>
+{% block extra_styles %}
+.scanner-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.scanner-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.scanner-hero h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.scanner-hero p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.mode-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 8px;
+}
+
+.mode-tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: transparent;
+    color: #666;
+}
+
+.mode-tab.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.mode-tab:hover:not(.active) {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.scanner-section {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.manual-input {
+    display: flex;
+    gap: 10px;
+}
+
+.manual-input input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.manual-input input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.scan-btn {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.scan-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+#reader {
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#reader video {
+    border-radius: 15px;
+}
+
+.result-card {
+    display: none;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-header {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.result-header.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.result-header.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.product-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    object-fit: cover;
+    background: white;
+}
+
+.product-title {
+    flex: 1;
+}
+
+.product-title h2 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.product-title p {
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+.result-body {
+    padding: 25px;
+}
+
+.health-scores {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.score-badge {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nutri-a { background: #22c55e; color: white; }
+.nutri-b { background: #84cc16; color: white; }
+.nutri-c { background: #fbbf24; color: #333; }
+.nutri-d { background: #f97316; color: white; }
+.nutri-e { background: #ef4444; color: white; }
+
+.nova-1 { background: #22c55e; color: white; }
+.nova-2 { background: #84cc16; color: white; }
+.nova-3 { background: #fbbf24; color: #333; }
+.nova-4 { background: #ef4444; color: white; }
+
+.warnings-box {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.warnings-box h4 {
+    color: #92400e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.warnings-box p {
+    color: #78350f;
+    font-size: 0.95rem;
+    margin: 5px 0;
+}
+
+.info-section {
+    margin-bottom: 20px;
+}
+
+.info-section h3 {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.info-section h3 i {
+    color: #667eea;
+}
+
+.nutrition-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nutrition-table tr {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.nutrition-table tr:last-child {
+    border-bottom: none;
+}
+
+.nutrition-table td {
+    padding: 10px 5px;
+}
+
+.nutrition-table td:first-child {
+    color: #6b7280;
+}
+
+.nutrition-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+    color: #374151;
+}
+
+.nutrition-table .highlight {
+    background: #fef3c7;
+}
+
+.nutrition-table .highlight td {
+    color: #92400e;
+}
+
+.vitamins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.vitamin-item {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.vitamin-item .name {
+    font-size: 0.85rem;
+    color: #0369a1;
+    margin-bottom: 5px;
+}
+
+.vitamin-item .value {
+    font-weight: 700;
+    color: #0c4a6e;
+}
+
+.ingredients-text {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 12px;
+    line-height: 1.6;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.allergens-box {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border: 2px solid #ef4444;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.allergens-box h4 {
+    color: #991b1b;
+    margin-bottom: 8px;
+}
+
+.allergens-box p {
+    color: #7f1d1d;
+}
+
+.additives-box {
+    background: linear-gradient(135deg, #fef9c3, #fef08a);
+    border: 2px solid #eab308;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.additives-box h4 {
+    color: #713f12;
+    margin-bottom: 8px;
+}
+
+.additives-box p {
+    color: #78350f;
+    font-size: 0.9rem;
+}
+
+.qr-result {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+}
+
+.qr-result h3 {
+    color: #0369a1;
+    margin-bottom: 15px;
+}
+
+.qr-result .qr-content {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    word-break: break-all;
+    margin-bottom: 15px;
+}
+
+.qr-result .action-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.not-found {
+    text-align: center;
+    padding: 30px;
+}
+
+.not-found i {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 15px;
+}
+
+.not-found h3 {
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+}
+
+.loading i {
+    font-size: 3rem;
+    color: #667eea;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+    .scanner-hero h1 { font-size: 1.5rem; }
+    .manual-input { flex-direction: column; }
+    .health-scores { flex-direction: column; }
+}
 {% endblock %}
 
 {% block content %}
 <div class="scanner-container">
-    <div class="text-center mb-4">
-        <h1><i class="fas fa-barcode"></i> Shtrix Kod Skaneri</h1>
-        <p class="text-muted">Mahsulot shtrix kodini skanerlang va barcha ma'lumotlarni oling</p>
+    <div class="scanner-hero">
+        <h1><i class="fas fa-qrcode"></i> QR & Barcode Skaner</h1>
+        <p>Mahsulot haqida to'liq ma'lumot: kaloriya, vitaminlar, allergenlar, zararlar</p>
     </div>
     
-    <!-- Skaner rejimi tanlash -->
-    <div class="d-flex justify-content-center gap-3 mb-4">
-        <button class="btn btn-outline-primary" onclick="startCamera()" id="btn-camera">
-            <i class="fas fa-camera"></i> Kamera
-        </button>
-        <button class="btn btn-outline-secondary" onclick="showManualInput()" id="btn-manual">
+    <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchMode('manual')">
             <i class="fas fa-keyboard"></i> Qo'lda kiritish
         </button>
-    </div>
-    
-    <!-- Kamera ko'rinishi -->
-    <div id="camera-view" class="scanner-overlay" style="display: none;">
-        <video id="scanner-video" autoplay playsinline></video>
-        <div class="scan-line"></div>
-        <canvas id="scanner-canvas" style="display: none;"></canvas>
-        <p class="text-center mt-2">
-            <i class="fas fa-info-circle"></i> Shtrix kodni kamera oldiga to'g'rilang
-        </p>
-        <button class="btn btn-danger d-block mx-auto" onclick="stopCamera()">
-            <i class="fas fa-stop"></i> To'xtatish
+        <button class="mode-tab" onclick="switchMode('camera')">
+            <i class="fas fa-camera"></i> Kamera
         </button>
     </div>
     
-    <!-- Qo'lda kiritish -->
-    <div id="manual-input" class="text-center">
-        <input type="text" id="barcode-input" class="form-control barcode-input mb-3" 
-               placeholder="Shtrix kodni kiriting" maxlength="20">
-        <button class="btn-scan" onclick="lookupBarcode()">
-            <i class="fas fa-search"></i> Qidirish
-        </button>
-    </div>
-    
-    <!-- Natija -->
-    <div id="result-container" style="display: none;">
-        <!-- Mahsulot topilganda -->
-        <div id="product-found" class="result-card" style="display: none;">
-            <div class="d-flex align-items-start gap-3">
-                <img id="product-image" src="" alt="" class="product-image" style="display: none;">
-                <div class="flex-grow-1">
-                    <h3 id="product-name" class="mb-2"></h3>
-                    <p id="product-barcode" class="mb-1 opacity-75"><i class="fas fa-barcode"></i> </p>
-                    <p id="product-brand" class="mb-1"><i class="fas fa-building"></i> </p>
-                    <p id="product-category" class="mb-0"><i class="fas fa-tag"></i> </p>
-                </div>
-            </div>
-            
-            <hr class="my-3 opacity-25">
-            
-            <div class="row">
-                <div class="col-6">
-                    <p class="mb-1"><strong>Narxi:</strong></p>
-                    <h4 id="product-price">-</h4>
-                </div>
-                <div class="col-6">
-                    <p class="mb-1"><strong>Og'irligi:</strong></p>
-                    <h4 id="product-weight">-</h4>
-                </div>
-            </div>
-            
-            <div id="product-description" class="mt-3" style="display: none;">
-                <p class="mb-1"><strong>Tavsif:</strong></p>
-                <p id="description-text" class="opacity-75"></p>
-            </div>
-            
-            <div id="product-ingredients" class="mt-3" style="display: none;">
-                <p class="mb-1"><strong>Tarkibi:</strong></p>
-                <p id="ingredients-text" class="opacity-75" style="font-size: 14px;"></p>
-            </div>
-            
-            <div id="product-nutrition" class="mt-3" style="display: none;">
-                <p class="mb-1"><strong>Ozuqaviy qiymati:</strong></p>
-                <div id="nutrition-badges"></div>
-            </div>
-            
-            <div id="product-country" class="mt-3" style="display: none;">
-                <p class="mb-0"><i class="fas fa-globe"></i> <span id="country-text"></span></p>
-            </div>
-        </div>
-        
-        <!-- Mahsulot topilmaganda -->
-        <div id="product-not-found" class="alert alert-warning" style="display: none;">
-            <h5><i class="fas fa-exclamation-triangle"></i> Mahsulot topilmadi</h5>
-            <p>Bu barcode bazada yo'q. Siz uni qo'shishingiz mumkin.</p>
-            <button class="btn btn-primary" onclick="showAddForm()">
-                <i class="fas fa-plus"></i> Mahsulot qo'shish
+    <div id="manualSection" class="scanner-section">
+        <div class="manual-input">
+            <input type="text" id="barcodeInput" placeholder="Barcode raqamini kiriting..." 
+                   onkeypress="if(event.key==='Enter') searchBarcode()">
+            <button class="scan-btn" onclick="searchBarcode()">
+                <i class="fas fa-search"></i> Qidirish
             </button>
         </div>
     </div>
     
-    <!-- Yangi mahsulot qo'shish formasi -->
-    <div id="add-product-form" class="add-product-form">
-        <h5 class="mb-3"><i class="fas fa-plus-circle"></i> Yangi mahsulot qo'shish</h5>
-        <input type="hidden" id="new-barcode">
-        
-        <div class="mb-3">
-            <label class="form-label">Mahsulot nomi *</label>
-            <input type="text" id="new-name" class="form-control" required>
-        </div>
-        
-        <div class="row mb-3">
-            <div class="col-6">
-                <label class="form-label">Narxi</label>
-                <input type="number" id="new-price" class="form-control" step="0.01">
-            </div>
-            <div class="col-6">
-                <label class="form-label">Valyuta</label>
-                <select id="new-currency" class="form-control">
-                    <option value="UZS">UZS</option>
-                    <option value="USD">USD</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Brend</label>
-            <input type="text" id="new-brand" class="form-control">
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Kategoriya</label>
-            <input type="text" id="new-category" class="form-control">
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Tavsif</label>
-            <textarea id="new-description" class="form-control" rows="2"></textarea>
-        </div>
-        
-        <button class="btn btn-success" onclick="addProduct()">
-            <i class="fas fa-save"></i> Saqlash
-        </button>
-        <button class="btn btn-secondary" onclick="hideAddForm()">Bekor qilish</button>
+    <div id="cameraSection" class="scanner-section" style="display: none;">
+        <div id="reader"></div>
+        <p style="text-align: center; margin-top: 15px; color: #6b7280;">
+            <i class="fas fa-info-circle"></i> QR kod yoki barcode'ni kameraga ko'rsating
+        </p>
     </div>
     
-    <!-- So'nggi skanerlashlar -->
-    {% if recent_scans %}
-    <div class="mt-5">
-        <h5><i class="fas fa-history"></i> So'nggi skanerlashlar</h5>
-        {% for scan in recent_scans %}
-        <div class="scan-history-item" onclick="lookupBarcodeValue('{{ scan.product.barcode }}')">
-            <i class="fas fa-barcode fa-2x text-primary"></i>
-            <div>
-                <strong>{{ scan.product.name }}</strong>
-                <br><small class="text-muted">{{ scan.product.barcode }} • {{ scan.scanned_at|timesince }} oldin</small>
-            </div>
-        </div>
-        {% endfor %}
-        <a href="{% url 'barcode_history' %}" class="btn btn-outline-primary btn-sm">
-            Barchasini ko'rish <i class="fas fa-arrow-right"></i>
-        </a>
+    <div id="loadingDiv" class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Qidirilmoqda...</p>
     </div>
-    {% endif %}
     
-    <!-- Xususiyatlar -->
-    <div class="row mt-5 text-center">
-        <div class="col-4">
-            <div class="feature-icon mx-auto">
-                <i class="fas fa-bolt"></i>
-            </div>
-            <h6>Tez</h6>
-            <small class="text-muted">1 soniyada natija</small>
-        </div>
-        <div class="col-4">
-            <div class="feature-icon mx-auto">
-                <i class="fas fa-database"></i>
-            </div>
-            <h6>Katta baza</h6>
-            <small class="text-muted">Millionlab mahsulot</small>
-        </div>
-        <div class="col-4">
-            <div class="feature-icon mx-auto">
-                <i class="fas fa-globe"></i>
-            </div>
-            <h6>Global</h6>
-            <small class="text-muted">Xalqaro API</small>
-        </div>
-    </div>
+    <div id="resultCard" class="result-card"></div>
 </div>
 
-<!-- QuaggaJS kutubxonasi -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
-let scanning = false;
+let html5QrCode = null;
+let currentMode = 'manual';
 
-function startCamera() {
-    document.getElementById('camera-view').style.display = 'block';
-    document.getElementById('manual-input').style.display = 'none';
+function switchMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.closest('.mode-tab').classList.add('active');
     
-    const video = document.getElementById('scanner-video');
-    
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-    }).then(stream => {
-        video.srcObject = stream;
-        scanning = true;
-        scanBarcode();
-    }).catch(err => {
-        alert('Kameraga ruxsat berilmadi: ' + err.message);
-        showManualInput();
-    });
-}
-
-function stopCamera() {
-    const video = document.getElementById('scanner-video');
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => track.stop());
+    if (mode === 'manual') {
+        document.getElementById('manualSection').style.display = 'block';
+        document.getElementById('cameraSection').style.display = 'none';
+        stopScanner();
+    } else {
+        document.getElementById('manualSection').style.display = 'none';
+        document.getElementById('cameraSection').style.display = 'block';
+        startScanner();
     }
-    scanning = false;
-    showManualInput();
 }
 
-function showManualInput() {
-    document.getElementById('camera-view').style.display = 'none';
-    document.getElementById('manual-input').style.display = 'block';
-}
-
-function scanBarcode() {
-    if (!scanning) return;
+function startScanner() {
+    if (html5QrCode) {
+        html5QrCode.clear();
+    }
     
-    const video = document.getElementById('scanner-video');
-    const canvas = document.getElementById('scanner-canvas');
-    const ctx = canvas.getContext('2d');
+    html5QrCode = new Html5Qrcode("reader");
     
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
-    
-    // Quagga bilan skanerlash
-    Quagga.decodeSingle({
-        src: canvas.toDataURL(),
-        numOfWorkers: 0,
-        decoder: {
-            readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'code_39_reader', 'upc_reader']
-        }
-    }, function(result) {
-        if (result && result.codeResult) {
-            stopCamera();
-            document.getElementById('barcode-input').value = result.codeResult.code;
-            lookupBarcode();
-        } else if (scanning) {
-            setTimeout(scanBarcode, 500);
-        }
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+            handleScanResult(decodedText);
+        },
+        (errorMessage) => {}
+    ).catch((err) => {
+        console.error("Kamera xatosi:", err);
+        alert("Kameraga kirish imkoni yo'q. Iltimos, ruxsat bering.");
     });
 }
 
-function lookupBarcode() {
-    const barcode = document.getElementById('barcode-input').value.trim();
+function stopScanner() {
+    if (html5QrCode) {
+        html5QrCode.stop().catch(err => console.log(err));
+    }
+}
+
+function handleScanResult(code) {
+    stopScanner();
+    
+    if (code.startsWith('http://') || code.startsWith('https://')) {
+        showQRResult('url', code);
+    } else if (code.startsWith('mailto:')) {
+        showQRResult('email', code);
+    } else if (code.startsWith('tel:')) {
+        showQRResult('phone', code);
+    } else if (code.startsWith('WIFI:')) {
+        showQRResult('wifi', code);
+    } else if (/^\d{8,14}$/.test(code)) {
+        document.getElementById('barcodeInput').value = code;
+        searchBarcode();
+    } else {
+        showQRResult('text', code);
+    }
+}
+
+function showQRResult(type, content) {
+    let html = '<div class="qr-result">';
+    
+    switch(type) {
+        case 'url':
+            html += `<h3><i class="fas fa-link"></i> Havola topildi</h3>
+                <div class="qr-content">${content}</div>
+                <a href="${content}" target="_blank" class="action-btn">
+                    <i class="fas fa-external-link-alt"></i> Havolani ochish
+                </a>`;
+            break;
+        case 'email':
+            html += `<h3><i class="fas fa-envelope"></i> Email topildi</h3>
+                <div class="qr-content">${content.replace('mailto:', '')}</div>
+                <a href="${content}" class="action-btn">
+                    <i class="fas fa-paper-plane"></i> Xat yuborish
+                </a>`;
+            break;
+        case 'phone':
+            html += `<h3><i class="fas fa-phone"></i> Telefon raqami</h3>
+                <div class="qr-content">${content.replace('tel:', '')}</div>
+                <a href="${content}" class="action-btn">
+                    <i class="fas fa-phone-alt"></i> Qo'ng'iroq qilish
+                </a>`;
+            break;
+        case 'wifi':
+            html += `<h3><i class="fas fa-wifi"></i> WiFi ma'lumotlari</h3>
+                <div class="qr-content">${content}</div>`;
+            break;
+        default:
+            html += `<h3><i class="fas fa-qrcode"></i> QR kod ma'lumoti</h3>
+                <div class="qr-content">${content}</div>
+                <button onclick="copyToClipboard('${content.replace(/'/g, "\\'")}')" class="action-btn">
+                    <i class="fas fa-copy"></i> Nusxalash
+                </button>`;
+    }
+    
+    html += '</div>';
+    document.getElementById('resultCard').innerHTML = html;
+    document.getElementById('resultCard').style.display = 'block';
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => alert('Nusxalandi!'));
+}
+
+function searchBarcode() {
+    const barcode = document.getElementById('barcodeInput').value.trim();
     if (!barcode) {
         alert('Iltimos, barcode kiriting');
         return;
     }
-    lookupBarcodeValue(barcode);
-}
-
-function lookupBarcodeValue(barcode) {
-    document.getElementById('barcode-input').value = barcode;
-    document.getElementById('result-container').style.display = 'block';
-    document.getElementById('product-found').style.display = 'none';
-    document.getElementById('product-not-found').style.display = 'none';
+    
+    document.getElementById('loadingDiv').style.display = 'block';
+    document.getElementById('resultCard').style.display = 'none';
     
     fetch('/api/barcode/lookup/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
         },
         body: JSON.stringify({ barcode: barcode })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.found) {
-            showProduct(data.product);
+        document.getElementById('loadingDiv').style.display = 'none';
+        
+        if (data.success && data.found) {
+            showProductResult(data.product, data.source);
         } else {
-            document.getElementById('new-barcode').value = barcode;
-            document.getElementById('product-not-found').style.display = 'block';
+            showNotFound(barcode);
         }
     })
-    .catch(err => {
-        alert('Xatolik: ' + err.message);
+    .catch(error => {
+        document.getElementById('loadingDiv').style.display = 'none';
+        alert('Xatolik yuz berdi');
     });
 }
 
-function showProduct(product) {
-    document.getElementById('product-found').style.display = 'block';
-    document.getElementById('product-name').textContent = product.name;
-    document.getElementById('product-barcode').innerHTML = '<i class="fas fa-barcode"></i> ' + product.barcode;
+function showProductResult(product, source) {
+    let html = `
+        <div class="result-header">
+            ${product.image_url ? `<img src="${product.image_url}" class="product-image" onerror="this.style.display='none'">` : '<i class="fas fa-box" style="font-size:3rem;"></i>'}
+            <div class="product-title">
+                <h2>${product.name || 'Nomsiz mahsulot'}</h2>
+                <p>${product.brand || ''} ${product.weight ? '• ' + product.weight : ''}</p>
+            </div>
+        </div>
+        <div class="result-body">
+    `;
     
-    if (product.brand) {
-        document.getElementById('product-brand').innerHTML = '<i class="fas fa-building"></i> ' + product.brand;
-        document.getElementById('product-brand').style.display = 'block';
-    } else {
-        document.getElementById('product-brand').style.display = 'none';
+    // Sog'liq ko'rsatkichlari
+    if (product.nutriscore_grade || product.nova_group) {
+        html += '<div class="health-scores">';
+        if (product.nutriscore_grade) {
+            const grade = product.nutriscore_grade.toLowerCase();
+            html += `<div class="score-badge nutri-${grade}">
+                <span>Nutri-Score</span> <strong>${product.nutriscore_grade}</strong>
+            </div>`;
+        }
+        if (product.nova_group) {
+            html += `<div class="score-badge nova-${product.nova_group}">
+                <span>NOVA</span> <strong>${product.nova_group}</strong>
+            </div>`;
+        }
+        html += '</div>';
     }
     
-    if (product.category) {
-        document.getElementById('product-category').innerHTML = '<i class="fas fa-tag"></i> ' + product.category;
-        document.getElementById('product-category').style.display = 'block';
-    } else {
-        document.getElementById('product-category').style.display = 'none';
+    // Ogohlantirishlar
+    if (product.warnings) {
+        html += `<div class="warnings-box">
+            <h4><i class="fas fa-exclamation-triangle"></i> Ogohlantirishlar</h4>
+            ${product.warnings.split('\n').map(w => `<p>${w}</p>`).join('')}
+        </div>`;
     }
     
-    document.getElementById('product-price').textContent = product.price ? 
-        parseFloat(product.price).toLocaleString() + ' ' + product.currency : '-';
-    document.getElementById('product-weight').textContent = product.weight || '-';
-    
-    if (product.image) {
-        document.getElementById('product-image').src = product.image;
-        document.getElementById('product-image').style.display = 'block';
-    } else {
-        document.getElementById('product-image').style.display = 'none';
+    // Allergenlar
+    if (product.allergens) {
+        html += `<div class="allergens-box">
+            <h4><i class="fas fa-allergies"></i> Allergenlar</h4>
+            <p>${product.allergens}</p>
+        </div>`;
     }
     
-    if (product.description) {
-        document.getElementById('description-text').textContent = product.description;
-        document.getElementById('product-description').style.display = 'block';
-    } else {
-        document.getElementById('product-description').style.display = 'none';
+    // Ozuqaviy qiymatlar
+    if (product.calories || product.proteins || product.carbohydrates || product.fat) {
+        html += `<div class="info-section">
+            <h3><i class="fas fa-fire"></i> Ozuqaviy qiymatlar (100g uchun)</h3>
+            <table class="nutrition-table">`;
+        
+        if (product.calories) html += `<tr class="highlight"><td>🔥 Kaloriya</td><td>${product.calories} kcal</td></tr>`;
+        if (product.proteins) html += `<tr><td>🥩 Oqsillar</td><td>${product.proteins}g</td></tr>`;
+        if (product.carbohydrates) html += `<tr><td>🍞 Uglevodlar</td><td>${product.carbohydrates}g</td></tr>`;
+        if (product.sugars) {
+            const cls = product.sugars > 22.5 ? 'highlight' : '';
+            html += `<tr class="${cls}"><td>🍬 Shakar</td><td>${product.sugars}g</td></tr>`;
+        }
+        if (product.fat) html += `<tr><td>🧈 Yog'</td><td>${product.fat}g</td></tr>`;
+        if (product.saturated_fat) {
+            const cls = product.saturated_fat > 5 ? 'highlight' : '';
+            html += `<tr class="${cls}"><td>• To'yingan yog'</td><td>${product.saturated_fat}g</td></tr>`;
+        }
+        if (product.fiber) html += `<tr><td>🌾 Kletchatka</td><td>${product.fiber}g</td></tr>`;
+        if (product.salt) {
+            const cls = product.salt > 1.5 ? 'highlight' : '';
+            html += `<tr class="${cls}"><td>🧂 Tuz</td><td>${product.salt}g</td></tr>`;
+        }
+        
+        html += '</table></div>';
     }
     
+    // Vitaminlar
+    const vitamins = [];
+    if (product.vitamin_a) vitamins.push({name: 'Vitamin A', value: product.vitamin_a + ' µg'});
+    if (product.vitamin_c) vitamins.push({name: 'Vitamin C', value: product.vitamin_c + ' mg'});
+    if (product.vitamin_d) vitamins.push({name: 'Vitamin D', value: product.vitamin_d + ' µg'});
+    if (product.vitamin_e) vitamins.push({name: 'Vitamin E', value: product.vitamin_e + ' mg'});
+    if (product.vitamin_b1) vitamins.push({name: 'Vitamin B1', value: product.vitamin_b1 + ' mg'});
+    if (product.vitamin_b2) vitamins.push({name: 'Vitamin B2', value: product.vitamin_b2 + ' mg'});
+    if (product.vitamin_b6) vitamins.push({name: 'Vitamin B6', value: product.vitamin_b6 + ' mg'});
+    if (product.vitamin_b12) vitamins.push({name: 'Vitamin B12', value: product.vitamin_b12 + ' µg'});
+    if (product.calcium) vitamins.push({name: 'Kaltsiy', value: product.calcium + ' mg'});
+    if (product.iron) vitamins.push({name: 'Temir', value: product.iron + ' mg'});
+    if (product.magnesium) vitamins.push({name: 'Magniy', value: product.magnesium + ' mg'});
+    if (product.zinc) vitamins.push({name: 'Sink', value: product.zinc + ' mg'});
+    if (product.potassium) vitamins.push({name: 'Kaliy', value: product.potassium + ' mg'});
+    
+    if (vitamins.length > 0) {
+        html += `<div class="info-section">
+            <h3><i class="fas fa-pills"></i> Vitaminlar va minerallar</h3>
+            <div class="vitamins-grid">
+                ${vitamins.map(v => `<div class="vitamin-item">
+                    <div class="name">${v.name}</div>
+                    <div class="value">${v.value}</div>
+                </div>`).join('')}
+            </div>
+        </div>`;
+    }
+    
+    // Tarkibi
     if (product.ingredients) {
-        document.getElementById('ingredients-text').textContent = product.ingredients;
-        document.getElementById('product-ingredients').style.display = 'block';
-    } else {
-        document.getElementById('product-ingredients').style.display = 'none';
+        html += `<div class="info-section">
+            <h3><i class="fas fa-list"></i> Tarkibi</h3>
+            <div class="ingredients-text">${product.ingredients}</div>
+        </div>`;
     }
     
-    if (product.country) {
-        document.getElementById('country-text').textContent = product.country;
-        document.getElementById('product-country').style.display = 'block';
-    } else {
-        document.getElementById('product-country').style.display = 'none';
+    // Qo'shimchalar
+    if (product.additives) {
+        html += `<div class="additives-box">
+            <h4><i class="fas fa-flask"></i> Qo'shimchalar (E raqamlar)</h4>
+            <p>${product.additives}</p>
+        </div>`;
     }
-}
-
-function showAddForm() {
-    document.getElementById('add-product-form').style.display = 'block';
-}
-
-function hideAddForm() {
-    document.getElementById('add-product-form').style.display = 'none';
-}
-
-function addProduct() {
-    const data = {
-        barcode: document.getElementById('new-barcode').value,
-        name: document.getElementById('new-name').value,
-        price: document.getElementById('new-price').value,
-        currency: document.getElementById('new-currency').value,
-        brand: document.getElementById('new-brand').value,
-        category: document.getElementById('new-category').value,
-        description: document.getElementById('new-description').value
-    };
     
-    if (!data.name) {
-        alert('Mahsulot nomi majburiy');
-        return;
-    }
+    // Qo'shimcha ma'lumotlar
+    html += `<div class="info-section" style="margin-top: 20px;">
+        <h3><i class="fas fa-info-circle"></i> Qo'shimcha ma'lumotlar</h3>
+        <table class="nutrition-table">
+            <tr><td>Barcode</td><td>${product.barcode}</td></tr>
+            ${product.category ? `<tr><td>Kategoriya</td><td>${product.category}</td></tr>` : ''}
+            ${product.country ? `<tr><td>Mamlakat</td><td>${product.country}</td></tr>` : ''}
+            ${product.scan_count ? `<tr><td>Skanerlangan</td><td>${product.scan_count} marta</td></tr>` : ''}
+        </table>
+    </div></div>`;
+    
+    document.getElementById('resultCard').innerHTML = html;
+    document.getElementById('resultCard').style.display = 'block';
+}
+
+function showNotFound(barcode) {
+    document.getElementById('resultCard').innerHTML = `
+        <div class="result-header error">
+            <i class="fas fa-times-circle" style="font-size: 2.5rem;"></i>
+            <div class="product-title">
+                <h2>Mahsulot topilmadi</h2>
+                <p>Barcode: ${barcode}</p>
+            </div>
+        </div>
+        <div class="result-body">
+            <div class="not-found">
+                <i class="fas fa-box-open"></i>
+                <h3>Bu mahsulot bazada mavjud emas</h3>
+                <p style="color: #9ca3af; margin-bottom: 20px;">
+                    Open Food Facts bazasida ham topilmadi.
+                </p>
+                <button class="scan-btn" onclick="addNewProduct('${barcode}')">
+                    <i class="fas fa-plus"></i> Mahsulot qo'shish
+                </button>
+            </div>
+        </div>`;
+    document.getElementById('resultCard').style.display = 'block';
+}
+
+function addNewProduct(barcode) {
+    const name = prompt('Mahsulot nomini kiriting:');
+    if (!name) return;
     
     fetch('/api/barcode/add/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ barcode: barcode, name: name })
     })
     .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            alert('Mahsulot muvaffaqiyatli qo\'shildi!');
-            hideAddForm();
-            lookupBarcodeValue(data.barcode);
+    .then(data => {
+        if (data.success) {
+            alert('Mahsulot qo\'shildi!');
+            searchBarcode();
         } else {
-            alert('Xatolik: ' + result.error);
+            alert('Xatolik: ' + (data.error || 'Noma\'lum'));
         }
-    })
-    .catch(err => {
-        alert('Xatolik: ' + err.message);
     });
 }
-
-// Enter tugmasi bilan qidirish
-document.getElementById('barcode-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        lookupBarcode();
-    }
-});
 </script>
 {% endblock %}
