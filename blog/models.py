@@ -404,3 +404,48 @@ class BookSummary(models.Model):
     
     def __str__(self):
         return f"Xulosa: {self.book.title}"
+
+
+class Product(models.Model):
+    """Mahsulot modeli - shtrix kod bilan"""
+    barcode = models.CharField(max_length=50, unique=True, verbose_name="Shtrix kod (Barcode)")
+    name = models.CharField(max_length=300, verbose_name="Mahsulot nomi")
+    description = models.TextField(blank=True, verbose_name="Tavsif")
+    price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, verbose_name="Narxi")
+    currency = models.CharField(max_length=10, default="UZS", verbose_name="Valyuta")
+    category = models.CharField(max_length=100, blank=True, verbose_name="Kategoriya")
+    brand = models.CharField(max_length=100, blank=True, verbose_name="Brend")
+    manufacturer = models.CharField(max_length=200, blank=True, verbose_name="Ishlab chiqaruvchi")
+    country = models.CharField(max_length=100, blank=True, verbose_name="Ishlab chiqarilgan mamlakat")
+    weight = models.CharField(max_length=50, blank=True, verbose_name="Og'irligi")
+    image = models.ImageField(upload_to='products/', blank=True, null=True, verbose_name="Rasm")
+    ingredients = models.TextField(blank=True, verbose_name="Tarkibi")
+    nutrition_info = models.TextField(blank=True, verbose_name="Ozuqaviy qiymati")
+    expiry_info = models.CharField(max_length=100, blank=True, verbose_name="Yaroqlilik muddati")
+    is_active = models.BooleanField(default=True, verbose_name="Faol")
+    scan_count = models.PositiveIntegerField(default=0, verbose_name="Skanerlangan soni")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Mahsulot"
+        verbose_name_plural = "Mahsulotlar"
+        ordering = ['-scan_count', 'name']
+    
+    def __str__(self):
+        return f"{self.name} ({self.barcode})"
+
+
+class ProductScanHistory(models.Model):
+    """Mahsulot skanerlash tarixi"""
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Foydalanuvchi")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='scans', verbose_name="Mahsulot")
+    scanned_at = models.DateTimeField(auto_now_add=True, verbose_name="Skanerlangan vaqt")
+    
+    class Meta:
+        verbose_name = "Skanerlash tarixi"
+        verbose_name_plural = "Skanerlash tarixi"
+        ordering = ['-scanned_at']
+    
+    def __str__(self):
+        return f"{self.product.name} - {self.scanned_at}"

@@ -1,0 +1,526 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Shtrix Kod Skaneri - Cloudstore AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .scanner-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    #scanner-video {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 15px;
+        border: 3px solid #667eea;
+        margin: 20px auto;
+        display: block;
+    }
+    
+    .scanner-overlay {
+        position: relative;
+    }
+    
+    .scan-line {
+        position: absolute;
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+        left: 10%;
+        animation: scan 2s infinite;
+    }
+    
+    @keyframes scan {
+        0% { top: 20%; }
+        50% { top: 80%; }
+        100% { top: 20%; }
+    }
+    
+    .result-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 25px;
+        color: white;
+        margin-top: 20px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+    
+    .product-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 15px;
+        border: 3px solid white;
+    }
+    
+    .barcode-input {
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 18px;
+        text-align: center;
+        letter-spacing: 2px;
+    }
+    
+    .btn-scan {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 15px 40px;
+        font-size: 18px;
+        border-radius: 30px;
+        color: white;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .btn-scan:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .scan-history-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .scan-history-item:hover {
+        background: #e9ecef;
+    }
+    
+    .add-product-form {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
+        display: none;
+    }
+    
+    .nutrition-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin: 3px;
+        background: rgba(255,255,255,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <div class="text-center mb-4">
+        <h1><i class="fas fa-barcode"></i> Shtrix Kod Skaneri</h1>
+        <p class="text-muted">Mahsulot shtrix kodini skanerlang va barcha ma'lumotlarni oling</p>
+    </div>
+    
+    <!-- Skaner rejimi tanlash -->
+    <div class="d-flex justify-content-center gap-3 mb-4">
+        <button class="btn btn-outline-primary" onclick="startCamera()" id="btn-camera">
+            <i class="fas fa-camera"></i> Kamera
+        </button>
+        <button class="btn btn-outline-secondary" onclick="showManualInput()" id="btn-manual">
+            <i class="fas fa-keyboard"></i> Qo'lda kiritish
+        </button>
+    </div>
+    
+    <!-- Kamera ko'rinishi -->
+    <div id="camera-view" class="scanner-overlay" style="display: none;">
+        <video id="scanner-video" autoplay playsinline></video>
+        <div class="scan-line"></div>
+        <canvas id="scanner-canvas" style="display: none;"></canvas>
+        <p class="text-center mt-2">
+            <i class="fas fa-info-circle"></i> Shtrix kodni kamera oldiga to'g'rilang
+        </p>
+        <button class="btn btn-danger d-block mx-auto" onclick="stopCamera()">
+            <i class="fas fa-stop"></i> To'xtatish
+        </button>
+    </div>
+    
+    <!-- Qo'lda kiritish -->
+    <div id="manual-input" class="text-center">
+        <input type="text" id="barcode-input" class="form-control barcode-input mb-3" 
+               placeholder="Shtrix kodni kiriting" maxlength="20">
+        <button class="btn-scan" onclick="lookupBarcode()">
+            <i class="fas fa-search"></i> Qidirish
+        </button>
+    </div>
+    
+    <!-- Natija -->
+    <div id="result-container" style="display: none;">
+        <!-- Mahsulot topilganda -->
+        <div id="product-found" class="result-card" style="display: none;">
+            <div class="d-flex align-items-start gap-3">
+                <img id="product-image" src="" alt="" class="product-image" style="display: none;">
+                <div class="flex-grow-1">
+                    <h3 id="product-name" class="mb-2"></h3>
+                    <p id="product-barcode" class="mb-1 opacity-75"><i class="fas fa-barcode"></i> </p>
+                    <p id="product-brand" class="mb-1"><i class="fas fa-building"></i> </p>
+                    <p id="product-category" class="mb-0"><i class="fas fa-tag"></i> </p>
+                </div>
+            </div>
+            
+            <hr class="my-3 opacity-25">
+            
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-1"><strong>Narxi:</strong></p>
+                    <h4 id="product-price">-</h4>
+                </div>
+                <div class="col-6">
+                    <p class="mb-1"><strong>Og'irligi:</strong></p>
+                    <h4 id="product-weight">-</h4>
+                </div>
+            </div>
+            
+            <div id="product-description" class="mt-3" style="display: none;">
+                <p class="mb-1"><strong>Tavsif:</strong></p>
+                <p id="description-text" class="opacity-75"></p>
+            </div>
+            
+            <div id="product-ingredients" class="mt-3" style="display: none;">
+                <p class="mb-1"><strong>Tarkibi:</strong></p>
+                <p id="ingredients-text" class="opacity-75" style="font-size: 14px;"></p>
+            </div>
+            
+            <div id="product-nutrition" class="mt-3" style="display: none;">
+                <p class="mb-1"><strong>Ozuqaviy qiymati:</strong></p>
+                <div id="nutrition-badges"></div>
+            </div>
+            
+            <div id="product-country" class="mt-3" style="display: none;">
+                <p class="mb-0"><i class="fas fa-globe"></i> <span id="country-text"></span></p>
+            </div>
+        </div>
+        
+        <!-- Mahsulot topilmaganda -->
+        <div id="product-not-found" class="alert alert-warning" style="display: none;">
+            <h5><i class="fas fa-exclamation-triangle"></i> Mahsulot topilmadi</h5>
+            <p>Bu barcode bazada yo'q. Siz uni qo'shishingiz mumkin.</p>
+            <button class="btn btn-primary" onclick="showAddForm()">
+                <i class="fas fa-plus"></i> Mahsulot qo'shish
+            </button>
+        </div>
+    </div>
+    
+    <!-- Yangi mahsulot qo'shish formasi -->
+    <div id="add-product-form" class="add-product-form">
+        <h5 class="mb-3"><i class="fas fa-plus-circle"></i> Yangi mahsulot qo'shish</h5>
+        <input type="hidden" id="new-barcode">
+        
+        <div class="mb-3">
+            <label class="form-label">Mahsulot nomi *</label>
+            <input type="text" id="new-name" class="form-control" required>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-6">
+                <label class="form-label">Narxi</label>
+                <input type="number" id="new-price" class="form-control" step="0.01">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Valyuta</label>
+                <select id="new-currency" class="form-control">
+                    <option value="UZS">UZS</option>
+                    <option value="USD">USD</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Brend</label>
+            <input type="text" id="new-brand" class="form-control">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Kategoriya</label>
+            <input type="text" id="new-category" class="form-control">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Tavsif</label>
+            <textarea id="new-description" class="form-control" rows="2"></textarea>
+        </div>
+        
+        <button class="btn btn-success" onclick="addProduct()">
+            <i class="fas fa-save"></i> Saqlash
+        </button>
+        <button class="btn btn-secondary" onclick="hideAddForm()">Bekor qilish</button>
+    </div>
+    
+    <!-- So'nggi skanerlashlar -->
+    {% if recent_scans %}
+    <div class="mt-5">
+        <h5><i class="fas fa-history"></i> So'nggi skanerlashlar</h5>
+        {% for scan in recent_scans %}
+        <div class="scan-history-item" onclick="lookupBarcodeValue('{{ scan.product.barcode }}')">
+            <i class="fas fa-barcode fa-2x text-primary"></i>
+            <div>
+                <strong>{{ scan.product.name }}</strong>
+                <br><small class="text-muted">{{ scan.product.barcode }} • {{ scan.scanned_at|timesince }} oldin</small>
+            </div>
+        </div>
+        {% endfor %}
+        <a href="{% url 'barcode_history' %}" class="btn btn-outline-primary btn-sm">
+            Barchasini ko'rish <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Xususiyatlar -->
+    <div class="row mt-5 text-center">
+        <div class="col-4">
+            <div class="feature-icon mx-auto">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h6>Tez</h6>
+            <small class="text-muted">1 soniyada natija</small>
+        </div>
+        <div class="col-4">
+            <div class="feature-icon mx-auto">
+                <i class="fas fa-database"></i>
+            </div>
+            <h6>Katta baza</h6>
+            <small class="text-muted">Millionlab mahsulot</small>
+        </div>
+        <div class="col-4">
+            <div class="feature-icon mx-auto">
+                <i class="fas fa-globe"></i>
+            </div>
+            <h6>Global</h6>
+            <small class="text-muted">Xalqaro API</small>
+        </div>
+    </div>
+</div>
+
+<!-- QuaggaJS kutubxonasi -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+<script>
+let scanning = false;
+
+function startCamera() {
+    document.getElementById('camera-view').style.display = 'block';
+    document.getElementById('manual-input').style.display = 'none';
+    
+    const video = document.getElementById('scanner-video');
+    
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+    }).then(stream => {
+        video.srcObject = stream;
+        scanning = true;
+        scanBarcode();
+    }).catch(err => {
+        alert('Kameraga ruxsat berilmadi: ' + err.message);
+        showManualInput();
+    });
+}
+
+function stopCamera() {
+    const video = document.getElementById('scanner-video');
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+    }
+    scanning = false;
+    showManualInput();
+}
+
+function showManualInput() {
+    document.getElementById('camera-view').style.display = 'none';
+    document.getElementById('manual-input').style.display = 'block';
+}
+
+function scanBarcode() {
+    if (!scanning) return;
+    
+    const video = document.getElementById('scanner-video');
+    const canvas = document.getElementById('scanner-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    
+    // Quagga bilan skanerlash
+    Quagga.decodeSingle({
+        src: canvas.toDataURL(),
+        numOfWorkers: 0,
+        decoder: {
+            readers: ['ean_reader', 'ean_8_reader', 'code_128_reader', 'code_39_reader', 'upc_reader']
+        }
+    }, function(result) {
+        if (result && result.codeResult) {
+            stopCamera();
+            document.getElementById('barcode-input').value = result.codeResult.code;
+            lookupBarcode();
+        } else if (scanning) {
+            setTimeout(scanBarcode, 500);
+        }
+    });
+}
+
+function lookupBarcode() {
+    const barcode = document.getElementById('barcode-input').value.trim();
+    if (!barcode) {
+        alert('Iltimos, barcode kiriting');
+        return;
+    }
+    lookupBarcodeValue(barcode);
+}
+
+function lookupBarcodeValue(barcode) {
+    document.getElementById('barcode-input').value = barcode;
+    document.getElementById('result-container').style.display = 'block';
+    document.getElementById('product-found').style.display = 'none';
+    document.getElementById('product-not-found').style.display = 'none';
+    
+    fetch('/api/barcode/lookup/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ barcode: barcode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.found) {
+            showProduct(data.product);
+        } else {
+            document.getElementById('new-barcode').value = barcode;
+            document.getElementById('product-not-found').style.display = 'block';
+        }
+    })
+    .catch(err => {
+        alert('Xatolik: ' + err.message);
+    });
+}
+
+function showProduct(product) {
+    document.getElementById('product-found').style.display = 'block';
+    document.getElementById('product-name').textContent = product.name;
+    document.getElementById('product-barcode').innerHTML = '<i class="fas fa-barcode"></i> ' + product.barcode;
+    
+    if (product.brand) {
+        document.getElementById('product-brand').innerHTML = '<i class="fas fa-building"></i> ' + product.brand;
+        document.getElementById('product-brand').style.display = 'block';
+    } else {
+        document.getElementById('product-brand').style.display = 'none';
+    }
+    
+    if (product.category) {
+        document.getElementById('product-category').innerHTML = '<i class="fas fa-tag"></i> ' + product.category;
+        document.getElementById('product-category').style.display = 'block';
+    } else {
+        document.getElementById('product-category').style.display = 'none';
+    }
+    
+    document.getElementById('product-price').textContent = product.price ? 
+        parseFloat(product.price).toLocaleString() + ' ' + product.currency : '-';
+    document.getElementById('product-weight').textContent = product.weight || '-';
+    
+    if (product.image) {
+        document.getElementById('product-image').src = product.image;
+        document.getElementById('product-image').style.display = 'block';
+    } else {
+        document.getElementById('product-image').style.display = 'none';
+    }
+    
+    if (product.description) {
+        document.getElementById('description-text').textContent = product.description;
+        document.getElementById('product-description').style.display = 'block';
+    } else {
+        document.getElementById('product-description').style.display = 'none';
+    }
+    
+    if (product.ingredients) {
+        document.getElementById('ingredients-text').textContent = product.ingredients;
+        document.getElementById('product-ingredients').style.display = 'block';
+    } else {
+        document.getElementById('product-ingredients').style.display = 'none';
+    }
+    
+    if (product.country) {
+        document.getElementById('country-text').textContent = product.country;
+        document.getElementById('product-country').style.display = 'block';
+    } else {
+        document.getElementById('product-country').style.display = 'none';
+    }
+}
+
+function showAddForm() {
+    document.getElementById('add-product-form').style.display = 'block';
+}
+
+function hideAddForm() {
+    document.getElementById('add-product-form').style.display = 'none';
+}
+
+function addProduct() {
+    const data = {
+        barcode: document.getElementById('new-barcode').value,
+        name: document.getElementById('new-name').value,
+        price: document.getElementById('new-price').value,
+        currency: document.getElementById('new-currency').value,
+        brand: document.getElementById('new-brand').value,
+        category: document.getElementById('new-category').value,
+        description: document.getElementById('new-description').value
+    };
+    
+    if (!data.name) {
+        alert('Mahsulot nomi majburiy');
+        return;
+    }
+    
+    fetch('/api/barcode/add/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Mahsulot muvaffaqiyatli qo\'shildi!');
+            hideAddForm();
+            lookupBarcodeValue(data.barcode);
+        } else {
+            alert('Xatolik: ' + result.error);
+        }
+    })
+    .catch(err => {
+        alert('Xatolik: ' + err.message);
+    });
+}
+
+// Enter tugmasi bilan qidirish
+document.getElementById('barcode-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        lookupBarcode();
+    }
+});
+</script>
+{% endblock %}

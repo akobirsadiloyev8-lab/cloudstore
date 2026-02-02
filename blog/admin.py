@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django import forms
 from .models import (Image, File, Feedback, Author, Book, BookPage, 
-                     Category, BookRating, Favorite, ReadingProgress, SearchQuery, BookSummary)
+                     Category, BookRating, Favorite, ReadingProgress, SearchQuery, BookSummary,
+                     Product, ProductScanHistory)
 
 # Premium Obuna Admin'larini import qilish
 from .admin_subscription import *
@@ -298,3 +299,42 @@ class BookSummaryAdmin(admin.ModelAdmin):
     def summary_preview(self, obj):
         return obj.short_summary[:100] + "..." if len(obj.short_summary) > 100 else obj.short_summary
     summary_preview.short_description = "Xulosa"
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('barcode', 'name', 'brand', 'price', 'currency', 'category', 'scan_count', 'is_active')
+    list_filter = ('is_active', 'category', 'brand', 'country')
+    search_fields = ('barcode', 'name', 'brand', 'manufacturer')
+    list_editable = ('is_active', 'price')
+    ordering = ('-scan_count', '-created_at')
+    readonly_fields = ('scan_count', 'created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Asosiy ma\'lumotlar', {
+            'fields': ('barcode', 'name', 'description', 'image')
+        }),
+        ('Narx', {
+            'fields': ('price', 'currency')
+        }),
+        ('Kategoriya', {
+            'fields': ('category', 'brand', 'manufacturer', 'country')
+        }),
+        ('Tarkib va qo\'shimcha', {
+            'fields': ('weight', 'ingredients', 'nutrition_info', 'expiry_info'),
+            'classes': ('collapse',)
+        }),
+        ('Statistika', {
+            'fields': ('is_active', 'scan_count', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(ProductScanHistory)
+class ProductScanHistoryAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'scanned_at')
+    list_filter = ('scanned_at',)
+    search_fields = ('product__name', 'product__barcode', 'user__username')
+    date_hierarchy = 'scanned_at'
+    ordering = ('-scanned_at',)

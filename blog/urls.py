@@ -85,6 +85,12 @@ urlpatterns = [
     path('offline/', views.pwa_offline, name='pwa_offline'),
     # path('pwa-icon/<str:size>/', views.pwa_icon, name='pwa_icon'),  # TODO: pwa_icon funksiyasini yaratish kerak
     
+    # ===== BARCODE SCANNER =====
+    path('scanner/', views.barcode_scanner, name='barcode_scanner'),
+    path('api/barcode/lookup/', views.barcode_lookup, name='barcode_lookup'),
+    path('api/barcode/add/', views.barcode_add_product, name='barcode_add_product'),
+    path('scanner/tarix/', views.barcode_history, name='barcode_history'),
+    
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),
     path('foydalanish-shartlari/', views.terms_of_service, name='terms_of_service'),

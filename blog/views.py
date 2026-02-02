@@ -3621,3 +3621,211 @@ self.addEventListener('fetch', event => {
 def pwa_offline(request):
     """Offline sahifa"""
     return render(request, 'blog/offline.html')
+
+
+# ===== BARCODE SCANNER =====
+
+def barcode_scanner(request):
+    """Barcode skanerlash sahifasi"""
+    from .models import ProductScanHistory
+    
+    recent_scans = []
+    if request.user.is_authenticated:
+        recent_scans = ProductScanHistory.objects.filter(user=request.user)[:10]
+    
+    return render(request, 'blog/barcode_scanner.html', {
+        'recent_scans': recent_scans
+    })
+
+
+@csrf_exempt
+def barcode_lookup(request):
+    """Barcode orqali mahsulot ma'lumotlarini olish API"""
+    from .models import Product, ProductScanHistory
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST so\'rov qabul qilinadi'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        barcode = data.get('barcode', '').strip()
+        
+        if not barcode:
+            return JsonResponse({'error': 'Barcode kiritilmagan'}, status=400)
+        
+        # Mahsulotni qidirish
+        try:
+            product = Product.objects.get(barcode=barcode)
+            
+            # Skanerlash sonini oshirish
+            product.scan_count += 1
+            product.save(update_fields=['scan_count'])
+            
+            # Tarixga qo'shish
+            if request.user.is_authenticated:
+                ProductScanHistory.objects.create(
+                    user=request.user,
+                    product=product
+                )
+            
+            return JsonResponse({
+                'success': True,
+                'found': True,
+                'product': {
+                    'id': product.id,
+                    'barcode': product.barcode,
+                    'name': product.name,
+                    'description': product.description,
+                    'price': str(product.price) if product.price else None,
+                    'currency': product.currency,
+                    'category': product.category,
+                    'brand': product.brand,
+                    'manufacturer': product.manufacturer,
+                    'country': product.country,
+                    'weight': product.weight,
+                    'image': product.image.url if product.image else None,
+                    'ingredients': product.ingredients,
+                    'nutrition_info': product.nutrition_info,
+                    'expiry_info': product.expiry_info,
+                    'scan_count': product.scan_count,
+                }
+            })
+        except Product.DoesNotExist:
+            # Tashqi API dan qidirish (Open Food Facts)
+            external_data = fetch_from_external_api(barcode)
+            
+            if external_data:
+                # Yangi mahsulot yaratish
+                product = Product.objects.create(
+                    barcode=barcode,
+                    name=external_data.get('name', f'Mahsulot {barcode}'),
+                    description=external_data.get('description', ''),
+                    brand=external_data.get('brand', ''),
+                    category=external_data.get('category', ''),
+                    country=external_data.get('country', ''),
+                    ingredients=external_data.get('ingredients', ''),
+                    nutrition_info=external_data.get('nutrition_info', ''),
+                    weight=external_data.get('weight', ''),
+                )
+                
+                if request.user.is_authenticated:
+                    ProductScanHistory.objects.create(user=request.user, product=product)
+                
+                return JsonResponse({
+                    'success': True,
+                    'found': True,
+                    'source': 'external',
+                    'product': {
+                        'id': product.id,
+                        'barcode': product.barcode,
+                        'name': product.name,
+                        'description': product.description,
+                        'brand': product.brand,
+                        'category': product.category,
+                        'country': product.country,
+                        'ingredients': product.ingredients,
+                        'nutrition_info': product.nutrition_info,
+                        'weight': product.weight,
+                    }
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'found': False,
+                'barcode': barcode,
+                'message': 'Mahsulot topilmadi. Siz uni qo\'shishingiz mumkin.'
+            })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Noto\'g\'ri JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def fetch_from_external_api(barcode):
+    """Open Food Facts API dan mahsulot ma'lumotlarini olish"""
+    import requests
+    
+    try:
+        # Open Food Facts API
+        url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 1:
+                product = data.get('product', {})
+                return {
+                    'name': product.get('product_name', '') or product.get('product_name_en', ''),
+                    'description': product.get('generic_name', ''),
+                    'brand': product.get('brands', ''),
+                    'category': product.get('categories', ''),
+                    'country': product.get('countries', ''),
+                    'ingredients': product.get('ingredients_text', ''),
+                    'nutrition_info': str(product.get('nutriments', {})),
+                    'weight': product.get('quantity', ''),
+                    'image_url': product.get('image_url', ''),
+                }
+    except Exception:
+        pass
+    
+    return None
+
+
+@csrf_exempt  
+def barcode_add_product(request):
+    """Yangi mahsulot qo'shish"""
+    from .models import Product
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        barcode = data.get('barcode', '').strip()
+        name = data.get('name', '').strip()
+        
+        if not barcode or not name:
+            return JsonResponse({'error': 'Barcode va nom majburiy'}, status=400)
+        
+        # Mavjudligini tekshirish
+        if Product.objects.filter(barcode=barcode).exists():
+            return JsonResponse({'error': 'Bu barcode allaqachon mavjud'}, status=400)
+        
+        product = Product.objects.create(
+            barcode=barcode,
+            name=name,
+            description=data.get('description', ''),
+            price=data.get('price') if data.get('price') else None,
+            currency=data.get('currency', 'UZS'),
+            category=data.get('category', ''),
+            brand=data.get('brand', ''),
+            manufacturer=data.get('manufacturer', ''),
+            country=data.get('country', ''),
+            weight=data.get('weight', ''),
+            ingredients=data.get('ingredients', ''),
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Mahsulot muvaffaqiyatli qo\'shildi',
+            'product_id': product.id
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Noto\'g\'ri JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def barcode_history(request):
+    """Skanerlash tarixi"""
+    from .models import ProductScanHistory
+    
+    if not request.user.is_authenticated:
+        return render(request, 'blog/barcode_history.html', {'scans': []})
+    
+    scans = ProductScanHistory.objects.filter(user=request.user).select_related('product')[:50]
+    return render(request, 'blog/barcode_history.html', {'scans': scans})
