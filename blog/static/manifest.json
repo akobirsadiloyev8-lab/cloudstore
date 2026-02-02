@@ -1,7 +1,7 @@
 {
-    "name": "Cloudstore - Kutubxona",
-    "short_name": "Cloudstore",
-    "description": "Bepul elektron kitoblar kutubxonasi. O'zbek tilidagi eng yaxshi kitoblarni o'qing!",
+    "name": "Cloudstore AI - Kutubxona",
+    "short_name": "Cloudstore AI",
+    "description": "AI yordamida ishlaydigan bepul elektron kitoblar kutubxonasi. O'zbek tilidagi eng yaxshi kitoblarni o'qing!",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#667eea",
