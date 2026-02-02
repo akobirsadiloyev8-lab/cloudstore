@@ -627,6 +627,10 @@
                         <i class="fas fa-book"></i>
                         <span>Kitoblar</span>
                     </a>
+                    <a href="{% url 'barcode_scanner' %}" class="menu-item {% if 'scanner' in request.path %}active{% endif %}" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));">
+                        <i class="fas fa-barcode" style="color: #10b981;"></i>
+                        <span style="color: #10b981;">Shtrix Skaner</span>
+                    </a>
                     {% if user.is_authenticated %}
                     <a href="{% url 'telegram_chat' %}" class="menu-item messages">
                         <i class="fas fa-comments"></i>
