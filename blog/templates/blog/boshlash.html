@@ -1082,7 +1082,36 @@
         function hideInstallButtons() {
             if (installBanner) installBanner.style.display = 'none';
             if (sidebarInstallBtn) sidebarInstallBtn.style.display = 'none';
-            if (heroInstallBtn) heroInstallBtn.style.display = 'none';
+            
+            // Hero tugmasini checkmark bilan almashtirish
+            if (heroInstallBtn) {
+                heroInstallBtn.onclick = null;
+                heroInstallBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                heroInstallBtn.style.cursor = 'default';
+                heroInstallBtn.style.boxShadow = '0 4px 15px rgba(34,197,94,0.4)';
+                heroInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> O\'rnatilgan';
+                heroInstallBtn.onmouseover = null;
+                heroInstallBtn.onmouseout = null;
+            }
+            
+            // LocalStorage ga saqlash
+            localStorage.setItem('appInstalled', 'true');
+        }
+        
+        // Sahifa yuklanganda tekshirish
+        if (localStorage.getItem('appInstalled') === 'true' || window.matchMedia('(display-mode: standalone)').matches) {
+            setTimeout(() => {
+                const heroBtn = document.getElementById('heroInstallBtn');
+                if (heroBtn) {
+                    heroBtn.onclick = null;
+                    heroBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                    heroBtn.style.cursor = 'default';
+                    heroBtn.style.boxShadow = '0 4px 15px rgba(34,197,94,0.4)';
+                    heroBtn.innerHTML = '<i class="fas fa-check-circle"></i> O\'rnatilgan';
+                    heroBtn.onmouseover = null;
+                    heroBtn.onmouseout = null;
+                }
+            }, 100);
         }
         
         function closeInstallBanner() {
