@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-4qu^cip^$6^ikf-3*e+y4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Development uchun yoqilgan
 
-ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1', 'cloudstore.uz', 'www.cloudstore.uz']
 
 # Render.com uchun
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -46,6 +46,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://cloudstore.uz',
+    'https://www.cloudstore.uz',
 ]
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
