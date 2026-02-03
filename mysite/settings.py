@@ -32,7 +32,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-4qu^cip^$6^ikf-3*e+y47j$0@#mfd%luznci+ey1c2s$pn4-a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Development uchun yoqilgan
+DEBUG = False  # Development uchun yoqilgan
 
 ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1', 'cloudstore.uz', 'www.cloudstore.uz']
 
