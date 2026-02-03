@@ -229,10 +229,10 @@ CACHES = {
 # Cache papkasini yaratish
 os.makedirs(os.path.join(BASE_DIR, 'cache'), exist_ok=True)
 
-# CSRF sozlamalari (Render.com uchun)
-CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
-
 # Production xavfsizlik sozlamalari
+# Render/Cloudflare proksi orqali kelgan so'rovlarni HTTPS deb tushunish uchun
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000  # 1 yil
