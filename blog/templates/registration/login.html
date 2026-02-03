@@ -102,9 +102,28 @@
             background: #5a67d8;
         }
         .error {
-            color: red;
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px 15px;
+            border-radius: 8px;
             text-align: center;
             margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        .register-prompt {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .register-prompt a {
+            color: #155724;
+            font-weight: bold;
+            text-decoration: underline;
         }
         .links {
             text-align: center;
@@ -120,9 +139,14 @@
     <div class="login-container">
         <h2>Kirish</h2>
         {% if error %}
-            <div class="error">{{ error }}</div>
+            <div class="error">⚠️ {{ error }}</div>
         {% endif %}
-        <form method="post">
+        {% if show_register %}
+            <div class="register-prompt">
+                📝 Hali akkountingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'ting!</a>
+            </div>
+        {% endif %}
+        <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="username">Foydalanuvchi nomi:</label>

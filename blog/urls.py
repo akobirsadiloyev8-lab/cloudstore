@@ -22,6 +22,7 @@ urlpatterns = [
     path('verify-email/<int:verification_id>/', views.verify_email, name='verify_email'),
     path('resend-code/<int:verification_id>/', views.resend_verification_code, name='resend_code'),
     path('login/', views.user_login, name='login'),
+    path('accounts/login/', views.user_login, name='accounts_login'),  # Django standart login ham biznikiga
     path('accounts/', include('django.contrib.auth.urls')),
     
     # AI Chat
@@ -31,6 +32,7 @@ urlpatterns = [
     
     # Kitoblar - Birlashtirilgan
     path('adabiyotlar/', views.adabiyotlar, name='adabiyotlar'),
+    path('adabiyotlar/<int:author_id>/', views.book_list, name='book_list'),
     path('kitoblar/', views.all_books, name='all_books'),
     path('api/search-books/', views.ai_search_books, name='ai_search_books'),
     path('kitob-yuklash/', views.kitob_yuklash, name='kitob_yuklash'),

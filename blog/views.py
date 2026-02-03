@@ -1,14 +1,11 @@
-﻿from django.shortcuts import render, get_object_or_404
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from django.db import models
 
 # Birinchi all_books va adabiyotlar 700-qatorda mavjud
 
 def book_list(request, author_id):
-    from .models import Author, Book
-    
-    author = get_object_or_404(Author, id=author_id)
-    books = Book.objects.filter(author=author)
-    return render(request, 'blog/book_list.html', {'author': author, 'books': books})
+    """Muallif kitoblarini ko'rsatish - all_books sahifasiga yo'naltirish"""
+    return redirect(f'/kitoblar/?author={author_id}')
 
 
 from django.views.decorators.csrf import csrf_exempt
@@ -2641,6 +2638,7 @@ def verify_email(request, verification_id):
     """Email tasdiqlash sahifasi"""
     from .models import EmailVerification
     from django.contrib.auth.hashers import check_password
+    from django.conf import settings
     
     try:
         verification = EmailVerification.objects.get(id=verification_id, is_verified=False)
@@ -2701,7 +2699,8 @@ def verify_email(request, verification_id):
     
     return render(request, 'registration/verify_email.html', {
         'verification': verification,
-        'email': verification.email
+        'email': verification.email,
+        'debug_code': verification.code if settings.DEBUG else None  # Development uchun kodni ko'rsatish
     })
 
 
@@ -2786,12 +2785,16 @@ def user_login(request):
                 error = 'Foydalanuvchi hisobi faol emas'
                 return render(request, 'registration/login.html', {'error': error})
         else:
-            # Foydalanuvchi topilmadi yoki parol noto'g'ri
-            if User.objects.filter(username=username).exists():
-                error = 'Parol noto\'g\'ri. Qayta urinib ko\'ring'
+            # Foydalanuvchi mavjudligini tekshirish
+            user_exists = User.objects.filter(username=username).exists() or User.objects.filter(username__iexact=username).exists()
+            
+            if user_exists:
+                # Foydalanuvchi bor, lekin parol noto'g'ri
+                error = 'Login yoki parol xato!'
             else:
-                error = 'Bunday foydalanuvchi yo\'q. Ro\'yxatdan o\'ting'
-            return render(request, 'registration/login.html', {'error': error, 'username': username})
+                # Foydalanuvchi umuman yo'q
+                error = 'Bunday foydalanuvchi mavjud emas. Iltimos, ro\'yxatdan o\'ting!'
+            return render(request, 'registration/login.html', {'error': error, 'username': username, 'show_register': not user_exists})
     
     return render(request, 'registration/login.html')
 
