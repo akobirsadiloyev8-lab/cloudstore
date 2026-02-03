@@ -418,6 +418,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
         
         .page-title h1 {
@@ -428,6 +429,13 @@
         .page-title .subtitle {
             color: var(--text-secondary);
             font-size: 0.9rem;
+        }
+        
+        .page-title .greeting-message {
+            width: 100%;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
         }
         
         .mobile-menu-btn {
@@ -713,6 +721,13 @@
             <header class="page-header" role="banner">
                 <div class="page-title">
                     <h1>{% block page_title %}Bosh sahifa{% endblock %}</h1>
+                    <p class="greeting-message">
+                        {% if user.is_authenticated %}
+                            Salom, {{ user.first_name|default:user.username }}! 👋
+                        {% else %}
+                            Salom, Mehmon! 👋
+                        {% endif %}
+                    </p>
                 </div>
                 <div></div>
             </header>
