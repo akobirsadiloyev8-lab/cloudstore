@@ -3,6 +3,25 @@ from django.db import models
 
 # Birinchi all_books va adabiyotlar 700-qatorda mavjud
 
+
+def salom(request):
+    """Salomlashish - foydalanuvchiga xush kelibsiz xabarini qaytaradi"""
+    user_name = None
+    if request.user.is_authenticated:
+        user_name = request.user.first_name or request.user.username
+    
+    if user_name:
+        message = f"Salom, {user_name}! Cloudstore'ga xush kelibsiz!"
+    else:
+        message = "Salom! Cloudstore'ga xush kelibsiz!"
+    
+    return JsonResponse({
+        'success': True,
+        'message': message,
+        'greeting': 'Salom'
+    })
+
+
 def book_list(request, author_id):
     """Muallif kitoblarini ko'rsatish - all_books sahifasiga yo'naltirish"""
     return redirect(f'/kitoblar/?author={author_id}')
