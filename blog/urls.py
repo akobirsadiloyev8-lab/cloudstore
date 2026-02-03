@@ -5,6 +5,7 @@ from . import views_social
 
 urlpatterns = [
     path('', views.boshlash, name='boshlash'),
+    path('salom/', views.salom, name='salom'),
     path('preview/', views.preview_files, name='preview'),
     path('preview-content/', views.preview_file_content, name='preview_content'),
     path('upload/', views.upload_file, name='upload'),
