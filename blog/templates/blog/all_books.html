@@ -436,6 +436,13 @@
         <h1 class="page-title"><i class="fas fa-book-open"></i> Kutubxona</h1>
         <p class="page-subtitle">Barcha kitoblarni ko'ring va o'qing</p>
         
+        <!-- Kitob yuklash tugmasi -->
+        {% if user.is_authenticated %}
+        <a href="{% url 'kitob_yuklash' %}" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; padding: 12px 25px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 25px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: all 0.3s;">
+            <i class="fas fa-plus"></i> Kitob yuklash
+        </a>
+        {% endif %}
+        
         <!-- Tab Navigation -->
         <div class="tab-navigation" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
             <a href="{% url 'all_books' %}" class="tab-btn {% if current_tab == 'all' %}active{% endif %}" style="padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s; {% if current_tab == 'all' %}background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;{% else %}background: var(--card-bg, #fff); color: var(--text-color, #333); border: 2px solid var(--border-color, #eee);{% endif %}">
