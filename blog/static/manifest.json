@@ -1,14 +1,17 @@
 {
     "name": "Cloudstore AI - Kutubxona",
-    "short_name": "Cloudstore AI",
+    "short_name": "Cloudstore",
     "description": "AI yordamida ishlaydigan bepul elektron kitoblar kutubxonasi. O'zbek tilidagi eng yaxshi kitoblarni o'qing!",
-    "start_url": "/",
+    "start_url": "/?utm_source=pwa",
     "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
     "background_color": "#667eea",
     "theme_color": "#667eea",
     "orientation": "portrait-primary",
     "scope": "/",
     "lang": "uz",
+    "dir": "ltr",
+    "id": "cloudstore-pwa",
     "icons": [
         {
             "src": "/static/icons/icon-72x72.png",
@@ -39,6 +42,18 @@
             "sizes": "152x152",
             "type": "image/png",
             "purpose": "maskable any"
+        },
+        {
+            "src": "/static/icons/icon-167x167.png",
+            "sizes": "167x167",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/icons/icon-180x180.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "/static/icons/icon-192x192.png",

@@ -4483,9 +4483,39 @@ def analyze_food_image(request):
     import requests
     from io import BytesIO
     from PIL import Image
+    from .models import AIUsageLimit, AIAnalysisImage
+    from django.core.files.base import ContentFile
     
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'POST kerak'})
+    
+    # Eski rasmlarni tozalash (har so'rovda)
+    try:
+        cleaned = AIAnalysisImage.cleanup_expired()
+        if cleaned > 0:
+            print(f"🧹 {cleaned} ta eski AI rasm o'chirildi")
+    except Exception as e:
+        print(f"Cleanup xatosi: {e}")
+    
+    # 1. LOGIN TEKSHIRISH - Faqat ro'yxatdan o'tgan foydalanuvchilar
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Bu funksiyadan foydalanish uchun tizimga kirishingiz kerak',
+            'require_login': True
+        })
+    
+    # 2. KUNLIK LIMIT TEKSHIRISH - Har bir foydalanuvchiga 20 ta
+    DAILY_LIMIT = 20
+    can_use, remaining = AIUsageLimit.check_limit(request.user, DAILY_LIMIT)
+    
+    if not can_use:
+        return JsonResponse({
+            'success': False,
+            'error': f'Kunlik limit tugadi! Har kuni {DAILY_LIMIT} ta rasm tahlil qilish mumkin. Ertaga qayta urinib ko\'ring.',
+            'limit_exceeded': True,
+            'daily_limit': DAILY_LIMIT
+        })
     
     try:
         # Rasm olish - multipart yoki base64
@@ -4516,19 +4546,22 @@ def analyze_food_image(request):
         if not image_bytes:
             return JsonResponse({'success': False, 'error': 'Rasm topilmadi'})
         
-        # Rasmni kichraytirish (max 1024px) - Groq API cheklovi
+        # 3. RASMNI O'LCHAMINI MOSLASHTIRISH (1280px, lekin kichikini kattalashtirmaslik)
         try:
             img = Image.open(BytesIO(image_bytes))
             # RGBA bo'lsa RGB ga o'tkazish
             if img.mode in ('RGBA', 'P'):
                 img = img.convert('RGB')
             
-            # Katta rasmlarni kichraytirish
-            max_size = 1024
+            # Faqat katta rasmlarni kichraytirish (1280px dan katta bo'lsa)
+            max_size = 1280
             if img.width > max_size or img.height > max_size:
                 ratio = min(max_size / img.width, max_size / img.height)
                 new_size = (int(img.width * ratio), int(img.height * ratio))
                 img = img.resize(new_size, Image.Resampling.LANCZOS)
+                print(f"Rasm kichraytirildi: {new_size}")
+            else:
+                print(f"Rasm o'zgartirilmadi: {img.width}x{img.height}")
             
             # JPEG formatda saqlash
             buffer = BytesIO()
@@ -4689,9 +4722,37 @@ Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
                     'not_food': True
                 })
             
+            # MUVAFFAQIYATLI - Limit sonini oshirish
+            usage_count = AIUsageLimit.increment_usage(request.user)
+            
+            # Rasmni bazaga saqlash (10 daqiqada o'chiriladi)
+            try:
+                from django.utils import timezone
+                from datetime import timedelta
+                
+                ai_image = AIAnalysisImage(
+                    user=request.user,
+                    expires_at=timezone.now() + timedelta(minutes=10),
+                    analysis_result=food_data
+                )
+                # Rasmni saqlash
+                ai_image.image.save(
+                    f"ai_{request.user.id}_{timezone.now().strftime('%Y%m%d_%H%M%S')}.jpg",
+                    ContentFile(image_bytes),
+                    save=True
+                )
+                print(f"📸 AI rasm saqlandi: {ai_image.image.name}, 10 daqiqada o'chiriladi")
+            except Exception as save_err:
+                print(f"Rasm saqlashda xato: {save_err}")
+            
             return JsonResponse({
                 'success': True,
-                'data': food_data
+                'data': food_data,
+                'usage_info': {
+                    'used_today': usage_count,
+                    'remaining': DAILY_LIMIT - usage_count,
+                    'daily_limit': DAILY_LIMIT
+                }
             })
             
         except json.JSONDecodeError as e:

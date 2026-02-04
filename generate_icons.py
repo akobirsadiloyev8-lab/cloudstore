@@ -146,11 +146,51 @@ def create_modern_cloud_icon(size):
     
     return img
 
+def create_splash_screen(width, height):
+    """iOS Splash Screen yaratish"""
+    img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    
+    # Gradient fon
+    for y in range(height):
+        ratio = y / height
+        r = int(99 * (1 - ratio) + 139 * ratio)
+        g = int(102 * (1 - ratio) + 92 * ratio)  
+        b = int(241 * (1 - ratio) + 246 * ratio)
+        draw.line([(0, y), (width, y)], fill=(r, g, b, 255))
+    
+    # Markazda ikonka
+    icon_size = min(width, height) // 4
+    icon = create_modern_cloud_icon(icon_size)
+    
+    # Ikonkani markazga joylashtirish
+    x = (width - icon_size) // 2
+    y = (height - icon_size) // 2 - height // 10
+    img.paste(icon, (x, y), icon)
+    
+    # Cloudstore yozuvi
+    try:
+        font_size = min(width, height) // 15
+        font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", font_size)
+    except:
+        font = ImageFont.load_default()
+    
+    text = "Cloudstore"
+    text_color = (255, 255, 255, 255)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_x = (width - text_width) // 2
+    text_y = y + icon_size + height // 20
+    draw.text((text_x, text_y), text, fill=text_color, font=font)
+    
+    return img
+
 # Ikonkalar papkasi
 icons_dir = "blog/static/icons"
+os.makedirs(icons_dir, exist_ok=True)
 
 # Barcha o'lchamlarda yaratish
-sizes = [72, 96, 128, 144, 152, 192, 384, 512]
+sizes = [16, 32, 72, 96, 128, 144, 152, 167, 180, 192, 384, 512]
 
 print("Cloudstore AI ikonkalari yaratilmoqda...")
 
@@ -161,5 +201,29 @@ for size in sizes:
     icon.save(filepath, 'PNG')
     print(f"✓ {filename} yaratildi")
 
-print("\nBarcha ikonkalar muvaffaqiyatli yaratildi!")
+# iOS Splash Screens
+splash_sizes = [
+    (750, 1334),    # iPhone 8, SE
+    (828, 1792),    # iPhone 11, XR
+    (1125, 2436),   # iPhone 12/13 Mini
+    (1170, 2532),   # iPhone 13/14
+    (1179, 2556),   # iPhone 14 Pro
+    (1242, 2208),   # iPhone 8 Plus
+    (1242, 2688),   # iPhone 11 Pro Max
+    (1290, 2796),   # iPhone 14 Pro Max
+    (1536, 2048),   # iPad Air, Mini
+    (1668, 2388),   # iPad Pro 11"
+    (2048, 2732),   # iPad Pro 12.9"
+]
+
+print("\niOS Splash Screen'lar yaratilmoqda...")
+
+for width, height in splash_sizes:
+    splash = create_splash_screen(width, height)
+    filename = f"splash-{width}x{height}.png"
+    filepath = os.path.join(icons_dir, filename)
+    splash.save(filepath, 'PNG')
+    print(f"✓ {filename} yaratildi")
+
+print("\nBarcha ikonkalar va splash screen'lar muvaffaqiyatli yaratildi!")
 print("Endi 'python manage.py collectstatic' buyrug'ini ishga tushiring.")

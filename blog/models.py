@@ -559,3 +559,90 @@ class ProductScanHistory(models.Model):
     
     def __str__(self):
         return f"{self.product.name} - {self.scanned_at}"
+
+
+class AIUsageLimit(models.Model):
+    """AI rasm tahlili kunlik limiti"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Foydalanuvchi")
+    date = models.DateField(auto_now_add=True, verbose_name="Sana")
+    usage_count = models.IntegerField(default=0, verbose_name="Ishlatish soni")
+    
+    class Meta:
+        verbose_name = "AI limit"
+        verbose_name_plural = "AI limitlar"
+        unique_together = ['user', 'date']
+        ordering = ['-date']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.date} - {self.usage_count} ta"
+    
+    @classmethod
+    def check_limit(cls, user, daily_limit=20):
+        """Foydalanuvchi limitini tekshirish"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        usage, created = cls.objects.get_or_create(
+            user=user,
+            date=today,
+            defaults={'usage_count': 0}
+        )
+        
+        return usage.usage_count < daily_limit, daily_limit - usage.usage_count
+    
+    @classmethod
+    def increment_usage(cls, user):
+        """Foydalanish sonini oshirish"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        usage, created = cls.objects.get_or_create(
+            user=user,
+            date=today,
+            defaults={'usage_count': 0}
+        )
+        usage.usage_count += 1
+        usage.save()
+        return usage.usage_count
+
+
+class AIAnalysisImage(models.Model):
+    """AI tahlil qilingan rasmlar - 10 daqiqadan keyin o'chiriladi"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Foydalanuvchi")
+    image = models.ImageField(upload_to='ai_temp/', verbose_name="Rasm")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
+    expires_at = models.DateTimeField(verbose_name="O'chirilish vaqti")
+    analysis_result = models.JSONField(null=True, blank=True, verbose_name="Tahlil natijasi")
+    
+    class Meta:
+        verbose_name = "AI tahlil rasmi"
+        verbose_name_plural = "AI tahlil rasmlari"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.created_at}"
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            from django.utils import timezone
+            self.expires_at = timezone.now() + timedelta(minutes=10)
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def cleanup_expired(cls):
+        """Muddati o'tgan rasmlarni o'chirish"""
+        from django.utils import timezone
+        import os
+        
+        expired = cls.objects.filter(expires_at__lt=timezone.now())
+        count = 0
+        for item in expired:
+            # Fayl mavjud bo'lsa o'chirish
+            if item.image and os.path.isfile(item.image.path):
+                try:
+                    os.remove(item.image.path)
+                    count += 1
+                except Exception as e:
+                    print(f"Fayl o'chirishda xato: {e}")
+            item.delete()
+        return count

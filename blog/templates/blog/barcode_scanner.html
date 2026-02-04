@@ -882,10 +882,8 @@
     <div id="resultCard" class="result-card"></div>
 </div>
 
-<!-- Barcode/QR kutubxonalari -->
+<!-- ZXing barcode kutubxonasi (Html5-QRCode orqali) -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://unpkg.com/@AustinZhu/barcoder@latest/dist/barcoder.min.js"></script>
 
 <script>
 let html5QrCode = null;
@@ -998,24 +996,143 @@ async function analyzePhoto() {
         
         const result = await fetch('/api/analyze-food/', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'same-origin'
         });
         
         const data = await result.json();
         document.getElementById('aiLoading').classList.remove('show');
         
         if (data.success) {
-            showAiResult(data.data);
+            // Qolgan limit haqida xabar
+            if (data.usage_info) {
+                console.log(`Bugun ${data.usage_info.used_today}/${data.usage_info.daily_limit} ta ishlatildi`);
+            }
+            showAiResult(data.data, data.usage_info);
+        } else if (data.require_login) {
+            // Login talab qilinadi
+            showLoginRequired();
+        } else if (data.limit_exceeded) {
+            // Limit tugadi
+            showLimitExceeded(data.daily_limit);
         } else {
-            alert('Xatolik: ' + (data.error || 'Tahlil qilib bo\'lmadi'));
+            showAiError(data.error || 'Tahlil qilib bo\'lmadi');
         }
     } catch (err) {
         document.getElementById('aiLoading').classList.remove('show');
-        alert('Server bilan bog\'lanib bo\'lmadi');
+        showAiError('Server bilan bog\'lanib bo\'lmadi');
     }
 }
 
-function showAiResult(data) {
+function showLoginRequired() {
+    document.getElementById('aiLoading').classList.remove('show');
+    document.getElementById('aiResultBody').innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🔐</div>
+            <h3 style="color: #f59e0b; margin-bottom: 15px;">Kirish talab qilinadi</h3>
+            <p style="color: #9ca3af; margin-bottom: 25px; line-height: 1.6;">
+                AI tahlil funksiyasidan foydalanish uchun<br>tizimga kirishingiz kerak
+            </p>
+            <a href="/login/?next=/scanner/" 
+               style="display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); 
+                      color: white; padding: 15px 35px; border-radius: 12px; text-decoration: none;
+                      font-weight: 600; box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);">
+                <i class="fas fa-sign-in-alt"></i> Tizimga kirish
+            </a>
+            <p style="color: #6b7280; margin-top: 20px; font-size: 0.9rem;">
+                Hisobingiz yo'qmi? 
+                <a href="/register/" style="color: #667eea;">Ro'yxatdan o'ting</a>
+            </p>
+        </div>
+    `;
+    document.getElementById('aiResultContainer').style.display = 'block';
+}
+
+function showLimitExceeded(dailyLimit) {
+    document.getElementById('aiLoading').classList.remove('show');
+    document.getElementById('aiResultBody').innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">⏰</div>
+            <h3 style="color: #ef4444; margin-bottom: 15px;">Kunlik limit tugadi!</h3>
+            <p style="color: #9ca3af; margin-bottom: 20px; line-height: 1.6;">
+                Siz bugun <strong>${dailyLimit} ta</strong> rasm tahlil qildingiz.<br>
+                Ertaga yana ${dailyLimit} ta imkoniyat bo'ladi.
+            </p>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); 
+                        border-radius: 12px; padding: 15px; margin-top: 20px;">
+                <p style="color: #f87171; font-size: 0.9rem;">
+                    💡 <strong>Maslahat:</strong> Shtrix kod skaneri cheksiz ishlaydi!<br>
+                    Mahsulotlarni shtrix kod orqali tekshirib ko'ring.
+                </p>
+            </div>
+        </div>
+    `;
+    document.getElementById('aiResultContainer').style.display = 'block';
+}
+
+function showAiError(message) {
+    document.getElementById('aiResultBody').innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+            <h3 style="color: #f59e0b; margin-bottom: 10px;">Xatolik</h3>
+            <p style="color: #9ca3af;">${message}</p>
+        </div>
+    `;
+    document.getElementById('aiResultContainer').style.display = 'block';
+}
+
+// LocalStorage dan saqlangan AI natijani yuklash
+function loadSavedAiResult() {
+    const saved = localStorage.getItem('lastAiResult');
+    const savedImage = localStorage.getItem('lastAiImage');
+    if (saved && savedImage) {
+        try {
+            const data = JSON.parse(saved);
+            capturedImageData = savedImage;
+            showAiResult(data, null, true); // isFromCache = true
+        } catch (e) {
+            console.log('Saqlangan natija o\'qishda xato:', e);
+        }
+    }
+}
+
+// AI natijani tozalash
+function clearAiResult() {
+    localStorage.removeItem('lastAiResult');
+    localStorage.removeItem('lastAiImage');
+    document.getElementById('aiResultContainer').style.display = 'none';
+    document.getElementById('aiResultBody').innerHTML = '';
+    capturedImageData = null;
+}
+
+// LocalStorage dan saqlangan shtrix kod natijasini yuklash
+function loadSavedBarcodeResult() {
+    const saved = localStorage.getItem('lastBarcodeResult');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            showProductResult(data.product, data.source, true); // isFromCache = true
+        } catch (e) {
+            console.log('Saqlangan shtrix kod natija o\'qishda xato:', e);
+        }
+    }
+}
+
+// Shtrix kod natijasini tozalash
+function clearBarcodeResult() {
+    localStorage.removeItem('lastBarcodeResult');
+    document.getElementById('productResult').style.display = 'none';
+    document.getElementById('productDisplay').innerHTML = '';
+}
+
+function showAiResult(data, usageInfo, isFromCache = false) {
+    // LocalStorage ga saqlash (agar yangi natija bo'lsa)
+    if (!isFromCache && data) {
+        localStorage.setItem('lastAiResult', JSON.stringify(data));
+        if (capturedImageData) {
+            localStorage.setItem('lastAiImage', capturedImageData);
+        }
+    }
     const n = data.nutrition_per_100g || {};
     const calories = Math.round(n.calories || 0);
     const proteins = parseFloat(n.proteins) || 0;
@@ -1036,7 +1153,42 @@ function showAiResult(data) {
     
     const storage = data.storage || {};
     
+    // Limit info banner
+    let limitBanner = '';
+    if (usageInfo) {
+        const remaining = usageInfo.remaining;
+        const used = usageInfo.used_today;
+        const limit = usageInfo.daily_limit;
+        const progressPercent = Math.round((used / limit) * 100);
+        const barColor = remaining > 10 ? '#10b981' : remaining > 5 ? '#f59e0b' : '#ef4444';
+        
+        limitBanner = `
+        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); 
+                    border-radius: 10px; padding: 10px 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1;">
+                <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 5px;">Bugungi limit</div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden;">
+                    <div style="background: ${barColor}; width: ${progressPercent}%; height: 100%; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; font-weight: bold; color: ${barColor};">${remaining}</div>
+                <div style="font-size: 0.7rem; color: #6b7280;">qoldi</div>
+            </div>
+        </div>`;
+    }
+    
     document.getElementById('aiResultBody').innerHTML = `
+        ${limitBanner}
+        <!-- Tozalash tugmasi -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+            <button onclick="clearAiResult()" 
+                    style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); 
+                           color: #f87171; padding: 8px 15px; border-radius: 8px; cursor: pointer;
+                           font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                <i class="fas fa-trash-alt"></i> Tozalash
+            </button>
+        </div>
         <!-- RASM TAHLILI BO'LIMI -->
         <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
             <h4 style="color: #34d399; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
@@ -1248,52 +1400,76 @@ function toggleFlash() {
     }
 }
 
-// ===== BARCODE SCANNER =====
+// ===== BARCODE SCANNER (ZXing) =====
 let scannerVideo = null;
 let scannerStream = null;
-let barcodeDetector = null;
+let html5QrcodeScanner = null;
 let scanInterval = null;
+let isScanning = false;
 
 async function startScanner() {
     const readerDiv = document.getElementById('reader');
     
-    // BarcodeDetector API mavjudligini tekshirish
-    if ('BarcodeDetector' in window) {
-        try {
-            barcodeDetector = new BarcodeDetector({
-                formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e']
-            });
-        } catch (e) {
-            console.log('BarcodeDetector xatosi:', e);
-        }
-    }
-    
-    // Kamera uchun video element yaratish
+    // Skaner uchun container yaratish
     readerDiv.innerHTML = `
-        <div style="position: relative;">
-            <video id="scannerVideo" autoplay playsinline muted style="width: 100%; border-radius: 15px;"></video>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                        width: 250px; height: 250px; border: 3px solid #4ade80; border-radius: 15px;
-                        box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);"></div>
-            <div id="scanStatus" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-                        background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 20px;">
-                📷 Skanerlash...
-            </div>
+        <div id="qr-reader" style="width: 100%; border-radius: 15px; overflow: hidden;"></div>
+        <div id="scanStatus" style="text-align: center; margin-top: 10px; padding: 10px; 
+                    background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 10px;">
+            📷 Shtrix kodni kameraga tutib turing...
         </div>
+        <style>
+            #qr-reader video { border-radius: 15px !important; }
+            #qr-reader__scan_region { border-radius: 15px !important; overflow: hidden; }
+            #qr-reader__dashboard { background: transparent !important; }
+            #qr-reader__dashboard_section { display: none !important; }
+            #qr-reader__dashboard_section_csr { display: none !important; }
+            #qr-reader__status_span { display: none !important; }
+        </style>
     `;
     
-    scannerVideo = document.getElementById('scannerVideo');
-    
     try {
-        scannerStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        // Html5Qrcode skaner - ZXing asosida, barcha formatlarni o'qiydi
+        html5QrcodeScanner = new Html5Qrcode("qr-reader", {
+            formatsToSupport: [
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.UPC_E,
+                Html5QrcodeSupportedFormats.ITF,
+                Html5QrcodeSupportedFormats.CODABAR,
+                Html5QrcodeSupportedFormats.DATA_MATRIX,
+                Html5QrcodeSupportedFormats.PDF_417
+            ],
+            verbose: false
         });
-        scannerVideo.srcObject = scannerStream;
         
-        // Skanerlash boshlash
-        scannerVideo.onloadedmetadata = () => {
-            startBarcodeDetection();
-        };
+        await html5QrcodeScanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 280, height: 150 },
+                aspectRatio: 1.5
+            },
+            (decodedText, decodedResult) => {
+                // Muvaffaqiyatli o'qildi
+                const format = decodedResult?.result?.format?.formatName || 'BARCODE';
+                console.log('✅ ZXing topdi:', decodedText, 'Format:', format);
+                document.getElementById('scanStatus').innerHTML = `
+                    <span style="color: #4ade80;">✓</span> <strong>${format}</strong>: ${decodedText}
+                `;
+                // Vibrate (agar mavjud bo'lsa)
+                if (navigator.vibrate) navigator.vibrate(100);
+                handleScanResult(decodedText);
+            },
+            (errorMessage) => {
+                // Skanerlash davom etmoqda
+            }
+        );
+        
+        isScanning = true;
     } catch (err) {
         console.error('Kamera xatosi:', err);
         readerDiv.innerHTML = `
@@ -1306,64 +1482,31 @@ async function startScanner() {
     }
 }
 
-function startBarcodeDetection() {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    scanInterval = setInterval(async () => {
-        if (!scannerVideo || scannerVideo.paused) return;
-        
-        canvas.width = scannerVideo.videoWidth;
-        canvas.height = scannerVideo.videoHeight;
-        ctx.drawImage(scannerVideo, 0, 0);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        try {
-            // 1. BarcodeDetector API bilan (Chrome, Edge)
-            if (barcodeDetector) {
-                const barcodes = await barcodeDetector.detect(canvas);
-                if (barcodes.length > 0) {
-                    const code = barcodes[0].rawValue;
-                    document.getElementById('scanStatus').textContent = '✓ Topildi: ' + code;
-                    handleScanResult(code);
-                    return;
-                }
-            }
-            
-            // 2. jsQR bilan QR kod o'qish (barcha brauzerlar)
-            if (typeof jsQR !== 'undefined') {
-                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-                if (qrCode) {
-                    document.getElementById('scanStatus').textContent = '✓ QR: ' + qrCode.data;
-                    handleScanResult(qrCode.data);
-                    return;
-                }
-            }
-            
-            // 3. Shtrix kod uchun - raqamlarni tekshirish
-            // EAN-13, UPC-A formatlar uchun oddiy tekshirish
-            
-        } catch (err) {
-            // Xato bo'lsa davom etish
-            console.log('Scan error:', err);
-        }
-    }, 150); // Tezroq skanerlash
+function getFormatName(format) {
+    const names = {
+        0: 'AZTEC', 1: 'CODABAR', 2: 'CODE 39', 3: 'CODE 93', 4: 'CODE 128',
+        5: 'DATA MATRIX', 6: 'EAN-8', 7: 'EAN-13', 8: 'ITF', 9: 'MAXICODE',
+        10: 'PDF 417', 11: 'QR CODE', 12: 'RSS 14', 13: 'RSS EXPANDED',
+        14: 'UPC-A', 15: 'UPC-E', 16: 'UPC EAN'
+    };
+    return names[format] || 'BARCODE';
 }
 
 function stopScanner() {
+    isScanning = false;
     if (scanInterval) {
         clearInterval(scanInterval);
         scanInterval = null;
     }
-    if (scannerStream) {
-        scannerStream.getTracks().forEach(track => track.stop());
-        scannerStream = null;
-    }
-    if (html5QrCode) {
+    if (html5QrcodeScanner) {
         try {
-            html5QrCode.stop().catch(err => console.log(err));
-        } catch (e) {}
+            html5QrcodeScanner.stop().then(() => {
+                html5QrcodeScanner.clear();
+            }).catch(err => console.log('Scanner stop error:', err));
+        } catch (e) {
+            console.log('Scanner stop exception:', e);
+        }
+        html5QrcodeScanner = null;
     }
 }
 
@@ -1466,7 +1609,12 @@ function searchBarcode() {
     });
 }
 
-function showProductResult(product, source) {
+function showProductResult(product, source, isFromCache = false) {
+    // LocalStorage ga saqlash (agar yangi natija bo'lsa)
+    if (!isFromCache && product) {
+        localStorage.setItem('lastBarcodeResult', JSON.stringify({product, source}));
+    }
+    
     const calories = Math.round(product.calories || 0);
     const proteins = parseFloat(product.proteins) || 0;
     const carbs = parseFloat(product.carbohydrates) || 0;
@@ -1673,6 +1821,13 @@ function showProductResult(product, source) {
                 ${source ? `<div style="display: flex; justify-content: space-between; padding: 4px 0;"><span style="color: #6b7280;">Ma'lumot manbasi</span><span>${source}</span></div>` : ''}
             </div>
         </div>
+        
+        <!-- Tozalash tugmasi -->
+        <div style="text-align: center; margin-top: 15px; padding-bottom: 10px;">
+            <button onclick="clearBarcodeResult()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 8px;">
+                <span>🗑️</span> Tozalash
+            </button>
+        </div>
     `;
     
     html += '</div>'; // result-body end
@@ -1728,5 +1883,11 @@ function addNewProduct(barcode) {
         }
     });
 }
+
+// Sahifa yuklanganda saqlangan natijalarni ko'rsatish
+document.addEventListener('DOMContentLoaded', function() {
+    loadSavedAiResult();
+    loadSavedBarcodeResult();
+});
 </script>
 {% endblock %}
