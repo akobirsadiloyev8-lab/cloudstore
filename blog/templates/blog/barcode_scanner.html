@@ -882,7 +882,10 @@
     <div id="resultCard" class="result-card"></div>
 </div>
 
+<!-- Barcode/QR kutubxonalari -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://unpkg.com/@AustinZhu/barcoder@latest/dist/barcoder.min.js"></script>
 
 <script>
 let html5QrCode = null;
@@ -1272,8 +1275,10 @@ function startBarcodeDetection() {
         canvas.height = scannerVideo.videoHeight;
         ctx.drawImage(scannerVideo, 0, 0);
         
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        
         try {
-            // BarcodeDetector API bilan
+            // 1. BarcodeDetector API bilan (Chrome, Edge)
             if (barcodeDetector) {
                 const barcodes = await barcodeDetector.detect(canvas);
                 if (barcodes.length > 0) {
@@ -1284,21 +1289,24 @@ function startBarcodeDetection() {
                 }
             }
             
-            // Html5Qrcode fallback
-            if (typeof Html5Qrcode !== 'undefined' && !barcodeDetector) {
-                // Html5Qrcode library orqali
-                const imageData = canvas.toDataURL('image/jpeg');
-                Html5Qrcode.scanFile(imageData, true)
-                    .then(code => {
-                        document.getElementById('scanStatus').textContent = '✓ Topildi: ' + code;
-                        handleScanResult(code);
-                    })
-                    .catch(() => {});
+            // 2. jsQR bilan QR kod o'qish (barcha brauzerlar)
+            if (typeof jsQR !== 'undefined') {
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+                if (qrCode) {
+                    document.getElementById('scanStatus').textContent = '✓ QR: ' + qrCode.data;
+                    handleScanResult(qrCode.data);
+                    return;
+                }
             }
+            
+            // 3. Shtrix kod uchun - raqamlarni tekshirish
+            // EAN-13, UPC-A formatlar uchun oddiy tekshirish
+            
         } catch (err) {
             // Xato bo'lsa davom etish
+            console.log('Scan error:', err);
         }
-    }, 200);
+    }, 150); // Tezroq skanerlash
 }
 
 function stopScanner() {
