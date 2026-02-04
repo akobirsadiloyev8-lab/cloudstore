@@ -4526,13 +4526,19 @@ def analyze_food_image(request):
         }
         
         # So'rov - batafsil ozuqaviy ma'lumotlar
-        prompt = """Bu rasmda ko'rsatilgan ovqat yoki mahsulotni tahlil qil va quyidagi ma'lumotlarni JSON formatda ber:
+        prompt = """Sen professional dietolog va oziq-ovqat ekspertizan. Bu rasmda ko'rsatilgan ovqat yoki mahsulotni diqqat bilan tahlil qil.
+
+MUHIM: Agar bu pirozhki, samsa, somsa, non, tort, shirinlik, fast-food yoki tayyor ovqat bo'lsa - taxminiy tarkibini ham yoz!
+
+Quyidagi ma'lumotlarni JSON formatda ber:
 
 {
-    "name": "Mahsulot nomi (o'zbek tilida)",
+    "name": "Mahsulot nomi (o'zbek tilida, masalan: Pirozhki, Go'shtli samsa, Shokoladli tort)",
     "name_en": "Product name in English",
-    "category": "Kategoriya (meva, sabzavot, go'sht, sut mahsuloti, ichimlik, tayyor ovqat, shirinlik, non mahsuloti, konserva, boshqa)",
-    "description": "Qisqa tavsif",
+    "category": "Kategoriya (meva, sabzavot, go'sht, sut mahsuloti, ichimlik, tayyor ovqat, shirinlik, non mahsuloti, fast-food, milliy taom, boshqa)",
+    "description": "Bu nima ekanligi haqida 2-3 gap batafsil tavsif",
+    
+    "ingredients": "Taxminiy tarkibi (masalan: xamir, go'sht, piyoz, yog', tuz, ziravor) - vergul bilan ajratilgan",
     
     "nutrition_per_100g": {
         "calories": 0,
@@ -4545,24 +4551,35 @@ def analyze_food_image(request):
         "saturated_fat": 0
     },
     
+    "portion_info": {
+        "typical_portion_grams": 0,
+        "calories_per_portion": 0,
+        "portions_description": "1 dona pirozhki taxminan 80-100g"
+    },
+    
     "health_benefits": ["Foyda 1", "Foyda 2", "Foyda 3"],
     "health_risks": ["Zarar yoki ogohlantirish 1", "Zarar 2"],
     
-    "best_time_to_eat": "Qachon iste'mol qilish yaxshi (ertalab, tushlik, kechqurun, istalgan vaqt)",
-    "who_should_avoid": "Kimlar iste'mol qilmasligi kerak",
+    "best_time_to_eat": "Qachon iste'mol qilish yaxshi",
+    "who_should_avoid": "Kimlar iste'mol qilmasligi kerak (diabetiklar, yurak kasalligi borlar, va h.k.)",
+    "daily_limit": "Kuniga nechta yeyish mumkin",
     
     "storage": {
-        "method": "Saqlash usuli (xona haroratida, muzlatgichda, muzxonada)",
+        "method": "Saqlash usuli",
         "temperature": "Saqlash harorati",
-        "duration": "Saqlash muddati",
-        "tips": "Saqlash bo'yicha maslahatlar"
+        "duration": "Saqlash muddati"
     },
     
-    "serving_suggestion": "Qanday iste'mol qilish tavsiya etiladi",
-    "pairs_well_with": ["Nima bilan yaxshi ketadi 1", "2", "3"],
+    "cooking_method": "Qanday tayyorlangan (qovurilgan, pishirilgan, bug'da, tandirda)",
+    "serving_suggestion": "Qanday va nima bilan yeyish tavsiya etiladi",
+    "pairs_well_with": ["Choy", "Ayron", "Salat"],
     
-    "nutriscore": "A/B/C/D/E - sog'liqqa ta'sir bahosi",
-    "is_organic": false,
+    "nutriscore": "A/B/C/D/E - sog'liqqa ta'sir bahosi (A-eng yaxshi, E-eng yomon)",
+    "health_summary": "Umumiy sog'liqqa ta'siri haqida 2-3 gap xulosa",
+    "recommendation": "Bu mahsulotni yeyish yoki yeymaslik haqida yakuniy maslahat",
+    
+    "is_homemade": false,
+    "is_fried": false,
     "is_vegan": false,
     "is_gluten_free": false,
     
@@ -4570,7 +4587,7 @@ def analyze_food_image(request):
 }
 
 Agar rasmda ovqat yoki mahsulot ko'rinmasa, "not_food": true qo'sh.
-Faqat JSON qaytar, boshqa matn yo'q."""
+Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
 
         payload = {
             "model": "llama-3.2-11b-vision-preview",
