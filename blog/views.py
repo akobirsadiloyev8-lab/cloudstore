@@ -4101,19 +4101,126 @@ def fetch_from_external_api(barcode):
     # 1. Open Food Facts API (oziq-ovqat mahsulotlari)
     result = fetch_from_open_food_facts(barcode)
     if result:
+        # AI bilan ma'lumotlarni boyitish
+        result = enrich_product_with_ai(result)
         return result
     
     # 2. Open Beauty Facts API (kosmetika mahsulotlari)
     result = fetch_from_open_beauty_facts(barcode)
     if result:
+        result = enrich_product_with_ai(result)
         return result
     
     # 3. UPC ItemDB API (umumiy mahsulotlar)
     result = fetch_from_upc_itemdb(barcode)
     if result:
+        result = enrich_product_with_ai(result)
         return result
     
     return None
+
+
+def enrich_product_with_ai(product_data):
+    """AI bilan mahsulot ma'lumotlarini boyitish va tozalash"""
+    import requests
+    
+    groq_key = os.environ.get('GROQ_API_KEY', '')
+    if not groq_key:
+        return product_data
+    
+    try:
+        prompt = f"""Quyidagi mahsulot ma'lumotlarini tahlil qil va tozala:
+
+Mahsulot: {product_data.get('name', 'Noma\'lum')}
+Brend: {product_data.get('brand', '')}
+Tarkibi: {product_data.get('ingredients', '')[:500]}
+Kaloriya: {product_data.get('calories', 'noma\'lum')}
+Oqsil: {product_data.get('proteins', 'noma\'lum')}g
+Yog': {product_data.get('fat', 'noma\'lum')}g
+Uglevod: {product_data.get('carbohydrates', 'noma\'lum')}g
+Shakar: {product_data.get('sugars', 'noma\'lum')}g
+Nutri-Score: {product_data.get('nutriscore_grade', 'noma\'lum')}
+
+Quyidagi JSON formatda javob ber:
+{{
+    "name_clean": "Mahsulot nomi (o'zbek tilida, chiroyli)",
+    "description_clean": "Qisqa tavsif (1-2 gap)",
+    "ingredients_clean": "Asosiy tarkibiy qismlar (o'zbek tilida, vergul bilan ajratilgan)",
+    "health_rating": "A/B/C/D/E (sog'liqqa ta'sir bahosi)",
+    "health_summary": "Sog'liqqa ta'siri haqida 1-2 gap",
+    "benefits": ["Foyda 1", "Foyda 2"],
+    "risks": ["Zarar yoki ogohlantirish 1"],
+    "best_time": "Qachon iste'mol qilish yaxshi",
+    "daily_limit": "Kunlik tavsiya etilgan miqdor",
+    "calories_estimate": 0,
+    "proteins_estimate": 0,
+    "carbs_estimate": 0,
+    "fat_estimate": 0,
+    "sugars_estimate": 0
+}}
+
+Agar qiymatlar noma'lum bo'lsa, o'rtacha qiymatlarni taxmin qil. Faqat JSON qaytar."""
+
+        headers = {
+            'Authorization': f'Bearer {groq_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.3,
+            "max_tokens": 1000
+        }
+        
+        response = requests.post(
+            'https://api.groq.com/openai/v1/chat/completions',
+            headers=headers,
+            json=payload,
+            timeout=15
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            ai_response = result['choices'][0]['message']['content']
+            
+            # JSON ni ajratish
+            if '{' in ai_response:
+                start = ai_response.find('{')
+                end = ai_response.rfind('}') + 1
+                ai_data = json.loads(ai_response[start:end])
+                
+                # Ma'lumotlarni birlashtirish
+                if ai_data.get('name_clean'):
+                    product_data['name'] = ai_data['name_clean']
+                if ai_data.get('description_clean'):
+                    product_data['description'] = ai_data['description_clean']
+                if ai_data.get('ingredients_clean'):
+                    product_data['ingredients'] = ai_data['ingredients_clean']
+                if ai_data.get('health_rating'):
+                    product_data['nutriscore_grade'] = ai_data['health_rating']
+                
+                # Yangi maydonlar
+                product_data['health_summary'] = ai_data.get('health_summary', '')
+                product_data['benefits'] = ai_data.get('benefits', [])
+                product_data['risks'] = ai_data.get('risks', [])
+                product_data['best_time'] = ai_data.get('best_time', '')
+                product_data['daily_limit'] = ai_data.get('daily_limit', '')
+                
+                # Agar kaloriya noma'lum bo'lsa, AI taxminini ishlatish
+                if not product_data.get('calories') and ai_data.get('calories_estimate'):
+                    product_data['calories'] = ai_data['calories_estimate']
+                if not product_data.get('proteins') and ai_data.get('proteins_estimate'):
+                    product_data['proteins'] = ai_data['proteins_estimate']
+                if not product_data.get('carbohydrates') and ai_data.get('carbs_estimate'):
+                    product_data['carbohydrates'] = ai_data['carbs_estimate']
+                if not product_data.get('fat') and ai_data.get('fat_estimate'):
+                    product_data['fat'] = ai_data['fat_estimate']
+                    
+    except Exception as e:
+        print(f"AI enrichment error: {e}")
+    
+    return product_data
 
 
 def fetch_from_open_food_facts(barcode):

@@ -1425,134 +1425,204 @@ function searchBarcode() {
 }
 
 function showProductResult(product, source) {
+    const calories = Math.round(product.calories || 0);
+    const proteins = parseFloat(product.proteins) || 0;
+    const carbs = parseFloat(product.carbohydrates) || 0;
+    const fat = parseFloat(product.fat) || 0;
+    const sugars = parseFloat(product.sugars) || 0;
+    const salt = parseFloat(product.salt) || 0;
+    
+    // Nutri-Score - agar yo'q bo'lsa, hisoblaymiz
+    let nutriGrade = product.nutriscore_grade || '';
+    if (!nutriGrade && calories) {
+        if (calories < 100 && sugars < 5) nutriGrade = 'A';
+        else if (calories < 200 && sugars < 10) nutriGrade = 'B';
+        else if (calories < 300) nutriGrade = 'C';
+        else if (calories < 400) nutriGrade = 'D';
+        else nutriGrade = 'E';
+    }
+    nutriGrade = nutriGrade.toUpperCase() || 'C';
+    
+    // Kunlik foizlar
+    const dailyCal = Math.min(100, Math.round((calories / 2000) * 100));
+    const dailyProtein = Math.min(100, Math.round((proteins / 50) * 100));
+    const dailyCarbs = Math.min(100, Math.round((carbs / 300) * 100));
+    const dailyFat = Math.min(100, Math.round((fat / 65) * 100));
+    
     let html = `
-        <div class="result-header">
-            ${product.image_url ? `<img src="${product.image_url}" class="product-image" onerror="this.style.display='none'">` : '<i class="fas fa-box" style="font-size:3rem;"></i>'}
+        <div class="result-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+            ${product.image_url ? `<img src="${product.image_url}" class="product-image" onerror="this.style.display='none'">` : '<div style="width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;">📦</div>'}
             <div class="product-title">
                 <h2>${product.name || 'Nomsiz mahsulot'}</h2>
                 <p>${product.brand || ''} ${product.weight ? '• ' + product.weight : ''}</p>
             </div>
         </div>
-        <div class="result-body">
+        <div class="result-body" style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; border-radius: 0 0 20px 20px;">
     `;
     
-    // Sog'liq ko'rsatkichlari
-    if (product.nutriscore_grade || product.nova_group) {
-        html += '<div class="health-scores">';
-        if (product.nutriscore_grade) {
-            const grade = product.nutriscore_grade.toLowerCase();
-            html += `<div class="score-badge nutri-${grade}">
-                <span>Nutri-Score</span> <strong>${product.nutriscore_grade}</strong>
-            </div>`;
-        }
-        if (product.nova_group) {
-            html += `<div class="score-badge nova-${product.nova_group}">
-                <span>NOVA</span> <strong>${product.nova_group}</strong>
-            </div>`;
-        }
-        html += '</div>';
-    }
+    // Nutri-Score vizual
+    html += `
+        <div style="display: flex; gap: 5px; justify-content: center; margin: 20px 0;">
+            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #038141; color: white; opacity: ${nutriGrade === 'A' ? '1' : '0.3'}; transform: ${nutriGrade === 'A' ? 'scale(1.2)' : 'scale(1)'};">A</div>
+            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #85bb2f; color: white; opacity: ${nutriGrade === 'B' ? '1' : '0.3'}; transform: ${nutriGrade === 'B' ? 'scale(1.2)' : 'scale(1)'};">B</div>
+            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #fecb02; color: #333; opacity: ${nutriGrade === 'C' ? '1' : '0.3'}; transform: ${nutriGrade === 'C' ? 'scale(1.2)' : 'scale(1)'};">C</div>
+            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #ee8100; color: white; opacity: ${nutriGrade === 'D' ? '1' : '0.3'}; transform: ${nutriGrade === 'D' ? 'scale(1.2)' : 'scale(1)'};">D</div>
+            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #e63e11; color: white; opacity: ${nutriGrade === 'E' ? '1' : '0.3'}; transform: ${nutriGrade === 'E' ? 'scale(1.2)' : 'scale(1)'};">E</div>
+        </div>
+    `;
     
-    // Ogohlantirishlar
-    if (product.warnings) {
-        html += `<div class="warnings-box">
-            <h4><i class="fas fa-exclamation-triangle"></i> Ogohlantirishlar</h4>
-            ${product.warnings.split('\n').map(w => `<p>${w}</p>`).join('')}
-        </div>`;
-    }
-    
-    // Allergenlar
-    if (product.allergens) {
-        html += `<div class="allergens-box">
-            <h4><i class="fas fa-allergies"></i> Allergenlar</h4>
-            <p>${product.allergens}</p>
-        </div>`;
-    }
-    
-    // Ozuqaviy qiymatlar
-    if (product.calories || product.proteins || product.carbohydrates || product.fat) {
-        html += `<div class="info-section">
-            <h3><i class="fas fa-fire"></i> Ozuqaviy qiymatlar (100g uchun)</h3>
-            <table class="nutrition-table">`;
-        
-        if (product.calories) html += `<tr class="highlight"><td>🔥 Kaloriya</td><td>${product.calories} kcal</td></tr>`;
-        if (product.proteins) html += `<tr><td>🥩 Oqsillar</td><td>${product.proteins}g</td></tr>`;
-        if (product.carbohydrates) html += `<tr><td>🍞 Uglevodlar</td><td>${product.carbohydrates}g</td></tr>`;
-        if (product.sugars) {
-            const cls = product.sugars > 22.5 ? 'highlight' : '';
-            html += `<tr class="${cls}"><td>🍬 Shakar</td><td>${product.sugars}g</td></tr>`;
-        }
-        if (product.fat) html += `<tr><td>🧈 Yog'</td><td>${product.fat}g</td></tr>`;
-        if (product.saturated_fat) {
-            const cls = product.saturated_fat > 5 ? 'highlight' : '';
-            html += `<tr class="${cls}"><td>• To'yingan yog'</td><td>${product.saturated_fat}g</td></tr>`;
-        }
-        if (product.fiber) html += `<tr><td>🌾 Kletchatka</td><td>${product.fiber}g</td></tr>`;
-        if (product.salt) {
-            const cls = product.salt > 1.5 ? 'highlight' : '';
-            html += `<tr class="${cls}"><td>🧂 Tuz</td><td>${product.salt}g</td></tr>`;
-        }
-        
-        html += '</table></div>';
-    }
-    
-    // Vitaminlar
-    const vitamins = [];
-    if (product.vitamin_a) vitamins.push({name: 'Vitamin A', value: product.vitamin_a + ' µg'});
-    if (product.vitamin_c) vitamins.push({name: 'Vitamin C', value: product.vitamin_c + ' mg'});
-    if (product.vitamin_d) vitamins.push({name: 'Vitamin D', value: product.vitamin_d + ' µg'});
-    if (product.vitamin_e) vitamins.push({name: 'Vitamin E', value: product.vitamin_e + ' mg'});
-    if (product.vitamin_b1) vitamins.push({name: 'Vitamin B1', value: product.vitamin_b1 + ' mg'});
-    if (product.vitamin_b2) vitamins.push({name: 'Vitamin B2', value: product.vitamin_b2 + ' mg'});
-    if (product.vitamin_b6) vitamins.push({name: 'Vitamin B6', value: product.vitamin_b6 + ' mg'});
-    if (product.vitamin_b12) vitamins.push({name: 'Vitamin B12', value: product.vitamin_b12 + ' µg'});
-    if (product.calcium) vitamins.push({name: 'Kaltsiy', value: product.calcium + ' mg'});
-    if (product.iron) vitamins.push({name: 'Temir', value: product.iron + ' mg'});
-    if (product.magnesium) vitamins.push({name: 'Magniy', value: product.magnesium + ' mg'});
-    if (product.zinc) vitamins.push({name: 'Sink', value: product.zinc + ' mg'});
-    if (product.potassium) vitamins.push({name: 'Kaliy', value: product.potassium + ' mg'});
-    
-    if (vitamins.length > 0) {
-        html += `<div class="info-section">
-            <h3><i class="fas fa-pills"></i> Vitaminlar va minerallar</h3>
-            <div class="vitamins-grid">
-                ${vitamins.map(v => `<div class="vitamin-item">
-                    <div class="name">${v.name}</div>
-                    <div class="value">${v.value}</div>
-                </div>`).join('')}
+    // Kaloriya - katta aylana
+    html += `
+        <div style="display: flex; justify-content: center; margin: 25px 0;">
+            <div style="position: relative; width: 160px; height: 160px;">
+                <svg width="160" height="160" style="transform: rotate(-90deg);">
+                    <defs>
+                        <linearGradient id="calGradient" x1="0%" y1="0%" x2="100%">
+                            <stop offset="0%" stop-color="#ff6b6b"/>
+                            <stop offset="100%" stop-color="#feca57"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="80" cy="80" r="65" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+                    <circle cx="80" cy="80" r="65" fill="none" stroke="url(#calGradient)" stroke-width="12" stroke-linecap="round"
+                        stroke-dasharray="${2 * Math.PI * 65}"
+                        stroke-dashoffset="${2 * Math.PI * 65 - (dailyCal / 100) * 2 * Math.PI * 65}"/>
+                </svg>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #feca57); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${calories}</div>
+                    <div style="color: #9ca3af; font-size: 0.9rem;">kkal / 100g</div>
+                </div>
             </div>
-        </div>`;
+        </div>
+    `;
+    
+    // Makro besin moddalari
+    html += `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0;">
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">${proteins}g</div>
+                <div style="color: #10b981; font-size: 0.85rem;">Oqsil</div>
+                <div style="color: #6b7280; font-size: 0.75rem;">${dailyProtein}% kunlik</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
+                <div style="color: #f59e0b; font-size: 0.85rem;">Uglevod</div>
+                <div style="color: #6b7280; font-size: 0.75rem;">${dailyCarbs}% kunlik</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">${fat}g</div>
+                <div style="color: #ef4444; font-size: 0.85rem;">Yog'</div>
+                <div style="color: #6b7280; font-size: 0.75rem;">${dailyFat}% kunlik</div>
+            </div>
+        </div>
+    `;
+    
+    // Batafsil qiymatlar
+    html += `
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
+            <h4 style="color: #9ca3af; margin-bottom: 15px; font-size: 0.9rem;">📊 Batafsil (100g)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span>🍬 Shakar</span>
+                    <span style="font-weight: 600; ${sugars > 10 ? 'color: #fca5a5;' : ''}">${sugars}g</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span>🧂 Tuz</span>
+                    <span style="font-weight: 600; ${salt > 1.5 ? 'color: #fca5a5;' : ''}">${salt}g</span>
+                </div>
+                ${product.fiber ? `<div style="display: flex; justify-content: space-between; padding: 8px 0;"><span>🌾 Tola</span><span style="font-weight: 600;">${product.fiber}g</span></div>` : ''}
+                ${product.saturated_fat ? `<div style="display: flex; justify-content: space-between; padding: 8px 0;"><span>🥓 To'yingan yog'</span><span style="font-weight: 600; ${product.saturated_fat > 5 ? 'color: #fca5a5;' : ''}">${product.saturated_fat}g</span></div>` : ''}
+            </div>
+        </div>
+    `;
+    
+    // AI tahlili - foyda va zarar
+    if (product.benefits && product.benefits.length > 0) {
+        html += `
+            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #4ade80; margin-bottom: 12px;">💚 Foydalari</h4>
+                ${product.benefits.map(b => `<div style="display: flex; gap: 10px; padding: 6px 0;"><span style="color: #4ade80;">✓</span><span>${b}</span></div>`).join('')}
+            </div>
+        `;
+    }
+    
+    if (product.risks && product.risks.length > 0) {
+        html += `
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #f87171; margin-bottom: 12px;">⚠️ Ogohlantirishlar</h4>
+                ${product.risks.map(r => `<div style="display: flex; gap: 10px; padding: 6px 0;"><span style="color: #f87171;">!</span><span>${r}</span></div>`).join('')}
+            </div>
+        `;
+    }
+    
+    // Ogohlantirishlar (eski format)
+    if (product.warnings && !product.risks) {
+        html += `
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #f87171; margin-bottom: 10px;">⚠️ Ogohlantirishlar</h4>
+                ${product.warnings.split('\n').map(w => `<p style="margin: 5px 0;">${w}</p>`).join('')}
+            </div>
+        `;
+    }
+    
+    // Qachon iste'mol qilish
+    if (product.best_time) {
+        html += `
+            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #a5b4fc; margin-bottom: 10px;">⏰ Qachon iste'mol qilish</h4>
+                <p>🕐 ${product.best_time}</p>
+                ${product.daily_limit ? `<p style="margin-top: 8px; color: #9ca3af;">📏 Kunlik: ${product.daily_limit}</p>` : ''}
+            </div>
+        `;
+    }
+    
+    // Sog'liq xulosasi
+    if (product.health_summary) {
+        html += `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #9ca3af; margin-bottom: 10px;">🏥 Sog'liqqa ta'siri</h4>
+                <p style="line-height: 1.6;">${product.health_summary}</p>
+            </div>
+        `;
     }
     
     // Tarkibi
     if (product.ingredients) {
-        html += `<div class="info-section">
-            <h3><i class="fas fa-list"></i> Tarkibi</h3>
-            <div class="ingredients-text">${product.ingredients}</div>
-        </div>`;
+        html += `
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #9ca3af; margin-bottom: 10px;">📝 Tarkibi</h4>
+                <p style="line-height: 1.6; color: #e5e7eb;">${product.ingredients}</p>
+            </div>
+        `;
     }
     
-    // Qo'shimchalar
-    if (product.additives) {
-        html += `<div class="additives-box">
-            <h4><i class="fas fa-flask"></i> Qo'shimchalar (E raqamlar)</h4>
-            <p>${product.additives}</p>
-        </div>`;
+    // Allergenlar
+    if (product.allergens) {
+        html += `
+            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
+                <h4 style="color: #fbbf24; margin-bottom: 10px;">🚫 Allergenlar</h4>
+                <p>${product.allergens}</p>
+            </div>
+        `;
     }
     
     // Qo'shimcha ma'lumotlar
-    html += `<div class="info-section" style="margin-top: 20px;">
-        <h3><i class="fas fa-info-circle"></i> Qo'shimcha ma'lumotlar</h3>
-        <table class="nutrition-table">
-            <tr><td>Barcode</td><td>${product.barcode}</td></tr>
-            ${product.category ? `<tr><td>Kategoriya</td><td>${product.category}</td></tr>` : ''}
-            ${product.country ? `<tr><td>Mamlakat</td><td>${product.country}</td></tr>` : ''}
-            ${product.scan_count ? `<tr><td>Skanerlangan</td><td>${product.scan_count} marta</td></tr>` : ''}
-        </table>
-    </div></div>`;
+    html += `
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
+            <h4 style="color: #9ca3af; margin-bottom: 12px;">ℹ️ Qo'shimcha</h4>
+            <div style="display: grid; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Barcode</span><span style="font-family: monospace;">${product.barcode}</span></div>
+                ${product.brand ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Brend</span><span>${product.brand}</span></div>` : ''}
+                ${product.country ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Mamlakat</span><span>${product.country.replace('en:', '').replace('uz:', '')}</span></div>` : ''}
+                ${product.category ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Kategoriya</span><span>${product.category.split(',')[0]}</span></div>` : ''}
+            </div>
+        </div>
+    `;
+    
+    html += '</div>'; // result-body end
     
     document.getElementById('resultCard').innerHTML = html;
     document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
 }
 
 function showNotFound(barcode) {
