@@ -16,176 +16,300 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            background: #0e1621;
             min-height: 100vh;
         }
         
+        /* Telegram style navbar */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: #17212b;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            padding: 15px 30px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #232e3c;
         }
         
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        .nav-links {
+        .back-btn {
+            color: #6ab3f3;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 8px;
+        }
+        
+        .chat-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ab3f3, #5b9bd5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .chat-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .chat-status {
+            color: #6ab3f3;
+            font-size: 0.85rem;
+        }
+        
+        .navbar-right {
             display: flex;
             gap: 15px;
-            list-style: none;
         }
         
-        .nav-links a {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        .navbar-btn {
+            color: #6ab3f3;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
         }
         
-        .nav-links a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
+        /* Chat container */
         .chat-container {
-            max-width: 900px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 100px 20px 20px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 70px 0 80px;
+            min-height: 100vh;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23232e3c' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         
-        .chat-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .chat-header h1 {
-            color: #333;
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        
-        .chat-header p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-        
-        /* Fayl tanlash */
+        /* File selector */
         .file-selector {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            background: #182533;
+            padding: 15px 20px;
+            margin: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #232e3c;
         }
         
         .file-selector h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1rem;
+            color: #6ab3f3;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         
         .file-select {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e1e5e9;
+            border: 1px solid #232e3c;
             border-radius: 10px;
             font-size: 1rem;
-            background: white;
+            background: #0e1621;
+            color: white;
             cursor: pointer;
         }
         
         .file-select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #6ab3f3;
         }
         
         /* Chat messages */
         .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
         .message {
             display: flex;
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s ease;
+            flex-direction: column;
+            max-width: 85%;
+            animation: messageIn 0.2s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         
         .message.user {
+            align-self: flex-end;
+        }
+        
+        .message.ai {
+            align-self: flex-start;
+        }
+        
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #5b9bd5, #4a8bc2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.ai .message-bubble {
+            background: #182533;
+            color: #f5f5f5;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .message.user .message-time {
             justify-content: flex-end;
         }
         
-        .message-content {
-            max-width: 70%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            line-height: 1.5;
+        /* Media messages */
+        .message-media {
+            max-width: 320px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
         }
         
-        .message.user .message-content {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-bottom-right-radius: 5px;
+        .message-media img,
+        .message-media video {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
         }
         
-        .message.ai .message-content {
-            background: #f0f2f5;
-            color: #333;
-            border-bottom-left-radius: 5px;
-        }
-        
-        .message-avatar {
-            width: 35px;
-            height: 35px;
+        .message-media .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 10px;
-            font-size: 1rem;
-        }
-        
-        .message.user .message-avatar {
-            background: #667eea;
             color: white;
-            order: 1;
+            font-size: 1.5rem;
         }
         
-        .message.ai .message-avatar {
-            background: #10a37f;
+        .message-media .media-caption {
+            padding: 8px 12px;
             color: white;
+            font-size: 0.9rem;
         }
         
+        /* Voice message */
+        .voice-message {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            min-width: 200px;
+        }
+        
+        .voice-play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6ab3f3;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .voice-waveform {
+            flex: 1;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .voice-waveform span {
+            width: 3px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 2px;
+        }
+        
+        .voice-duration {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* File attachment */
+        .file-attachment {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            min-width: 200px;
+        }
+        
+        .file-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: #6ab3f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .file-size {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+        }
+        
+        /* Typing indicator */
         .typing-indicator {
             display: flex;
             align-items: center;
@@ -196,7 +320,7 @@
         .typing-indicator span {
             width: 8px;
             height: 8px;
-            background: #667eea;
+            background: #6ab3f3;
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -206,98 +330,297 @@
         
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+            30% { transform: translateY(-8px); }
         }
         
-        /* Chat input */
-        .chat-input-container {
+        /* Chat input area - Telegram style */
+        .chat-input-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #17212b;
+            padding: 10px 15px;
             display: flex;
+            align-items: flex-end;
             gap: 10px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #232e3c;
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            color: #6ab3f3;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(106, 179, 243, 0.1);
+        }
+        
+        .input-wrapper {
+            flex: 1;
+            background: #0e1621;
+            border-radius: 20px;
+            display: flex;
+            align-items: flex-end;
+            padding: 5px 15px;
+            border: 1px solid #232e3c;
         }
         
         .chat-input {
             flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 25px;
+            background: none;
+            border: none;
+            color: white;
             font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
+            padding: 8px 0;
+            resize: none;
+            max-height: 120px;
+            line-height: 1.4;
         }
         
         .chat-input:focus {
-            border-color: #667eea;
+            outline: none;
+        }
+        
+        .chat-input::placeholder {
+            color: #6c7883;
+        }
+        
+        .emoji-btn {
+            color: #6ab3f3;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 5px;
         }
         
         .send-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ab3f3, #5b9bd5);
             color: white;
             border: none;
-            padding: 15px 25px;
-            border-radius: 25px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .send-btn.voice-mode {
+            background: linear-gradient(135deg, #ef5350, #e53935);
+        }
+        
+        /* Media preview modal */
+        .media-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            flex-direction: column;
+        }
+        
+        .media-preview-modal.active {
+            display: flex;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .preview-close {
+            color: white;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .preview-action-btn {
+            color: white;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .send-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        .preview-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        .send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+        .preview-content img,
+        .preview-content video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+        
+        .preview-footer {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .preview-caption {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .preview-caption::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .preview-send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ab3f3, #5b9bd5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        /* Upload progress */
+        .upload-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .upload-progress-bar {
+            height: 100%;
+            background: #6ab3f3;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        .lightbox img,
+        .lightbox video {
+            max-width: 95%;
+            max-height: 95%;
         }
         
         /* Welcome message */
         .welcome-message {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 20px;
+            color: #6c7883;
         }
         
         .welcome-message i {
             font-size: 4rem;
-            color: #667eea;
+            color: #6ab3f3;
             margin-bottom: 20px;
         }
         
         .welcome-message h2 {
-            color: #333;
+            color: white;
             margin-bottom: 10px;
+        }
+        
+        /* Hidden file inputs */
+        .hidden-input {
+            display: none;
         }
         
         /* Responsive */
         @media (max-width: 768px) {
-            .navbar {
-                padding: 10px 15px;
+            .message {
+                max-width: 90%;
             }
             
-            .logo {
-                font-size: 1.4rem;
+            .message-media {
+                max-width: 260px;
             }
-            
-            .chat-container {
-                padding: 80px 10px 10px;
-            }
-            
-            .chat-header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .message-content {
-                max-width: 85%;
-                padding: 10px 14px;
-            }
+        }
+    </style>
             
             .chat-input {
                 padding: 12px 15px;
@@ -334,20 +657,25 @@
     </style>
 </head>
 <body>
+    <!-- Telegram style header -->
     <header class="navbar">
-        <div class="logo">Cloudstore AI</div>
-        <ul class="nav-links">
-            <li><a href="{% url 'boshlash' %}"><i class="fas fa-home"></i> Bosh sahifa</a></li>
-            <li><a href="{% url 'preview' %}"><i class="fas fa-file"></i> Fayllar</a></li>
-        </ul>
+        <div class="navbar-left">
+            <a href="{% url 'boshlash' %}" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <div class="chat-info">
+                <div class="chat-avatar"><i class="fas fa-robot"></i></div>
+                <div>
+                    <div class="chat-name">AI Yordamchi</div>
+                    <div class="chat-status" id="chatStatus">online</div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <button class="navbar-btn"><i class="fas fa-search"></i></button>
+            <button class="navbar-btn"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
     </header>
 
     <div class="chat-container">
-        <div class="chat-header">
-            <h1><i class="fas fa-robot"></i> AI Yordamchi</h1>
-            <p>Fayl tanlang va uning mazmuni haqida savol bering</p>
-        </div>
-        
         <!-- Fayl tanlash -->
         <div class="file-selector">
             <h3><i class="fas fa-file-alt"></i> Fayl tanlang:</h3>
@@ -364,18 +692,55 @@
             <div class="welcome-message">
                 <i class="fas fa-comments"></i>
                 <h2>Salom! Men AI yordamchiman</h2>
-                <p>Avval fayl tanlang, keyin uning mazmuni haqida savol bering</p>
+                <p>Rasm, video yoki fayl yuboring, yoki savol yozing</p>
             </div>
         </div>
-        
-        <!-- Chat input -->
-        <div class="chat-input-container">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Savolingizni yozing..." disabled>
-            <button id="send-btn" class="send-btn" disabled>
-                <i class="fas fa-paper-plane"></i>
-                <span>Yuborish</span>
+    </div>
+    
+    <!-- Chat input area -->
+    <div class="chat-input-area">
+        <div class="input-actions">
+            <button class="action-btn" onclick="document.getElementById('fileInput').click()" title="Fayl biriktirish">
+                <i class="fas fa-paperclip"></i>
             </button>
         </div>
+        
+        <div class="input-wrapper">
+            <textarea id="chat-input" class="chat-input" placeholder="Xabar yozing..." rows="1" disabled></textarea>
+            <button class="emoji-btn" title="Emoji"><i class="far fa-smile"></i></button>
+        </div>
+        
+        <button id="send-btn" class="send-btn" disabled>
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+    
+    <!-- Hidden file inputs -->
+    <input type="file" id="fileInput" class="hidden-input" accept="image/*,video/*,.pdf,.doc,.docx,.txt" multiple>
+    <input type="file" id="imageInput" class="hidden-input" accept="image/*" multiple>
+    <input type="file" id="videoInput" class="hidden-input" accept="video/*">
+    
+    <!-- Media preview modal -->
+    <div class="media-preview-modal" id="mediaPreviewModal">
+        <div class="preview-header">
+            <button class="preview-close" onclick="closeMediaPreview()"><i class="fas fa-times"></i></button>
+            <div class="preview-actions">
+                <button class="preview-action-btn" onclick="cropImage()"><i class="fas fa-crop"></i> Kesish</button>
+                <button class="preview-action-btn" onclick="addSticker()"><i class="fas fa-smile"></i> Sticker</button>
+                <button class="preview-action-btn" onclick="editImage()"><i class="fas fa-pen"></i> Chizish</button>
+            </div>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+        <div class="preview-footer">
+            <input type="text" class="preview-caption" id="mediaCaption" placeholder="Izoh qo'shing...">
+            <button class="preview-send-btn" onclick="sendMedia()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close"><i class="fas fa-times"></i></button>
+        <div id="lightboxContent"></div>
     </div>
 
     <script>
@@ -383,9 +748,363 @@
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
         const chatMessages = document.getElementById('chat-messages');
+        const chatStatus = document.getElementById('chatStatus');
+        const fileInput = document.getElementById('fileInput');
+        const mediaPreviewModal = document.getElementById('mediaPreviewModal');
+        const previewContent = document.getElementById('previewContent');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightboxContent');
         
         let selectedFileId = null;
         let fileContent = null;
+        let pendingMedia = null;
+        
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            
+            // Voice/Send toggle
+            if (this.value.trim()) {
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                sendBtn.classList.remove('voice-mode');
+            } else {
+                sendBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                sendBtn.classList.add('voice-mode');
+            }
+        });
+        
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+            this.value = '';
+        });
+        
+        // Handle dropped/selected files
+        function handleFiles(files) {
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    showImagePreview(file);
+                } else if (file.type.startsWith('video/')) {
+                    showVideoPreview(file);
+                } else {
+                    sendFileMessage(file);
+                }
+            });
+        }
+        
+        // Show image preview (Telegram style)
+        function showImagePreview(file) {
+            pendingMedia = { type: 'image', file: file };
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContent.innerHTML = `<img src="${e.target.result}" style="max-height: 70vh;">`;
+                mediaPreviewModal.classList.add('active');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Show video preview
+        function showVideoPreview(file) {
+            pendingMedia = { type: 'video', file: file };
+            
+            const url = URL.createObjectURL(file);
+            previewContent.innerHTML = `<video src="${url}" controls style="max-height: 70vh;"></video>`;
+            mediaPreviewModal.classList.add('active');
+        }
+        
+        // Close media preview
+        function closeMediaPreview() {
+            mediaPreviewModal.classList.remove('active');
+            pendingMedia = null;
+            document.getElementById('mediaCaption').value = '';
+        }
+        
+        // Send media message
+        async function sendMedia() {
+            if (!pendingMedia) return;
+            
+            const caption = document.getElementById('mediaCaption').value.trim();
+            const file = pendingMedia.file;
+            const fileType = pendingMedia.type;
+            closeMediaPreview();
+            
+            // Show uploading placeholder
+            const messageId = 'msg_' + Date.now();
+            const time = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            
+            // Temporary placeholder
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.id = messageId;
+            messageDiv.innerHTML = `
+                <div class="message-bubble" style="padding: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i>
+                        <span>Yuklanmoqda... (${formatFileSize(file.size)})</span>
+                    </div>
+                    <div class="message-time">${time} <span class="message-status"><i class="fas fa-clock"></i></span></div>
+                </div>
+            `;
+            
+            const welcome = chatMessages.querySelector('.welcome-message');
+            if (welcome) welcome.remove();
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Upload to server
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('caption', caption);
+            
+            try {
+                const response = await fetch('{% url "upload_chat_file" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Replace placeholder with actual media from server
+                    const serverUrl = data.file_url;
+                    let mediaHtml = '';
+                    
+                    if (data.file_type === 'image') {
+                        mediaHtml = `<img src="${serverUrl}" onclick="openLightbox('${serverUrl}', 'image')" style="max-width: 100%; border-radius: 8px; cursor: pointer;">`;
+                    } else if (data.file_type === 'video') {
+                        mediaHtml = `<video src="${serverUrl}" controls style="max-width: 100%; border-radius: 8px;"></video>`;
+                    } else {
+                        // File
+                        mediaHtml = `
+                            <div class="file-attachment" onclick="window.open('${serverUrl}', '_blank')" style="cursor: pointer;">
+                                <div class="file-icon"><i class="fas fa-${getFileIcon(data.file_name)}"></i></div>
+                                <div class="file-info">
+                                    <div class="file-name">${data.file_name}</div>
+                                    <div class="file-size">${formatFileSize(data.file_size)}</div>
+                                </div>
+                                <i class="fas fa-download"></i>
+                            </div>
+                        `;
+                    }
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-bubble" style="padding: 4px;">
+                            <div class="message-media">
+                                ${mediaHtml}
+                                ${caption ? `<div class="media-caption">${caption}</div>` : ''}
+                            </div>
+                            <div class="message-time">${time} <span class="message-status"><i class="fas fa-check-double" style="color: #6ab3f3;"></i></span></div>
+                        </div>
+                    `;
+                } else {
+                    // Error
+                    messageDiv.innerHTML = `
+                        <div class="message-bubble" style="padding: 12px; background: #ff4444 !important;">
+                            <div>❌ Yuklashda xatolik: ${data.error}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `
+                    <div class="message-bubble" style="padding: 12px; background: #ff4444 !important;">
+                        <div>❌ Server bilan bog'lanib bo'lmadi</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Add media message (Telegram style)
+        function addMediaMessage(type, mediaHtml, caption, messageId) {
+            const time = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.id = messageId;
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble" style="padding: 4px;">
+                    <div class="message-media">
+                        ${mediaHtml}
+                        ${caption ? `<div class="media-caption">${caption}</div>` : ''}
+                    </div>
+                    <div class="message-time">
+                        ${time}
+                        <span class="message-status"><i class="fas fa-clock"></i></span>
+                    </div>
+                </div>
+            `;
+            
+            // Remove welcome message
+            const welcome = chatMessages.querySelector('.welcome-message');
+            if (welcome) welcome.remove();
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Update message status
+        function updateMessageStatus(messageId, status) {
+            const msg = document.getElementById(messageId);
+            if (!msg) return;
+            
+            const statusEl = msg.querySelector('.message-status');
+            if (!statusEl) return;
+            
+            switch (status) {
+                case 'sending':
+                    statusEl.innerHTML = '<i class="fas fa-clock"></i>';
+                    break;
+                case 'sent':
+                    statusEl.innerHTML = '<i class="fas fa-check"></i>';
+                    break;
+                case 'delivered':
+                    statusEl.innerHTML = '<i class="fas fa-check-double"></i>';
+                    break;
+                case 'read':
+                    statusEl.innerHTML = '<i class="fas fa-check-double" style="color: #6ab3f3;"></i>';
+                    break;
+                case 'error':
+                    statusEl.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #ef5350;"></i>';
+                    break;
+            }
+        }
+        
+        // Send file message - with actual server upload
+        async function sendFileMessage(file) {
+            const time = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            const size = formatFileSize(file.size);
+            const icon = getFileIcon(file.name);
+            const messageId = 'msg_' + Date.now();
+            
+            // Placeholder
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.id = messageId;
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="file-attachment">
+                        <div class="file-icon"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">Yuklanmoqda... ${size}</div>
+                        </div>
+                    </div>
+                    <div class="message-time">${time} <span class="message-status"><i class="fas fa-clock"></i></span></div>
+                </div>
+            `;
+            
+            const welcome = chatMessages.querySelector('.welcome-message');
+            if (welcome) welcome.remove();
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Upload to server
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('{% url "upload_chat_file" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageDiv.innerHTML = `
+                        <div class="message-bubble">
+                            <div class="file-attachment" onclick="window.open('${data.file_url}', '_blank')" style="cursor: pointer;">
+                                <div class="file-icon"><i class="fas fa-${icon}"></i></div>
+                                <div class="file-info">
+                                    <div class="file-name">${data.file_name}</div>
+                                    <div class="file-size">${formatFileSize(data.file_size)}</div>
+                                </div>
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="message-time">${time} <span class="message-status"><i class="fas fa-check-double" style="color: #6ab3f3;"></i></span></div>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="message-bubble" style="background: #ff4444 !important;">
+                            <div class="file-attachment">
+                                <div class="file-icon"><i class="fas fa-exclamation-circle"></i></div>
+                                <div class="file-info">
+                                    <div class="file-name">${file.name}</div>
+                                    <div class="file-size" style="color: white;">Xatolik: ${data.error}</div>
+                                </div>
+                            </div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `
+                    <div class="message-bubble" style="background: #ff4444 !important;">
+                        <div>❌ Yuklashda xatolik</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        // Get file icon
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': 'file-pdf',
+                'doc': 'file-word', 'docx': 'file-word',
+                'xls': 'file-excel', 'xlsx': 'file-excel',
+                'ppt': 'file-powerpoint', 'pptx': 'file-powerpoint',
+                'zip': 'file-archive', 'rar': 'file-archive',
+                'mp3': 'file-audio', 'wav': 'file-audio',
+                'txt': 'file-alt'
+            };
+            return icons[ext] || 'file';
+        }
+        
+        // Open lightbox
+        function openLightbox(src, type) {
+            if (type === 'image') {
+                lightboxContent.innerHTML = `<img src="${src}">`;
+            } else {
+                lightboxContent.innerHTML = `<video src="${src}" controls autoplay></video>`;
+            }
+            lightbox.classList.add('active');
+        }
+        
+        // Close lightbox
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightboxContent.innerHTML = '';
+        }
         
         // Fayl tanlanganda
         fileSelect.addEventListener('change', async function() {
@@ -394,8 +1113,8 @@
             if (selectedFileId) {
                 chatInput.disabled = false;
                 sendBtn.disabled = false;
+                chatStatus.textContent = 'typing...';
                 
-                // Fayl kontentini olish
                 try {
                     const response = await fetch('{% url "get_file_content" %}', {
                         method: 'POST',
@@ -406,18 +1125,21 @@
                         body: JSON.stringify({ file_id: selectedFileId })
                     });
                     const data = await response.json();
+                    
+                    chatStatus.textContent = 'online';
+                    
                     if (data.success) {
                         fileContent = data.content;
-                        // Welcome xabarini o'chirish
                         const welcome = chatMessages.querySelector('.welcome-message');
                         if (welcome) welcome.remove();
                         
-                        addMessage('ai', `Fayl yuklandi: "${data.filename}". Endi bu fayl haqida savol berishingiz mumkin.`);
+                        addMessage('ai', `📄 Fayl yuklandi: "${data.filename}"\n\nEndi bu fayl haqida savol berishingiz mumkin.`);
                     } else {
-                        addMessage('ai', 'Faylni o\'qishda xatolik: ' + data.error);
+                        addMessage('ai', '❌ Faylni o\'qishda xatolik: ' + data.error);
                     }
                 } catch (error) {
-                    addMessage('ai', 'Xatolik yuz berdi: ' + error.message);
+                    chatStatus.textContent = 'online';
+                    addMessage('ai', '❌ Xatolik yuz berdi: ' + error.message);
                 }
             } else {
                 chatInput.disabled = true;
@@ -425,26 +1147,25 @@
             }
         });
         
-        // Xabar qo'shish
+        // Xabar qo'shish (matn)
         function addMessage(type, text) {
+            const time = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.innerHTML = type === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            // Convert newlines to <br>
+            const formattedText = text.replace(/\n/g, '<br>');
             
-            const content = document.createElement('div');
-            content.className = 'message-content';
-            content.textContent = text;
-            
-            if (type === 'ai') {
-                messageDiv.appendChild(avatar);
-                messageDiv.appendChild(content);
-            } else {
-                messageDiv.appendChild(content);
-                messageDiv.appendChild(avatar);
-            }
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-text">${formattedText}</div>
+                    <div class="message-time">
+                        ${time}
+                        ${type === 'user' ? '<i class="fas fa-check-double" style="color: #6ab3f3;"></i>' : ''}
+                    </div>
+                </div>
+            `;
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -452,12 +1173,13 @@
         
         // Typing indicator
         function showTyping() {
+            chatStatus.textContent = 'typing...';
+            
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message ai';
             typingDiv.id = 'typing-indicator';
             typingDiv.innerHTML = `
-                <div class="message-avatar"><i class="fas fa-robot"></i></div>
-                <div class="message-content">
+                <div class="message-bubble">
                     <div class="typing-indicator">
                         <span></span><span></span><span></span>
                     </div>
@@ -468,6 +1190,7 @@
         }
         
         function hideTyping() {
+            chatStatus.textContent = 'online';
             const typing = document.getElementById('typing-indicator');
             if (typing) typing.remove();
         }
@@ -479,6 +1202,7 @@
             
             addMessage('user', question);
             chatInput.value = '';
+            chatInput.style.height = 'auto';
             sendBtn.disabled = true;
             showTyping();
             
@@ -502,21 +1226,49 @@
                 if (data.success) {
                     addMessage('ai', data.answer);
                 } else {
-                    addMessage('ai', 'Xatolik: ' + data.error);
+                    addMessage('ai', '❌ Xatolik: ' + data.error);
                 }
             } catch (error) {
                 hideTyping();
-                addMessage('ai', 'Xatolik yuz berdi: ' + error.message);
+                addMessage('ai', '❌ Xatolik yuz berdi: ' + error.message);
             }
             
             sendBtn.disabled = false;
         }
         
         // Event listeners
-        sendBtn.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
+        sendBtn.addEventListener('click', function() {
+            if (chatInput.value.trim()) {
+                sendMessage();
+            }
         });
+        
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim()) {
+                    sendMessage();
+                }
+            }
+        });
+        
+        // Drag and drop
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+        
+        // Placeholder functions
+        function cropImage() { alert('Kesish funksiyasi tez orada qo\'shiladi'); }
+        function addSticker() { alert('Sticker funksiyasi tez orada qo\'shiladi'); }
+        function editImage() { alert('Chizish funksiyasi tez orada qo\'shiladi'); }
     </script>
 </body>
 </html>

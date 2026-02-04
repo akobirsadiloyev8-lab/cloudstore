@@ -29,6 +29,7 @@ urlpatterns = [
     path('ai-chat/', views.ai_chat, name='ai_chat'),
     path('api/get-file-content/', views.get_file_content, name='get_file_content'),
     path('api/ai-ask/', views.ai_ask, name='ai_ask'),
+    path('api/upload-chat-file/', views.upload_chat_file, name='upload_chat_file'),
     
     # Kitoblar - Birlashtirilgan
     path('adabiyotlar/', views.adabiyotlar, name='adabiyotlar'),
@@ -94,6 +95,10 @@ urlpatterns = [
     path('api/barcode/lookup/', views.barcode_lookup, name='barcode_lookup'),
     path('api/barcode/add/', views.barcode_add_product, name='barcode_add_product'),
     path('scanner/tarix/', views.barcode_history, name='barcode_history'),
+    
+    # ===== AI FOOD SCANNER =====
+    path('food-scanner/', views.food_scanner, name='food_scanner'),
+    path('api/analyze-food/', views.analyze_food_image, name='analyze_food_image'),
     
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),

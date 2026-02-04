@@ -32,7 +32,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-4qu^cip^$6^ikf-3*e+y47j$0@#mfd%luznci+ey1c2s$pn4-a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Development uchun yoqilgan
+DEBUG = True  # Lokal development uchun yoqilgan
 
 ALLOWED_HOSTS = ['*', '.onrender.com', 'localhost', '127.0.0.1', 'cloudstore.uz', 'www.cloudstore.uz']
 
@@ -54,9 +54,9 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # iOS Safari uchun cookie sozlamalari
 CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = True  # HTTPS uchun
+CSRF_COOKIE_SECURE = False  # Lokal uchun False
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = True  # HTTPS uchun
+SESSION_COOKIE_SECURE = False  # Lokal uchun False
 
 # CSRF cookie nomi
 CSRF_COOKIE_NAME = 'csrftoken'

@@ -2938,6 +2938,61 @@ def ai_ask(request):
         return JsonResponse({'success': False, 'error': str(e)})
 
 
+@csrf_exempt
+def upload_chat_file(request):
+    """Chat uchun rasm/video/fayl yuklash (Telegram uslubida)"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST kerak'})
+    
+    try:
+        uploaded_file = request.FILES.get('file')
+        caption = request.POST.get('caption', '')
+        
+        if not uploaded_file:
+            return JsonResponse({'success': False, 'error': 'Fayl yuklanmadi'})
+        
+        # Fayl turini aniqlash
+        content_type = uploaded_file.content_type
+        
+        # Papka yaratish
+        import uuid
+        from datetime import datetime
+        
+        date_folder = datetime.now().strftime('%Y/%m')
+        upload_dir = os.path.join(settings.MEDIA_ROOT, 'chat_files', date_folder)
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Unique nom yaratish
+        ext = os.path.splitext(uploaded_file.name)[1]
+        unique_name = f"{uuid.uuid4().hex}{ext}"
+        file_path = os.path.join(upload_dir, unique_name)
+        
+        # Faylni saqlash
+        with open(file_path, 'wb+') as f:
+            for chunk in uploaded_file.chunks():
+                f.write(chunk)
+        
+        # URL yaratish
+        relative_path = f"chat_files/{date_folder}/{unique_name}"
+        file_url = f"{settings.MEDIA_URL}{relative_path}"
+        
+        # Fayl ma'lumotlari
+        file_type = 'image' if content_type.startswith('image/') else \
+                    'video' if content_type.startswith('video/') else 'file'
+        
+        return JsonResponse({
+            'success': True,
+            'file_url': file_url,
+            'file_type': file_type,
+            'file_name': uploaded_file.name,
+            'file_size': uploaded_file.size,
+            'caption': caption
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
 def simple_ai_answer(question, content):
     """Groq AI - fayl kontenti asosida javob berish"""
     # Agar GROQ API kaliti sozlanmagan bo'lsa, foydalanuvchiga aniq xabar qaytaramiz
@@ -4040,13 +4095,34 @@ def barcode_lookup(request):
 
 
 def fetch_from_external_api(barcode):
-    """Open Food Facts API dan mahsulot ma'lumotlarini olish"""
+    """Tashqi API'lardan mahsulot ma'lumotlarini olish (Open Food Facts + UPC Database)"""
+    import requests
+    
+    # 1. Open Food Facts API (oziq-ovqat mahsulotlari)
+    result = fetch_from_open_food_facts(barcode)
+    if result:
+        return result
+    
+    # 2. Open Beauty Facts API (kosmetika mahsulotlari)
+    result = fetch_from_open_beauty_facts(barcode)
+    if result:
+        return result
+    
+    # 3. UPC ItemDB API (umumiy mahsulotlar)
+    result = fetch_from_upc_itemdb(barcode)
+    if result:
+        return result
+    
+    return None
+
+
+def fetch_from_open_food_facts(barcode):
+    """Open Food Facts API - oziq-ovqat mahsulotlari"""
     import requests
     
     try:
-        # Open Food Facts API
         url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
         
         if response.status_code == 200:
             data = response.json()
@@ -4128,6 +4204,64 @@ def fetch_from_external_api(barcode):
     return None
 
 
+def fetch_from_open_beauty_facts(barcode):
+    """Open Beauty Facts API - kosmetika va shaxsiy gigiena mahsulotlari"""
+    import requests
+    
+    try:
+        url = f"https://world.openbeautyfacts.org/api/v0/product/{barcode}.json"
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 1:
+                product = data.get('product', {})
+                
+                return {
+                    'name': product.get('product_name', '') or product.get('product_name_en', ''),
+                    'description': product.get('generic_name', ''),
+                    'brand': product.get('brands', ''),
+                    'category': product.get('categories', '') or 'Kosmetika',
+                    'country': product.get('countries', ''),
+                    'ingredients': product.get('ingredients_text', ''),
+                    'weight': product.get('quantity', ''),
+                    'image_url': product.get('image_url', ''),
+                }
+    except Exception:
+        pass
+    
+    return None
+
+
+def fetch_from_upc_itemdb(barcode):
+    """UPC ItemDB API - umumiy mahsulotlar (bepul, lekin cheklangan)"""
+    import requests
+    
+    try:
+        url = f"https://api.upcitemdb.com/prod/trial/lookup?upc={barcode}"
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('code') == 'OK' and data.get('items'):
+                item = data['items'][0]
+                
+                return {
+                    'name': item.get('title', ''),
+                    'description': item.get('description', ''),
+                    'brand': item.get('brand', ''),
+                    'category': item.get('category', ''),
+                    'country': '',
+                    'ingredients': '',
+                    'weight': item.get('weight', ''),
+                    'image_url': item.get('images', [''])[0] if item.get('images') else '',
+                }
+    except Exception:
+        pass
+    
+    return None
+
+
 @csrf_exempt  
 def barcode_add_product(request):
     """Yangi mahsulot qo'shish"""
@@ -4184,3 +4318,193 @@ def barcode_history(request):
     
     scans = ProductScanHistory.objects.filter(user=request.user).select_related('product')[:50]
     return render(request, 'blog/barcode_history.html', {'scans': scans})
+
+
+def food_scanner(request):
+    """FatSecret stilidagi AI ovqat skaneri sahifasi"""
+    return render(request, 'blog/food_scanner.html')
+
+
+@csrf_exempt
+def analyze_food_image(request):
+    """AI bilan ovqat rasmini tahlil qilish - Groq Vision API"""
+    import base64
+    import requests
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST kerak'})
+    
+    try:
+        # Rasm olish - multipart yoki base64
+        image_data = None
+        
+        if request.FILES.get('image'):
+            # Fayl yuklandi
+            image_file = request.FILES['image']
+            image_bytes = image_file.read()
+            image_data = base64.b64encode(image_bytes).decode('utf-8')
+            content_type = image_file.content_type or 'image/jpeg'
+        elif request.POST.get('image_base64'):
+            # Base64 formatda keldi
+            image_data = request.POST.get('image_base64')
+            if 'data:image' in image_data:
+                # data:image/jpeg;base64,... formatdan ajratish
+                image_data = image_data.split(',')[1]
+            content_type = 'image/jpeg'
+        else:
+            # JSON body
+            data = json.loads(request.body)
+            image_data = data.get('image_base64', '')
+            if 'data:image' in image_data:
+                image_data = image_data.split(',')[1]
+            content_type = 'image/jpeg'
+        
+        if not image_data:
+            return JsonResponse({'success': False, 'error': 'Rasm topilmadi'})
+        
+        # Groq Vision API bilan tahlil
+        groq_key = os.environ.get('GROQ_API_KEY', '')
+        
+        if not groq_key:
+            return JsonResponse({'success': False, 'error': 'AI API kaliti sozlanmagan'})
+        
+        # Groq Vision API so'rovi
+        headers = {
+            'Authorization': f'Bearer {groq_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        # So'rov - batafsil ozuqaviy ma'lumotlar
+        prompt = """Bu rasmda ko'rsatilgan ovqat yoki mahsulotni tahlil qil va quyidagi ma'lumotlarni JSON formatda ber:
+
+{
+    "name": "Mahsulot nomi (o'zbek tilida)",
+    "name_en": "Product name in English",
+    "category": "Kategoriya (meva, sabzavot, go'sht, sut mahsuloti, ichimlik, tayyor ovqat, shirinlik, non mahsuloti, konserva, boshqa)",
+    "description": "Qisqa tavsif",
+    
+    "nutrition_per_100g": {
+        "calories": 0,
+        "proteins": 0,
+        "carbohydrates": 0,
+        "fat": 0,
+        "fiber": 0,
+        "sugars": 0,
+        "salt": 0,
+        "saturated_fat": 0
+    },
+    
+    "health_benefits": ["Foyda 1", "Foyda 2", "Foyda 3"],
+    "health_risks": ["Zarar yoki ogohlantirish 1", "Zarar 2"],
+    
+    "best_time_to_eat": "Qachon iste'mol qilish yaxshi (ertalab, tushlik, kechqurun, istalgan vaqt)",
+    "who_should_avoid": "Kimlar iste'mol qilmasligi kerak",
+    
+    "storage": {
+        "method": "Saqlash usuli (xona haroratida, muzlatgichda, muzxonada)",
+        "temperature": "Saqlash harorati",
+        "duration": "Saqlash muddati",
+        "tips": "Saqlash bo'yicha maslahatlar"
+    },
+    
+    "serving_suggestion": "Qanday iste'mol qilish tavsiya etiladi",
+    "pairs_well_with": ["Nima bilan yaxshi ketadi 1", "2", "3"],
+    
+    "nutriscore": "A/B/C/D/E - sog'liqqa ta'sir bahosi",
+    "is_organic": false,
+    "is_vegan": false,
+    "is_gluten_free": false,
+    
+    "confidence": 0.95
+}
+
+Agar rasmda ovqat yoki mahsulot ko'rinmasa, "not_food": true qo'sh.
+Faqat JSON qaytar, boshqa matn yo'q."""
+
+        payload = {
+            "model": "llama-3.2-90b-vision-preview",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{content_type};base64,{image_data}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "temperature": 0.3,
+            "max_tokens": 2000
+        }
+        
+        response = requests.post(
+            'https://api.groq.com/openai/v1/chat/completions',
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code != 200:
+            return JsonResponse({
+                'success': False, 
+                'error': f'AI xatosi: {response.status_code}',
+                'details': response.text[:500]
+            })
+        
+        result = response.json()
+        ai_response = result['choices'][0]['message']['content']
+        
+        # JSON ni ajratib olish
+        try:
+            # JSON qismini topish
+            if '```json' in ai_response:
+                json_str = ai_response.split('```json')[1].split('```')[0]
+            elif '```' in ai_response:
+                json_str = ai_response.split('```')[1].split('```')[0]
+            elif '{' in ai_response:
+                start = ai_response.find('{')
+                end = ai_response.rfind('}') + 1
+                json_str = ai_response[start:end]
+            else:
+                json_str = ai_response
+            
+            food_data = json.loads(json_str)
+            
+            # Ovqat emasligini tekshirish
+            if food_data.get('not_food'):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Rasmda ovqat yoki mahsulot aniqlanmadi',
+                    'not_food': True
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'data': food_data
+            })
+            
+        except json.JSONDecodeError as e:
+            return JsonResponse({
+                'success': True,
+                'data': {
+                    'name': 'Noma\'lum mahsulot',
+                    'raw_response': ai_response,
+                    'parse_error': str(e)
+                }
+            })
+    
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        })
+
