@@ -1027,163 +1027,168 @@ function showAiResult(data) {
     
     const nutriscore = (data.nutriscore || 'C').toUpperCase();
     const dailyCal = Math.min(100, Math.round((calories / 2000) * 100));
-    const circumference = 2 * Math.PI * 60;
+    const circumference = 2 * Math.PI * 55;
     const offset = circumference - (dailyCal / 100) * circumference;
-    
-    // Benefits
-    let benefitsHtml = '';
-    if (data.health_benefits && data.health_benefits.length) {
-        benefitsHtml = data.health_benefits.map(b => `
-            <div class="benefit-row">
-                <div class="benefit-icon">✓</div>
-                <span>${b}</span>
-            </div>
-        `).join('');
-    }
-    
-    // Risks
-    let risksHtml = '';
-    if (data.health_risks && data.health_risks.length) {
-        risksHtml = data.health_risks.map(r => `
-            <div class="risk-row">
-                <div class="risk-icon">!</div>
-                <span>${r}</span>
-            </div>
-        `).join('');
-    }
     
     const storage = data.storage || {};
     
     document.getElementById('aiResultBody').innerHTML = `
-        <div class="ai-product-card">
-            <div class="ai-product-header">
-                <img src="${capturedImageData}" class="ai-product-img" alt="">
-                <div class="ai-product-info">
-                    <h2>${data.name || 'Noma\'lum'}</h2>
-                    ${data.category ? `<span class="category">${data.category}</span>` : ''}
+        <!-- RASM TAHLILI BO'LIMI -->
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+            <h4 style="color: #34d399; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.3rem;">📸</span> Rasm tahlili
+                <span style="font-size: 0.7rem; background: rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 10px; margin-left: auto;">AI Vision</span>
+            </h4>
+            
+            <div class="ai-product-header" style="display: flex; gap: 15px; align-items: center;">
+                <img src="${capturedImageData}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px;" alt="">
+                <div>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 5px;">${data.name || 'Noma\'lum'}</h3>
+                    ${data.name_en ? `<p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 5px;">${data.name_en}</p>` : ''}
+                    ${data.category ? `<span style="background: rgba(16,185,129,0.2); color: #34d399; padding: 3px 10px; border-radius: 8px; font-size: 0.75rem;">${data.category}</span>` : ''}
                 </div>
             </div>
             
-            <div class="ns-bar">
-                <div class="ns-letter ns-a ${nutriscore === 'A' ? 'active' : ''}">A</div>
-                <div class="ns-letter ns-b ${nutriscore === 'B' ? 'active' : ''}">B</div>
-                <div class="ns-letter ns-c ${nutriscore === 'C' ? 'active' : ''}">C</div>
-                <div class="ns-letter ns-d ${nutriscore === 'D' ? 'active' : ''}">D</div>
-                <div class="ns-letter ns-e ${nutriscore === 'E' ? 'active' : ''}">E</div>
+            ${data.description ? `<p style="color: #d1d5db; margin: 15px 0; font-size: 0.9rem; font-style: italic;">"${data.description}"</p>` : ''}
+            
+            <!-- Ozuqaviy qiymatlar -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 1rem; font-weight: 700; color: #fbbf24;">${calories}</div>
+                    <div style="color: #9ca3af; font-size: 0.7rem;">kkal</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 1rem; font-weight: 700; color: #10b981;">${proteins}g</div>
+                    <div style="color: #9ca3af; font-size: 0.7rem;">oqsil</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 1rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
+                    <div style="color: #9ca3af; font-size: 0.7rem;">uglevod</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 1rem; font-weight: 700; color: #ef4444;">${fat}g</div>
+                    <div style="color: #9ca3af; font-size: 0.7rem;">yog'</div>
+                </div>
             </div>
         </div>
         
-        <div class="ai-info-box">
-            <h4>🔥 Kaloriya (100g)</h4>
-            <div class="cal-circle-box">
-                <div class="cal-circle">
-                    <svg width="150" height="150">
+        <!-- AI TAHLILI BO'LIMI -->
+        <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+            <h4 style="color: #c084fc; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.3rem;">🤖</span> AI Tahlili
+                <span style="font-size: 0.7rem; background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 3px 10px; border-radius: 10px; margin-left: auto;">Ekspert xulosa</span>
+            </h4>
+            
+            <!-- Nutri-Score -->
+            <div style="display: flex; gap: 5px; justify-content: center; margin: 15px 0;">
+                <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #038141; color: white; opacity: ${nutriscore === 'A' ? '1' : '0.3'}; transform: ${nutriscore === 'A' ? 'scale(1.15)' : 'scale(1)'};">A</div>
+                <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #85bb2f; color: white; opacity: ${nutriscore === 'B' ? '1' : '0.3'}; transform: ${nutriscore === 'B' ? 'scale(1.15)' : 'scale(1)'};">B</div>
+                <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #fecb02; color: #333; opacity: ${nutriscore === 'C' ? '1' : '0.3'}; transform: ${nutriscore === 'C' ? 'scale(1.15)' : 'scale(1)'};">C</div>
+                <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #ee8100; color: white; opacity: ${nutriscore === 'D' ? '1' : '0.3'}; transform: ${nutriscore === 'D' ? 'scale(1.15)' : 'scale(1)'};">D</div>
+                <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #e63e11; color: white; opacity: ${nutriscore === 'E' ? '1' : '0.3'}; transform: ${nutriscore === 'E' ? 'scale(1.15)' : 'scale(1)'};">E</div>
+            </div>
+            
+            <!-- Kaloriya doira -->
+            <div style="display: flex; justify-content: center; margin: 20px 0;">
+                <div style="position: relative; width: 130px; height: 130px;">
+                    <svg width="130" height="130" style="transform: rotate(-90deg);">
                         <defs>
-                            <linearGradient id="calGrad" x1="0%" y1="0%" x2="100%">
+                            <linearGradient id="calGrad3" x1="0%" y1="0%" x2="100%">
                                 <stop offset="0%" stop-color="#ff6b6b"/>
                                 <stop offset="100%" stop-color="#feca57"/>
                             </linearGradient>
                         </defs>
-                        <circle class="cal-bg" cx="75" cy="75" r="60"/>
-                        <circle class="cal-progress" cx="75" cy="75" r="60"
+                        <circle cx="65" cy="65" r="55" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+                        <circle cx="65" cy="65" r="55" fill="none" stroke="url(#calGrad3)" stroke-width="10" stroke-linecap="round"
                             stroke-dasharray="${circumference}"
                             stroke-dashoffset="${offset}"/>
                     </svg>
-                    <div class="cal-text">
-                        <div class="cal-value">${calories}</div>
-                        <div class="cal-label">kkal</div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #feca57); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${calories}</div>
+                        <div style="color: #9ca3af; font-size: 0.75rem;">kkal/100g</div>
                     </div>
                 </div>
             </div>
             
-            <div class="macro-row">
-                <div class="macro-card">
-                    <div class="macro-val">${proteins}g</div>
-                    <div class="macro-name protein">Oqsil</div>
+            <!-- Makrolar -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+                <div style="background: rgba(16, 185, 129, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 1.3rem; font-weight: 700; color: #10b981;">${proteins}g</div>
+                    <div style="color: #10b981; font-size: 0.75rem;">Oqsil</div>
                 </div>
-                <div class="macro-card">
-                    <div class="macro-val">${carbs}g</div>
-                    <div class="macro-name carbs">Uglevod</div>
+                <div style="background: rgba(245, 158, 11, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
+                    <div style="color: #f59e0b; font-size: 0.75rem;">Uglevod</div>
                 </div>
-                <div class="macro-card">
-                    <div class="macro-val">${fat}g</div>
-                    <div class="macro-name fat">Yog'</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="ai-info-box">
-            <h4>📊 Batafsil</h4>
-            <div class="macro-row">
-                <div class="macro-card">
-                    <div class="macro-val">${sugars}g</div>
-                    <div class="macro-name">🍬 Shakar</div>
-                </div>
-                <div class="macro-card">
-                    <div class="macro-val">${salt}g</div>
-                    <div class="macro-name">🧂 Tuz</div>
-                </div>
-                <div class="macro-card">
-                    <div class="macro-val">${fiber}g</div>
-                    <div class="macro-name">🌾 Tola</div>
+                <div style="background: rgba(239, 68, 68, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 1.3rem; font-weight: 700; color: #ef4444;">${fat}g</div>
+                    <div style="color: #ef4444; font-size: 0.75rem;">Yog'</div>
                 </div>
             </div>
-        </div>
-        
-        ${benefitsHtml ? `
-        <div class="ai-info-box">
-            <h4>💚 Foydalari</h4>
-            ${benefitsHtml}
-        </div>
-        ` : ''}
-        
-        ${risksHtml ? `
-        <div class="ai-info-box">
-            <h4>⚠️ Ogohlantirishlar</h4>
-            ${risksHtml}
-        </div>
-        ` : ''}
-        
-        ${data.best_time_to_eat ? `
-        <div class="ai-info-box">
-            <h4>⏰ Qachon iste'mol qilish</h4>
-            <p style="background: rgba(99,102,241,0.2); padding: 10px 15px; border-radius: 10px;">
-                🕐 ${data.best_time_to_eat}
-            </p>
-            ${data.who_should_avoid ? `<p style="color: #fca5a5; margin-top: 10px;">⚠️ ${data.who_should_avoid}</p>` : ''}
-        </div>
-        ` : ''}
-        
-        ${storage.method ? `
-        <div class="ai-info-box">
-            <h4>📦 Saqlash sharoitlari</h4>
-            <div class="storage-grid">
-                <div class="storage-item">
-                    <div class="label">Usul</div>
-                    <div class="value">${storage.method || '-'}</div>
+            
+            <!-- Foydalari -->
+            ${data.health_benefits && data.health_benefits.length ? `
+            <div style="background: rgba(34, 197, 94, 0.1); border-left: 3px solid #22c55e; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #4ade80; margin-bottom: 8px; font-size: 0.9rem;">💚 Foydalari</h5>
+                ${data.health_benefits.map(b => `<div style="display: flex; gap: 8px; padding: 4px 0; font-size: 0.85rem;"><span style="color: #4ade80;">✓</span><span>${b}</span></div>`).join('')}
+            </div>
+            ` : ''}
+            
+            <!-- Zararlari -->
+            ${data.health_risks && data.health_risks.length ? `
+            <div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #f87171; margin-bottom: 8px; font-size: 0.9rem;">⚠️ Ogohlantirishlar</h5>
+                ${data.health_risks.map(r => `<div style="display: flex; gap: 8px; padding: 4px 0; font-size: 0.85rem;"><span style="color: #f87171;">!</span><span>${r}</span></div>`).join('')}
+            </div>
+            ` : ''}
+            
+            <!-- Tavsiyalar -->
+            ${data.best_time_to_eat || data.who_should_avoid ? `
+            <div style="background: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366f1; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #a5b4fc; margin-bottom: 8px; font-size: 0.9rem;">⏰ Tavsiyalar</h5>
+                ${data.best_time_to_eat ? `<p style="font-size: 0.85rem; margin: 4px 0;"><span style="color: #9ca3af;">Qachon:</span> ${data.best_time_to_eat}</p>` : ''}
+                ${data.who_should_avoid ? `<p style="font-size: 0.85rem; margin: 4px 0; color: #fca5a5;"><span style="color: #9ca3af;">Kimlar ichmasin:</span> ${data.who_should_avoid}</p>` : ''}
+            </div>
+            ` : ''}
+            
+            <!-- Saqlash -->
+            ${storage.method ? `
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #9ca3af; margin-bottom: 8px; font-size: 0.9rem;">📦 Saqlash</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+                    <div><span style="color: #6b7280;">Usul:</span> ${storage.method}</div>
+                    <div><span style="color: #6b7280;">Harorat:</span> ${storage.temperature || '-'}</div>
+                    <div><span style="color: #6b7280;">Muddat:</span> ${storage.duration || '-'}</div>
                 </div>
-                <div class="storage-item">
-                    <div class="label">Harorat</div>
-                    <div class="value">${storage.temperature || '-'}</div>
-                </div>
-                <div class="storage-item">
-                    <div class="label">Muddat</div>
-                    <div class="value">${storage.duration || '-'}</div>
-                </div>
-                <div class="storage-item">
-                    <div class="label">Maslahat</div>
-                    <div class="value" style="font-size: 0.8rem;">${storage.tips || '-'}</div>
+                ${storage.tips ? `<p style="margin-top: 8px; font-size: 0.8rem; color: #d1d5db;">${storage.tips}</p>` : ''}
+            </div>
+            ` : ''}
+            
+            <!-- Yakuniy xulosa -->
+            ${data.serving_suggestion ? `
+            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2)); border: 1px solid rgba(139, 92, 246, 0.4); padding: 15px; border-radius: 12px; margin: 15px 0;">
+                <h5 style="color: #e879f9; margin-bottom: 10px; font-size: 0.9rem;">🎯 AI Tavsiya</h5>
+                <p style="font-size: 0.9rem; line-height: 1.6; color: #e5e7eb;">${data.serving_suggestion}</p>
+            </div>
+            ` : ''}
+            
+            <!-- Nima bilan yaxshi ketadi -->
+            ${data.pairs_well_with && data.pairs_well_with.length ? `
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #9ca3af; margin-bottom: 8px; font-size: 0.9rem;">🍽️ Nima bilan yaxshi ketadi</h5>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    ${data.pairs_well_with.map(p => `<span style="background: rgba(16,185,129,0.2); color: #34d399; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">${p}</span>`).join('')}
                 </div>
             </div>
+            ` : ''}
+            
+            <!-- Qo'shimcha belgilar -->
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                ${data.is_organic ? `<span style="background: rgba(34,197,94,0.2); color: #4ade80; padding: 5px 12px; border-radius: 15px; font-size: 0.75rem;">🌿 Organik</span>` : ''}
+                ${data.is_vegan ? `<span style="background: rgba(16,185,129,0.2); color: #34d399; padding: 5px 12px; border-radius: 15px; font-size: 0.75rem;">🥬 Vegan</span>` : ''}
+                ${data.is_gluten_free ? `<span style="background: rgba(251,191,36,0.2); color: #fbbf24; padding: 5px 12px; border-radius: 15px; font-size: 0.75rem;">🌾 Glutensiz</span>` : ''}
+            </div>
         </div>
-        ` : ''}
-        
-        ${data.serving_suggestion ? `
-        <div class="ai-info-box">
-            <h4>🍽️ Iste'mol tavsiyasi</h4>
-            <p>${data.serving_suggestion}</p>
-        </div>
-        ` : ''}
     `;
     
     document.getElementById('aiResultModal').classList.add('show');
@@ -1432,8 +1437,12 @@ function showProductResult(product, source) {
     const sugars = parseFloat(product.sugars) || 0;
     const salt = parseFloat(product.salt) || 0;
     
-    // Nutri-Score - agar yo'q bo'lsa, hisoblaymiz
-    let nutriGrade = product.nutriscore_grade || '';
+    // AI tahlili mavjudmi
+    const ai = product.ai_analysis || {};
+    const rawApi = product.raw_api_data || {};
+    
+    // Nutri-Score
+    let nutriGrade = ai.health_rating || product.nutriscore_grade || '';
     if (!nutriGrade && calories) {
         if (calories < 100 && sugars < 5) nutriGrade = 'A';
         else if (calories < 200 && sugars < 10) nutriGrade = 'B';
@@ -1457,140 +1466,151 @@ function showProductResult(product, source) {
                 <p>${product.brand || ''} ${product.weight ? '• ' + product.weight : ''}</p>
             </div>
         </div>
-        <div class="result-body" style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; border-radius: 0 0 20px 20px;">
+        <div class="result-body" style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); color: white; border-radius: 0 0 20px 20px; padding: 20px;">
+    `;
+    
+    // ===== 1. SHTRIX KOD MA'LUMOTLARI (API dan) =====
+    if (rawApi.source) {
+        html += `
+            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+                <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.3rem;">📊</span> Shtrix kod ma'lumotlari
+                    <span style="font-size: 0.7rem; background: rgba(59, 130, 246, 0.3); padding: 3px 8px; border-radius: 10px; margin-left: auto;">${rawApi.source}</span>
+                </h4>
+                <div style="display: grid; gap: 8px; font-size: 0.9rem;">
+                    ${rawApi.name ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Nomi:</span><span>${rawApi.name}</span></div>` : ''}
+                    ${rawApi.brand ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Brend:</span><span>${rawApi.brand}</span></div>` : ''}
+                    ${rawApi.calories ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Kaloriya:</span><span>${rawApi.calories} kkal</span></div>` : ''}
+                    ${rawApi.proteins ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Oqsil:</span><span>${rawApi.proteins}g</span></div>` : ''}
+                    ${rawApi.carbohydrates ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Uglevod:</span><span>${rawApi.carbohydrates}g</span></div>` : ''}
+                    ${rawApi.fat ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span style="color: #9ca3af;">Yog':</span><span>${rawApi.fat}g</span></div>` : ''}
+                    ${rawApi.nutriscore_grade ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #9ca3af;">Nutri-Score:</span><span style="font-weight: 600;">${rawApi.nutriscore_grade.toUpperCase()}</span></div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // ===== 2. AI TAHLILI =====
+    html += `
+        <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15)); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 15px; padding: 15px; margin-bottom: 20px;">
+            <h4 style="color: #c084fc; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.3rem;">🤖</span> AI Tahlili
+                <span style="font-size: 0.7rem; background: linear-gradient(135deg, #8b5cf6, #ec4899); padding: 3px 10px; border-radius: 10px; margin-left: auto;">Ekspert xulosa</span>
+            </h4>
     `;
     
     // Nutri-Score vizual
     html += `
-        <div style="display: flex; gap: 5px; justify-content: center; margin: 20px 0;">
-            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #038141; color: white; opacity: ${nutriGrade === 'A' ? '1' : '0.3'}; transform: ${nutriGrade === 'A' ? 'scale(1.2)' : 'scale(1)'};">A</div>
-            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #85bb2f; color: white; opacity: ${nutriGrade === 'B' ? '1' : '0.3'}; transform: ${nutriGrade === 'B' ? 'scale(1.2)' : 'scale(1)'};">B</div>
-            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #fecb02; color: #333; opacity: ${nutriGrade === 'C' ? '1' : '0.3'}; transform: ${nutriGrade === 'C' ? 'scale(1.2)' : 'scale(1)'};">C</div>
-            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #ee8100; color: white; opacity: ${nutriGrade === 'D' ? '1' : '0.3'}; transform: ${nutriGrade === 'D' ? 'scale(1.2)' : 'scale(1)'};">D</div>
-            <div style="width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; border-radius: 8px; background: #e63e11; color: white; opacity: ${nutriGrade === 'E' ? '1' : '0.3'}; transform: ${nutriGrade === 'E' ? 'scale(1.2)' : 'scale(1)'};">E</div>
+        <div style="display: flex; gap: 5px; justify-content: center; margin: 15px 0;">
+            <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #038141; color: white; opacity: ${nutriGrade === 'A' ? '1' : '0.3'}; transform: ${nutriGrade === 'A' ? 'scale(1.15)' : 'scale(1)'};">A</div>
+            <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #85bb2f; color: white; opacity: ${nutriGrade === 'B' ? '1' : '0.3'}; transform: ${nutriGrade === 'B' ? 'scale(1.15)' : 'scale(1)'};">B</div>
+            <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #fecb02; color: #333; opacity: ${nutriGrade === 'C' ? '1' : '0.3'}; transform: ${nutriGrade === 'C' ? 'scale(1.15)' : 'scale(1)'};">C</div>
+            <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #ee8100; color: white; opacity: ${nutriGrade === 'D' ? '1' : '0.3'}; transform: ${nutriGrade === 'D' ? 'scale(1.15)' : 'scale(1)'};">D</div>
+            <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #e63e11; color: white; opacity: ${nutriGrade === 'E' ? '1' : '0.3'}; transform: ${nutriGrade === 'E' ? 'scale(1.15)' : 'scale(1)'};">E</div>
         </div>
     `;
     
-    // Kaloriya - katta aylana
+    // AI tomonidan tavsif
+    if (ai.description || product.description) {
+        html += `<p style="color: #d1d5db; margin: 15px 0; font-style: italic; text-align: center;">"${ai.description || product.description}"</p>`;
+    }
+    
+    // Kaloriya va makro
     html += `
-        <div style="display: flex; justify-content: center; margin: 25px 0;">
-            <div style="position: relative; width: 160px; height: 160px;">
-                <svg width="160" height="160" style="transform: rotate(-90deg);">
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+            <div style="position: relative; width: 130px; height: 130px;">
+                <svg width="130" height="130" style="transform: rotate(-90deg);">
                     <defs>
-                        <linearGradient id="calGradient" x1="0%" y1="0%" x2="100%">
+                        <linearGradient id="calGradient2" x1="0%" y1="0%" x2="100%">
                             <stop offset="0%" stop-color="#ff6b6b"/>
                             <stop offset="100%" stop-color="#feca57"/>
                         </linearGradient>
                     </defs>
-                    <circle cx="80" cy="80" r="65" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
-                    <circle cx="80" cy="80" r="65" fill="none" stroke="url(#calGradient)" stroke-width="12" stroke-linecap="round"
-                        stroke-dasharray="${2 * Math.PI * 65}"
-                        stroke-dashoffset="${2 * Math.PI * 65 - (dailyCal / 100) * 2 * Math.PI * 65}"/>
+                    <circle cx="65" cy="65" r="55" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+                    <circle cx="65" cy="65" r="55" fill="none" stroke="url(#calGradient2)" stroke-width="10" stroke-linecap="round"
+                        stroke-dasharray="${2 * Math.PI * 55}"
+                        stroke-dashoffset="${2 * Math.PI * 55 - (dailyCal / 100) * 2 * Math.PI * 55}"/>
                 </svg>
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                    <div style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #feca57); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${calories}</div>
-                    <div style="color: #9ca3af; font-size: 0.9rem;">kkal / 100g</div>
+                    <div style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #feca57); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${calories}</div>
+                    <div style="color: #9ca3af; font-size: 0.75rem;">kkal</div>
                 </div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+            <div style="background: rgba(16, 185, 129, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.3rem; font-weight: 700; color: #10b981;">${proteins}g</div>
+                <div style="color: #10b981; font-size: 0.75rem;">Oqsil</div>
+            </div>
+            <div style="background: rgba(245, 158, 11, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
+                <div style="color: #f59e0b; font-size: 0.75rem;">Uglevod</div>
+            </div>
+            <div style="background: rgba(239, 68, 68, 0.15); padding: 12px 8px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.3rem; font-weight: 700; color: #ef4444;">${fat}g</div>
+                <div style="color: #ef4444; font-size: 0.75rem;">Yog'</div>
             </div>
         </div>
     `;
     
-    // Makro besin moddalari
-    html += `
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0;">
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: #10b981;">${proteins}g</div>
-                <div style="color: #10b981; font-size: 0.85rem;">Oqsil</div>
-                <div style="color: #6b7280; font-size: 0.75rem;">${dailyProtein}% kunlik</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
-                <div style="color: #f59e0b; font-size: 0.85rem;">Uglevod</div>
-                <div style="color: #6b7280; font-size: 0.75rem;">${dailyCarbs}% kunlik</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">${fat}g</div>
-                <div style="color: #ef4444; font-size: 0.85rem;">Yog'</div>
-                <div style="color: #6b7280; font-size: 0.75rem;">${dailyFat}% kunlik</div>
-            </div>
-        </div>
-    `;
-    
-    // Batafsil qiymatlar
-    html += `
-        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
-            <h4 style="color: #9ca3af; margin-bottom: 15px; font-size: 0.9rem;">📊 Batafsil (100g)</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                    <span>🍬 Shakar</span>
-                    <span style="font-weight: 600; ${sugars > 10 ? 'color: #fca5a5;' : ''}">${sugars}g</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                    <span>🧂 Tuz</span>
-                    <span style="font-weight: 600; ${salt > 1.5 ? 'color: #fca5a5;' : ''}">${salt}g</span>
-                </div>
-                ${product.fiber ? `<div style="display: flex; justify-content: space-between; padding: 8px 0;"><span>🌾 Tola</span><span style="font-weight: 600;">${product.fiber}g</span></div>` : ''}
-                ${product.saturated_fat ? `<div style="display: flex; justify-content: space-between; padding: 8px 0;"><span>🥓 To'yingan yog'</span><span style="font-weight: 600; ${product.saturated_fat > 5 ? 'color: #fca5a5;' : ''}">${product.saturated_fat}g</span></div>` : ''}
-            </div>
-        </div>
-    `;
-    
-    // AI tahlili - foyda va zarar
-    if (product.benefits && product.benefits.length > 0) {
+    // AI - Foydalari
+    const benefits = ai.benefits || product.benefits || [];
+    if (benefits.length > 0) {
         html += `
-            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #4ade80; margin-bottom: 12px;">💚 Foydalari</h4>
-                ${product.benefits.map(b => `<div style="display: flex; gap: 10px; padding: 6px 0;"><span style="color: #4ade80;">✓</span><span>${b}</span></div>`).join('')}
+            <div style="background: rgba(34, 197, 94, 0.1); border-left: 3px solid #22c55e; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #4ade80; margin-bottom: 8px; font-size: 0.9rem;">💚 Foydalari</h5>
+                ${benefits.map(b => `<div style="display: flex; gap: 8px; padding: 4px 0; font-size: 0.85rem;"><span style="color: #4ade80;">✓</span><span>${b}</span></div>`).join('')}
             </div>
         `;
     }
     
-    if (product.risks && product.risks.length > 0) {
+    // AI - Zararlari
+    const risks = ai.risks || product.risks || [];
+    if (risks.length > 0) {
         html += `
-            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #f87171; margin-bottom: 12px;">⚠️ Ogohlantirishlar</h4>
-                ${product.risks.map(r => `<div style="display: flex; gap: 10px; padding: 6px 0;"><span style="color: #f87171;">!</span><span>${r}</span></div>`).join('')}
+            <div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #f87171; margin-bottom: 8px; font-size: 0.9rem;">⚠️ Ogohlantirishlar</h5>
+                ${risks.map(r => `<div style="display: flex; gap: 8px; padding: 4px 0; font-size: 0.85rem;"><span style="color: #f87171;">!</span><span>${r}</span></div>`).join('')}
             </div>
         `;
     }
     
-    // Ogohlantirishlar (eski format)
-    if (product.warnings && !product.risks) {
+    // AI - Qachon iste'mol qilish
+    const bestTime = ai.best_time || product.best_time;
+    const dailyLimit = ai.daily_limit || product.daily_limit;
+    const whoShouldAvoid = ai.who_should_avoid || '';
+    if (bestTime || dailyLimit) {
         html += `
-            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #f87171; margin-bottom: 10px;">⚠️ Ogohlantirishlar</h4>
-                ${product.warnings.split('\n').map(w => `<p style="margin: 5px 0;">${w}</p>`).join('')}
+            <div style="background: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366f1; padding: 12px; border-radius: 8px; margin: 12px 0;">
+                <h5 style="color: #a5b4fc; margin-bottom: 8px; font-size: 0.9rem;">⏰ Tavsiyalar</h5>
+                ${bestTime ? `<p style="font-size: 0.85rem; margin: 4px 0;"><span style="color: #9ca3af;">Qachon:</span> ${bestTime}</p>` : ''}
+                ${dailyLimit ? `<p style="font-size: 0.85rem; margin: 4px 0;"><span style="color: #9ca3af;">Kunlik:</span> ${dailyLimit}</p>` : ''}
+                ${whoShouldAvoid ? `<p style="font-size: 0.85rem; margin: 4px 0; color: #fca5a5;"><span style="color: #9ca3af;">Kimlar ichmasin:</span> ${whoShouldAvoid}</p>` : ''}
             </div>
         `;
     }
     
-    // Qachon iste'mol qilish
-    if (product.best_time) {
+    // AI - Yakuniy xulosa
+    const conclusion = ai.conclusion || ai.health_summary || product.health_summary;
+    if (conclusion) {
         html += `
-            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #a5b4fc; margin-bottom: 10px;">⏰ Qachon iste'mol qilish</h4>
-                <p>🕐 ${product.best_time}</p>
-                ${product.daily_limit ? `<p style="margin-top: 8px; color: #9ca3af;">📏 Kunlik: ${product.daily_limit}</p>` : ''}
+            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2)); border: 1px solid rgba(139, 92, 246, 0.4); padding: 15px; border-radius: 12px; margin: 15px 0;">
+                <h5 style="color: #e879f9; margin-bottom: 10px; font-size: 0.9rem;">🎯 AI Yakuniy Xulosa</h5>
+                <p style="font-size: 0.9rem; line-height: 1.6; color: #e5e7eb;">${conclusion}</p>
             </div>
         `;
     }
     
-    // Sog'liq xulosasi
-    if (product.health_summary) {
-        html += `
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #9ca3af; margin-bottom: 10px;">🏥 Sog'liqqa ta'siri</h4>
-                <p style="line-height: 1.6;">${product.health_summary}</p>
-            </div>
-        `;
-    }
+    html += `</div>`; // AI tahlili end
     
+    // ===== 3. TARKIB VA QO'SHIMCHA MA'LUMOTLAR =====
     // Tarkibi
     if (product.ingredients) {
         html += `
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #9ca3af; margin-bottom: 10px;">📝 Tarkibi</h4>
-                <p style="line-height: 1.6; color: #e5e7eb;">${product.ingredients}</p>
+                <h4 style="color: #9ca3af; margin-bottom: 10px; font-size: 0.9rem;">📝 Tarkibi</h4>
+                <p style="line-height: 1.5; color: #d1d5db; font-size: 0.85rem;">${product.ingredients}</p>
             </div>
         `;
     }
@@ -1598,9 +1618,9 @@ function showProductResult(product, source) {
     // Allergenlar
     if (product.allergens) {
         html += `
-            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 15px; border-radius: 15px; margin: 15px 0;">
-                <h4 style="color: #fbbf24; margin-bottom: 10px;">🚫 Allergenlar</h4>
-                <p>${product.allergens}</p>
+            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 12px; border-radius: 12px; margin: 12px 0;">
+                <h5 style="color: #fbbf24; margin-bottom: 8px; font-size: 0.9rem;">🚫 Allergenlar</h5>
+                <p style="font-size: 0.85rem;">${product.allergens}</p>
             </div>
         `;
     }
@@ -1608,12 +1628,12 @@ function showProductResult(product, source) {
     // Qo'shimcha ma'lumotlar
     html += `
         <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin: 15px 0;">
-            <h4 style="color: #9ca3af; margin-bottom: 12px;">ℹ️ Qo'shimcha</h4>
-            <div style="display: grid; gap: 8px;">
-                <div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Barcode</span><span style="font-family: monospace;">${product.barcode}</span></div>
-                ${product.brand ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Brend</span><span>${product.brand}</span></div>` : ''}
-                ${product.country ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Mamlakat</span><span>${product.country.replace('en:', '').replace('uz:', '')}</span></div>` : ''}
-                ${product.category ? `<div style="display: flex; justify-content: space-between; padding: 5px 0;"><span style="color: #6b7280;">Kategoriya</span><span>${product.category.split(',')[0]}</span></div>` : ''}
+            <h4 style="color: #9ca3af; margin-bottom: 12px; font-size: 0.9rem;">ℹ️ Qo'shimcha</h4>
+            <div style="display: grid; gap: 6px; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; padding: 4px 0;"><span style="color: #6b7280;">Barcode</span><span style="font-family: monospace;">${product.barcode}</span></div>
+                ${product.brand ? `<div style="display: flex; justify-content: space-between; padding: 4px 0;"><span style="color: #6b7280;">Brend</span><span>${product.brand}</span></div>` : ''}
+                ${product.country ? `<div style="display: flex; justify-content: space-between; padding: 4px 0;"><span style="color: #6b7280;">Mamlakat</span><span>${product.country.replace('en:', '').replace('uz:', '')}</span></div>` : ''}
+                ${source ? `<div style="display: flex; justify-content: space-between; padding: 4px 0;"><span style="color: #6b7280;">Ma'lumot manbasi</span><span>${source}</span></div>` : ''}
             </div>
         </div>
     `;

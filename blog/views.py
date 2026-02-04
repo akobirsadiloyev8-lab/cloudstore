@@ -4101,19 +4101,42 @@ def fetch_from_external_api(barcode):
     # 1. Open Food Facts API (oziq-ovqat mahsulotlari)
     result = fetch_from_open_food_facts(barcode)
     if result:
-        # AI bilan ma'lumotlarni boyitish
+        # API ma'lumotlarini saqlash va AI xulosa qo'shish
+        result['raw_api_data'] = {
+            'source': 'Open Food Facts',
+            'name': result.get('name', ''),
+            'brand': result.get('brand', ''),
+            'calories': result.get('calories', 0),
+            'proteins': result.get('proteins', 0),
+            'carbohydrates': result.get('carbohydrates', 0),
+            'fat': result.get('fat', 0),
+            'ingredients': result.get('ingredients', ''),
+            'nutriscore_grade': result.get('nutriscore_grade', '')
+        }
         result = enrich_product_with_ai(result)
         return result
     
     # 2. Open Beauty Facts API (kosmetika mahsulotlari)
     result = fetch_from_open_beauty_facts(barcode)
     if result:
+        result['raw_api_data'] = {
+            'source': 'Open Beauty Facts',
+            'name': result.get('name', ''),
+            'brand': result.get('brand', ''),
+            'ingredients': result.get('ingredients', '')
+        }
         result = enrich_product_with_ai(result)
         return result
     
     # 3. UPC ItemDB API (umumiy mahsulotlar)
     result = fetch_from_upc_itemdb(barcode)
     if result:
+        result['raw_api_data'] = {
+            'source': 'UPC ItemDB',
+            'name': result.get('name', ''),
+            'brand': result.get('brand', ''),
+            'description': result.get('description', '')
+        }
         result = enrich_product_with_ai(result)
         return result
     
@@ -4129,7 +4152,7 @@ def enrich_product_with_ai(product_data):
         return product_data
     
     try:
-        prompt = f"""Quyidagi mahsulot ma'lumotlarini tahlil qil va tozala:
+        prompt = f"""Quyidagi mahsulot ma'lumotlarini tahlil qil va ekspert sifatida xulosa ber:
 
 Mahsulot: {product_data.get('name', 'Noma\'lum')}
 Brend: {product_data.get('brand', '')}
@@ -4141,22 +4164,24 @@ Uglevod: {product_data.get('carbohydrates', 'noma\'lum')}g
 Shakar: {product_data.get('sugars', 'noma\'lum')}g
 Nutri-Score: {product_data.get('nutriscore_grade', 'noma\'lum')}
 
-Quyidagi JSON formatda javob ber:
+Sen oziq-ovqat ekspertizan. Quyidagi JSON formatda javob ber:
 {{
-    "name_clean": "Mahsulot nomi (o'zbek tilida, chiroyli)",
-    "description_clean": "Qisqa tavsif (1-2 gap)",
-    "ingredients_clean": "Asosiy tarkibiy qismlar (o'zbek tilida, vergul bilan ajratilgan)",
-    "health_rating": "A/B/C/D/E (sog'liqqa ta'sir bahosi)",
-    "health_summary": "Sog'liqqa ta'siri haqida 1-2 gap",
-    "benefits": ["Foyda 1", "Foyda 2"],
-    "risks": ["Zarar yoki ogohlantirish 1"],
-    "best_time": "Qachon iste'mol qilish yaxshi",
-    "daily_limit": "Kunlik tavsiya etilgan miqdor",
-    "calories_estimate": 0,
-    "proteins_estimate": 0,
-    "carbs_estimate": 0,
-    "fat_estimate": 0,
-    "sugars_estimate": 0
+    "ai_name": "Mahsulot nomi (o'zbek tilida, chiroyli)",
+    "ai_description": "Qisqa tavsif (1-2 gap)",
+    "ai_ingredients_clean": "Asosiy tarkibiy qismlar (o'zbek tilida, vergul bilan ajratilgan)",
+    "ai_health_rating": "A/B/C/D/E (sog'liqqa ta'sir bahosi, A-eng yaxshi, E-eng yomon)",
+    "ai_health_summary": "Sog'liqqa ta'siri haqida batafsil 2-3 gap xulosa",
+    "ai_benefits": ["Foyda 1", "Foyda 2", "Foyda 3"],
+    "ai_risks": ["Zarar yoki ogohlantirish 1", "2"],
+    "ai_best_time": "Qachon iste'mol qilish yaxshi (ertalab, tushda, kechqurun)",
+    "ai_daily_limit": "Kunlik tavsiya etilgan miqdor",
+    "ai_who_should_avoid": "Kimlar iste'mol qilmasligi kerak",
+    "ai_conclusion": "Yakuniy xulosa - bu mahsulotni sotib olish yoki olmaslik haqida 2-3 gap maslahat",
+    "ai_calories_estimate": 0,
+    "ai_proteins_estimate": 0,
+    "ai_carbs_estimate": 0,
+    "ai_fat_estimate": 0,
+    "ai_sugars_estimate": 0
 }}
 
 Agar qiymatlar noma'lum bo'lsa, o'rtacha qiymatlarni taxmin qil. Faqat JSON qaytar."""
@@ -4170,7 +4195,7 @@ Agar qiymatlar noma'lum bo'lsa, o'rtacha qiymatlarni taxmin qil. Faqat JSON qayt
             "model": "llama-3.3-70b-versatile",
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.3,
-            "max_tokens": 1000
+            "max_tokens": 1500
         }
         
         response = requests.post(
@@ -4190,32 +4215,51 @@ Agar qiymatlar noma'lum bo'lsa, o'rtacha qiymatlarni taxmin qil. Faqat JSON qayt
                 end = ai_response.rfind('}') + 1
                 ai_data = json.loads(ai_response[start:end])
                 
-                # Ma'lumotlarni birlashtirish
-                if ai_data.get('name_clean'):
-                    product_data['name'] = ai_data['name_clean']
-                if ai_data.get('description_clean'):
-                    product_data['description'] = ai_data['description_clean']
-                if ai_data.get('ingredients_clean'):
-                    product_data['ingredients'] = ai_data['ingredients_clean']
-                if ai_data.get('health_rating'):
-                    product_data['nutriscore_grade'] = ai_data['health_rating']
+                # AI xulosasini alohida saqlash
+                product_data['ai_analysis'] = {
+                    'name': ai_data.get('ai_name', ''),
+                    'description': ai_data.get('ai_description', ''),
+                    'ingredients_clean': ai_data.get('ai_ingredients_clean', ''),
+                    'health_rating': ai_data.get('ai_health_rating', 'C'),
+                    'health_summary': ai_data.get('ai_health_summary', ''),
+                    'benefits': ai_data.get('ai_benefits', []),
+                    'risks': ai_data.get('ai_risks', []),
+                    'best_time': ai_data.get('ai_best_time', ''),
+                    'daily_limit': ai_data.get('ai_daily_limit', ''),
+                    'who_should_avoid': ai_data.get('ai_who_should_avoid', ''),
+                    'conclusion': ai_data.get('ai_conclusion', ''),
+                    'calories_estimate': ai_data.get('ai_calories_estimate', 0),
+                    'proteins_estimate': ai_data.get('ai_proteins_estimate', 0),
+                    'carbs_estimate': ai_data.get('ai_carbs_estimate', 0),
+                    'fat_estimate': ai_data.get('ai_fat_estimate', 0),
+                    'sugars_estimate': ai_data.get('ai_sugars_estimate', 0)
+                }
                 
-                # Yangi maydonlar
-                product_data['health_summary'] = ai_data.get('health_summary', '')
-                product_data['benefits'] = ai_data.get('benefits', [])
-                product_data['risks'] = ai_data.get('risks', [])
-                product_data['best_time'] = ai_data.get('best_time', '')
-                product_data['daily_limit'] = ai_data.get('daily_limit', '')
+                # Asosiy ma'lumotlarni ham yangilash (orqaga muvofiqlik uchun)
+                if ai_data.get('ai_name'):
+                    product_data['name'] = ai_data['ai_name']
+                if ai_data.get('ai_description'):
+                    product_data['description'] = ai_data['ai_description']
+                if ai_data.get('ai_ingredients_clean'):
+                    product_data['ingredients'] = ai_data['ai_ingredients_clean']
+                if ai_data.get('ai_health_rating'):
+                    product_data['nutriscore_grade'] = ai_data['ai_health_rating']
+                
+                product_data['health_summary'] = ai_data.get('ai_health_summary', '')
+                product_data['benefits'] = ai_data.get('ai_benefits', [])
+                product_data['risks'] = ai_data.get('ai_risks', [])
+                product_data['best_time'] = ai_data.get('ai_best_time', '')
+                product_data['daily_limit'] = ai_data.get('ai_daily_limit', '')
                 
                 # Agar kaloriya noma'lum bo'lsa, AI taxminini ishlatish
-                if not product_data.get('calories') and ai_data.get('calories_estimate'):
-                    product_data['calories'] = ai_data['calories_estimate']
-                if not product_data.get('proteins') and ai_data.get('proteins_estimate'):
-                    product_data['proteins'] = ai_data['proteins_estimate']
-                if not product_data.get('carbohydrates') and ai_data.get('carbs_estimate'):
-                    product_data['carbohydrates'] = ai_data['carbs_estimate']
-                if not product_data.get('fat') and ai_data.get('fat_estimate'):
-                    product_data['fat'] = ai_data['fat_estimate']
+                if not product_data.get('calories') and ai_data.get('ai_calories_estimate'):
+                    product_data['calories'] = ai_data['ai_calories_estimate']
+                if not product_data.get('proteins') and ai_data.get('ai_proteins_estimate'):
+                    product_data['proteins'] = ai_data['ai_proteins_estimate']
+                if not product_data.get('carbohydrates') and ai_data.get('ai_carbs_estimate'):
+                    product_data['carbohydrates'] = ai_data['ai_carbs_estimate']
+                if not product_data.get('fat') and ai_data.get('ai_fat_estimate'):
+                    product_data['fat'] = ai_data['ai_fat_estimate']
                     
     except Exception as e:
         print(f"AI enrichment error: {e}")
