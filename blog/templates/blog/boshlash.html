@@ -204,23 +204,20 @@
         }
         
         .menu-toggle-btn {
-            position: fixed;
-            left: 15px;
-            top: 15px;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
         }
         
         .menu-toggle-btn:hover {
@@ -502,12 +499,11 @@
         /* Content Area */
         .content-area {
             padding: 25px;
-            padding-top: 80px; /* Menu button uchun joy */
         }
         
         /* Page Header with left padding for menu button */
         .page-header {
-            padding-left: 80px;
+            padding-left: 20px;
         }
         
         {% block extra_styles %}{% endblock %}
@@ -515,19 +511,16 @@
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             .menu-toggle-btn {
-                left: 10px;
-                top: 10px;
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
             }
             
             .content-area {
                 padding: 15px;
-                padding-top: 70px;
             }
             
             .page-header {
-                padding-left: 70px;
+                padding-left: 15px;
             }
         }
         
@@ -767,16 +760,14 @@
             </nav>
         </aside>
         
-        <!-- Menu Toggle Button (Telegram style) -->
-        <button class="menu-toggle-btn" id="menuToggleBtn" onclick="openSidebar()" aria-label="Menyuni ochish">
-            <i class="fas fa-bars"></i>
-        </button>
-        
         <!-- Main Content -->
         <main class="main-content" id="main-content" role="main">
             <!-- Page Header -->
             <header class="page-header" role="banner">
                 <div class="page-title">
+                    <button class="menu-toggle-btn" id="menuToggleBtn" onclick="openSidebar()" aria-label="Menyuni ochish">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <h1>{% block page_title %}Bosh sahifa{% endblock %}</h1>
                 </div>
                 <div></div>
