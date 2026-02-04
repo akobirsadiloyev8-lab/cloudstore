@@ -478,10 +478,13 @@
     /* ========== INPUT AREA ========== */
     .chat-input-area {
         padding: 10px 15px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
         background: var(--card-bg);
         border-top: 1px solid var(--border-color);
         z-index: 100;
         flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
     }
     
     /* File Preview */
@@ -969,6 +972,50 @@
             grid-template-columns: repeat(6, 1fr);
         }
     }
+    
+    /* ========== PWA / iOS SAFE AREA ========== */
+    @supports (padding-top: env(safe-area-inset-top)) {
+        .telegram-chat-container {
+            height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        .chat-header {
+            padding-top: calc(10px + env(safe-area-inset-top));
+        }
+        
+        .chat-sidebar-header {
+            padding-top: calc(15px + env(safe-area-inset-top));
+        }
+        
+        .chat-input-area {
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+    }
+    
+    /* PWA standalone mode uchun */
+    @media (display-mode: standalone) {
+        .telegram-chat-container {
+            height: 100vh;
+            height: -webkit-fill-available;
+        }
+        
+        .main-content, .content-area {
+            height: 100vh !important;
+            height: -webkit-fill-available !important;
+        }
+    }
+    
+    /* Klaviatura chiqganda input ko'tarilishi */
+    @media (max-height: 500px) {
+        .telegram-chat-container {
+            height: 100%;
+        }
+        
+        .chat-messages {
+            max-height: 50vh;
+        }
+    }
 {% endblock %}
 
 {% block content %}
@@ -1423,6 +1470,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     initMobileNav();
     initFileUpload();
     
+    // iOS PWA: Klaviatura chiqganda scroll fix
+    initIOSKeyboardFix();
+    
     if (activeUsername) {
         setInterval(pollNewMessages, 2000);
         // Mobile: Show chat area if there's an active chat
@@ -1524,6 +1574,47 @@ function openImageViewer(src) {
 
 function closeImageViewer() {
     document.getElementById('imageViewer').classList.remove('show');
+}
+
+// ========== iOS KEYBOARD FIX ==========
+function initIOSKeyboardFix() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    
+    if (isIOS || isPWA) {
+        const messageInput = document.getElementById('messageInput');
+        const chatContainer = document.querySelector('.telegram-chat-container');
+        const inputArea = document.querySelector('.chat-input-area');
+        
+        if (messageInput && inputArea) {
+            // Klaviatura ochilganda
+            messageInput.addEventListener('focus', function() {
+                setTimeout(() => {
+                    // Scroll to bottom
+                    scrollToBottom();
+                    // Input ni ko'rinadigan qilish
+                    inputArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 300);
+            });
+            
+            // Visual Viewport API (zamonaviy brauzerlar uchun)
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', function() {
+                    const viewportHeight = window.visualViewport.height;
+                    if (chatContainer) {
+                        chatContainer.style.height = viewportHeight + 'px';
+                    }
+                    scrollToBottom();
+                });
+                
+                window.visualViewport.addEventListener('scroll', function() {
+                    if (inputArea) {
+                        inputArea.style.transform = `translateY(${window.visualViewport.offsetTop}px)`;
+                    }
+                });
+            }
+        }
+    }
 }
 
 // ========== MOBILE NAVIGATION ==========
