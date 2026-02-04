@@ -4481,6 +4481,8 @@ def analyze_food_image(request):
     """AI bilan ovqat rasmini tahlil qilish - Groq Vision API"""
     import base64
     import requests
+    from io import BytesIO
+    from PIL import Image
     
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'POST kerak'})
@@ -4488,30 +4490,56 @@ def analyze_food_image(request):
     try:
         # Rasm olish - multipart yoki base64
         image_data = None
+        image_bytes = None
         
         if request.FILES.get('image'):
             # Fayl yuklandi
             image_file = request.FILES['image']
             image_bytes = image_file.read()
-            image_data = base64.b64encode(image_bytes).decode('utf-8')
             content_type = image_file.content_type or 'image/jpeg'
         elif request.POST.get('image_base64'):
             # Base64 formatda keldi
-            image_data = request.POST.get('image_base64')
-            if 'data:image' in image_data:
-                # data:image/jpeg;base64,... formatdan ajratish
-                image_data = image_data.split(',')[1]
+            temp_data = request.POST.get('image_base64')
+            if 'data:image' in temp_data:
+                temp_data = temp_data.split(',')[1]
+            image_bytes = base64.b64decode(temp_data)
             content_type = 'image/jpeg'
         else:
             # JSON body
             data = json.loads(request.body)
-            image_data = data.get('image_base64', '')
-            if 'data:image' in image_data:
-                image_data = image_data.split(',')[1]
+            temp_data = data.get('image_base64', '')
+            if 'data:image' in temp_data:
+                temp_data = temp_data.split(',')[1]
+            image_bytes = base64.b64decode(temp_data) if temp_data else None
             content_type = 'image/jpeg'
         
-        if not image_data:
+        if not image_bytes:
             return JsonResponse({'success': False, 'error': 'Rasm topilmadi'})
+        
+        # Rasmni kichraytirish (max 1024px) - Groq API cheklovi
+        try:
+            img = Image.open(BytesIO(image_bytes))
+            # RGBA bo'lsa RGB ga o'tkazish
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            
+            # Katta rasmlarni kichraytirish
+            max_size = 1024
+            if img.width > max_size or img.height > max_size:
+                ratio = min(max_size / img.width, max_size / img.height)
+                new_size = (int(img.width * ratio), int(img.height * ratio))
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
+            
+            # JPEG formatda saqlash
+            buffer = BytesIO()
+            img.save(buffer, format='JPEG', quality=85)
+            image_bytes = buffer.getvalue()
+            content_type = 'image/jpeg'
+        except Exception as img_err:
+            print(f"Image processing error: {img_err}")
+            # Xato bo'lsa original rasmni ishlatish
+        
+        image_data = base64.b64encode(image_bytes).decode('utf-8')
         
         # Groq Vision API bilan tahlil
         groq_key = os.environ.get('GROQ_API_KEY', '')
@@ -4590,7 +4618,7 @@ Agar rasmda ovqat yoki mahsulot ko'rinmasa, "not_food": true qo'sh.
 Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
 
         payload = {
-            "model": "llama-3.2-11b-vision-preview",
+            "model": "meta-llama/llama-4-scout-17b-16e-instruct",
             "messages": [
                 {
                     "role": "user",
@@ -4620,6 +4648,9 @@ Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
         )
         
         if response.status_code != 200:
+            # Xato tafsilotlarini log qilish
+            print(f"Groq API Error: {response.status_code}")
+            print(f"Response: {response.text[:1000]}")
             return JsonResponse({
                 'success': False, 
                 'error': f'AI xatosi: {response.status_code}',
@@ -4628,6 +4659,10 @@ Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
         
         result = response.json()
         ai_response = result['choices'][0]['message']['content']
+        
+        # Debug - AI javobini ko'rish
+        print(f"AI Response length: {len(ai_response)}")
+        print(f"AI Response preview: {ai_response[:500]}")
         
         # JSON ni ajratib olish
         try:
@@ -4643,10 +4678,11 @@ Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
             else:
                 json_str = ai_response
             
+            print(f"JSON string preview: {json_str[:300]}")
             food_data = json.loads(json_str)
             
-            # Ovqat emasligini tekshirish
-            if food_data.get('not_food'):
+            # Ovqat emasligini tekshirish - faqat aniq not_food bo'lsa
+            if food_data.get('not_food') == True and not food_data.get('name'):
                 return JsonResponse({
                     'success': False,
                     'error': 'Rasmda ovqat yoki mahsulot aniqlanmadi',
