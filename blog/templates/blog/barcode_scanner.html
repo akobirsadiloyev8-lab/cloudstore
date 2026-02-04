@@ -1045,7 +1045,7 @@ function showLoginRequired() {
             </p>
         </div>
     `;
-    document.getElementById('aiResultContainer').style.display = 'block';
+    document.getElementById('aiResultModal').classList.add('show');
 }
 
 function showLimitExceeded(dailyLimit) {
@@ -1067,7 +1067,7 @@ function showLimitExceeded(dailyLimit) {
             </div>
         </div>
     `;
-    document.getElementById('aiResultContainer').style.display = 'block';
+    document.getElementById('aiResultModal').classList.add('show');
 }
 
 function showAiError(message) {
@@ -1078,7 +1078,7 @@ function showAiError(message) {
             <p style="color: #9ca3af;">${message}</p>
         </div>
     `;
-    document.getElementById('aiResultContainer').style.display = 'block';
+    document.getElementById('aiResultModal').classList.add('show');
 }
 
 // LocalStorage dan saqlangan AI natijani yuklash
@@ -1100,7 +1100,7 @@ function loadSavedAiResult() {
 function clearAiResult() {
     localStorage.removeItem('lastAiResult');
     localStorage.removeItem('lastAiImage');
-    document.getElementById('aiResultContainer').style.display = 'none';
+    document.getElementById('aiResultModal').classList.remove('show');
     document.getElementById('aiResultBody').innerHTML = '';
     capturedImageData = null;
 }
