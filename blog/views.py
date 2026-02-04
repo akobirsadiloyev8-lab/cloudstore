@@ -4422,7 +4422,7 @@ Agar rasmda ovqat yoki mahsulot ko'rinmasa, "not_food": true qo'sh.
 Faqat JSON qaytar, boshqa matn yo'q."""
 
         payload = {
-            "model": "llama-3.2-90b-vision-preview",
+            "model": "llama-3.2-11b-vision-preview",
             "messages": [
                 {
                     "role": "user",
