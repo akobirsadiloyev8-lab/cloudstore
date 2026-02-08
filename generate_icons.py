@@ -73,17 +73,17 @@ def create_cloud_icon(size):
     return img
 
 def create_modern_cloud_icon(size):
-    """Zamonaviy flat dizaynli bulut ikonkasi"""
+    """Zamonaviy flat dizaynli bulut ikonkasi - Qora tema"""
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     
-    # Gradient fon
+    # Qora gradient fon
     for y in range(size):
         ratio = y / size
-        # Ko'k-binafsha gradient
-        r = int(99 * (1 - ratio) + 139 * ratio)
-        g = int(102 * (1 - ratio) + 92 * ratio)  
-        b = int(241 * (1 - ratio) + 246 * ratio)
+        # Qora gradient (yuqoridan pastga)
+        r = int(25 * (1 - ratio) + 15 * ratio)
+        g = int(25 * (1 - ratio) + 15 * ratio)  
+        b = int(25 * (1 - ratio) + 15 * ratio)
         draw.line([(0, y), (size, y)], fill=(r, g, b, 255))
     
     # Rounded rectangle mask
@@ -134,7 +134,7 @@ def create_modern_cloud_icon(size):
             font = ImageFont.load_default()
     
     text = "AI"
-    text_color = (99, 102, 241, 255)  # Indigo
+    text_color = (25, 25, 25, 255)  # Qora rang
     
     bbox = draw.textbbox((0, 0), text, font=font)
     text_width = bbox[2] - bbox[0]
@@ -147,16 +147,16 @@ def create_modern_cloud_icon(size):
     return img
 
 def create_splash_screen(width, height):
-    """iOS Splash Screen yaratish"""
+    """iOS Splash Screen yaratish - Qora tema"""
     img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     
-    # Gradient fon
+    # Qora gradient fon
     for y in range(height):
         ratio = y / height
-        r = int(99 * (1 - ratio) + 139 * ratio)
-        g = int(102 * (1 - ratio) + 92 * ratio)  
-        b = int(241 * (1 - ratio) + 246 * ratio)
+        r = int(25 * (1 - ratio) + 15 * ratio)
+        g = int(25 * (1 - ratio) + 15 * ratio)  
+        b = int(25 * (1 - ratio) + 15 * ratio)
         draw.line([(0, y), (width, y)], fill=(r, g, b, 255))
     
     # Markazda ikonka
