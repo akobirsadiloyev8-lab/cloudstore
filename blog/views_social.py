@@ -38,6 +38,11 @@ def search_users(request):
     query = request.GET.get('q', '').strip()
     filter_by = request.GET.get('filter', 'all')
     current_tab = request.GET.get('tab', 'all')
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.GET.get('format') == 'json'
+    
+    # AJAX bo'lmasa, telegram-chat ga yo'naltirish
+    if not is_ajax:
+        return redirect('telegram_chat')
     
     # Tab tizimi bilan birlashtirish
     if current_tab == 'followers' and request.user.is_authenticated:
@@ -94,43 +99,40 @@ def search_users(request):
     else:
         users = users.order_by('-date_joined')
     
-    # Pagination
-    paginator = Paginator(users, 20)
-    page = request.GET.get('page', 1)
-    users_page = paginator.get_page(page)
-    
-    # Kuzatish holatini bir marta olish (faqat authenticated users uchun)
-    following_ids = set()
-    if request.user.is_authenticated:
-        following_ids = set(Follow.objects.filter(
-            follower=request.user
-        ).values_list('following_id', flat=True))
-    
-    # Natijalarni tayyorlash - N+1 yo'q
-    users_with_profiles = []
-    for user in users_page:
-        try:
-            profile = user.social_profile
-        except UserProfile.DoesNotExist:
-            profile = UserProfile.objects.create(user=user)
+    # AJAX request uchun JSON response
+    if is_ajax:
+        users_list = users[:20]  # Limit 20 results for AJAX
         
-        users_with_profiles.append({
-            'user': user,
-            'profile': profile,
-            'is_following': user.id in following_ids,
-            'followers_count': user.annotated_follower_count,
-            'following_count': user.annotated_following_count,
+        following_ids = set()
+        if request.user.is_authenticated:
+            following_ids = set(Follow.objects.filter(
+                follower=request.user
+            ).values_list('following_id', flat=True))
+        
+        users_data = []
+        for user in users_list:
+            try:
+                profile = user.social_profile
+            except UserProfile.DoesNotExist:
+                profile = UserProfile.objects.create(user=user)
+            
+            users_data.append({
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name or user.username,
+                'last_name': user.last_name or '',
+                'avatar': profile.avatar.url if profile.avatar else None,
+                'bio': profile.bio[:100] if profile.bio else '',
+                'is_online': profile.is_online,
+                'is_following': user.id in following_ids,
+                'followers_count': user.annotated_follower_count,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'users': users_data,
+            'total_count': users.count()
         })
-    
-    context = {
-        'users': users_with_profiles,
-        'query': query,
-        'filter_by': filter_by,
-        'page_obj': users_page,
-        'total_count': paginator.count,
-        'current_tab': current_tab,
-    }
-    return render(request, 'blog/social/search_users.html', context)
 
 
 def user_profile_view(request, username):
@@ -222,19 +224,19 @@ def toggle_follow(request, username):
 
 @login_required
 def my_followers(request):
-    """search_users ga yo'naltirish"""
-    return redirect('/users/?tab=followers')
+    """telegram_chat ga yo'naltirish"""
+    return redirect('telegram_chat')
 
 
 @login_required
 def my_following(request):
-    """search_users ga yo'naltirish"""
-    return redirect('/users/?tab=following')
+    """telegram_chat ga yo'naltirish"""
+    return redirect('telegram_chat')
 
 
 def discover_users(request):
-    """search_users ga yo'naltirish"""
-    return redirect('/users/?tab=discover')
+    """telegram_chat ga yo'naltirish"""
+    return redirect('telegram_chat')
 
 
 # ===== MESSAGES =====

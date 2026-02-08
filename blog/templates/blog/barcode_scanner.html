@@ -4,73 +4,112 @@
 {% block title %}QR & Barcode Skaner - Cloudstore AI{% endblock %}
 
 {% block extra_styles %}
+/* Amazon Style Scanner Page */
+:root {
+    --amz-orange: #ff9900;
+    --amz-orange-hover: #ffad33;
+    --amz-dark: #131921;
+    --amz-light-dark: #232f3e;
+    --amz-text: #0f1111;
+    --amz-link: #007185;
+    --amz-border: #ddd;
+    --amz-bg: #0f1111;
+    --amz-card: #1a1a1a;
+    --amz-green: #067d62;
+}
+
 .scanner-container {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
+    background: var(--amz-bg);
+    min-height: 100vh;
 }
 
 .scanner-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
+    background: linear-gradient(135deg, var(--amz-dark) 0%, var(--amz-light-dark) 100%);
+    border-radius: 8px;
     padding: 30px;
     text-align: center;
     color: white;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    margin-bottom: 20px;
+    border: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.scanner-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff9900' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
 }
 
 .scanner-hero h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.scanner-hero h1 i {
+    color: var(--amz-orange);
 }
 
 .scanner-hero p {
     opacity: 0.9;
     font-size: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .mode-tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
+    background: var(--amz-light-dark);
+    border-radius: 8px;
     padding: 8px;
+    border: 1px solid #333;
 }
 
 .mode-tab {
     flex: 1;
     padding: 12px 20px;
     border: none;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s;
+    transition: all 0.2s;
     background: transparent;
-    color: #666;
+    color: #ccc;
+    font-size: 0.9rem;
 }
 
 .mode-tab.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+    color: #111;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .mode-tab:hover:not(.active) {
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(255, 153, 0, 0.1);
+    color: var(--amz-orange);
 }
 
 .scanner-section {
-    background: white;
-    border-radius: 20px;
+    background: var(--amz-card);
+    border-radius: 8px;
     padding: 25px;
-    box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+    border: 1px solid #333;
     margin-bottom: 20px;
 }
 
@@ -82,50 +121,55 @@
 .manual-input input {
     flex: 1;
     padding: 15px 20px;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
+    border: 2px solid #333;
+    border-radius: 8px;
     font-size: 1.1rem;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    background: #111;
+    color: #fff;
 }
 
 .manual-input input:focus {
-    border-color: #667eea;
+    border-color: var(--amz-orange);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
+}
+
+.manual-input input::placeholder {
+    color: #666;
 }
 
 .scan-btn {
     padding: 15px 30px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 12px;
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+    border: 1px solid #a88734;
+    color: #111;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .scan-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(to bottom, #f5d78e, #eeb933);
 }
 
 #reader {
     width: 100%;
-    border-radius: 15px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
 #reader video {
-    border-radius: 15px;
+    border-radius: 8px;
 }
 
 .result-card {
     display: none;
-    background: white;
-    border-radius: 20px;
+    background: var(--amz-card);
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid #333;
     animation: slideUp 0.5s ease;
 }
 
@@ -135,7 +179,7 @@
 }
 
 .result-header {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: var(--amz-light-dark);
     color: white;
     padding: 20px;
     display: flex;
@@ -154,7 +198,7 @@
 .product-image {
     width: 80px;
     height: 80px;
-    border-radius: 15px;
+    border-radius: 8px;
     object-fit: cover;
     background: white;
 }
@@ -175,6 +219,8 @@
 
 .result-body {
     padding: 25px;
+    background: var(--amz-card);
+    color: #e0e0e0;
 }
 
 .health-scores {
@@ -186,7 +232,7 @@
 
 .score-badge {
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-weight: 700;
     font-size: 1rem;
     display: flex;
@@ -206,15 +252,15 @@
 .nova-4 { background: #ef4444; color: white; }
 
 .warnings-box {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    border: 2px solid #f59e0b;
-    border-radius: 12px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
 }
 
 .warnings-box h4 {
-    color: #92400e;
+    color: var(--amz-orange);
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -222,7 +268,7 @@
 }
 
 .warnings-box p {
-    color: #78350f;
+    color: #e0e0e0;
     font-size: 0.95rem;
     margin: 5px 0;
 }
@@ -233,17 +279,17 @@
 
 .info-section h3 {
     font-size: 1.1rem;
-    color: #374151;
+    color: #e0e0e0;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
     padding-bottom: 8px;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 1px solid #333;
 }
 
 .info-section h3 i {
-    color: #667eea;
+    color: var(--amz-orange);
 }
 
 .nutrition-table {
@@ -252,7 +298,7 @@
 }
 
 .nutrition-table tr {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #333;
 }
 
 .nutrition-table tr:last-child {
@@ -261,24 +307,25 @@
 
 .nutrition-table td {
     padding: 10px 5px;
+    color: #e0e0e0;
 }
 
 .nutrition-table td:first-child {
-    color: #6b7280;
+    color: #9ca3af;
 }
 
 .nutrition-table td:last-child {
     text-align: right;
     font-weight: 600;
-    color: #374151;
+    color: var(--amz-orange);
 }
 
 .nutrition-table .highlight {
-    background: #fef3c7;
+    background: rgba(255, 153, 0, 0.1);
 }
 
 .nutrition-table .highlight td {
-    color: #92400e;
+    color: var(--amz-orange);
 }
 
 .vitamins-grid {
@@ -288,93 +335,98 @@
 }
 
 .vitamin-item {
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    background: rgba(255, 153, 0, 0.1);
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 8px;
     text-align: center;
+    border: 1px solid #333;
 }
 
 .vitamin-item .name {
     font-size: 0.85rem;
-    color: #0369a1;
+    color: #9ca3af;
     margin-bottom: 5px;
 }
 
 .vitamin-item .value {
     font-weight: 700;
-    color: #0c4a6e;
+    color: var(--amz-orange);
 }
 
 .ingredients-text {
-    background: #f9fafb;
+    background: rgba(255, 255, 255, 0.05);
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 8px;
     line-height: 1.6;
-    color: #4b5563;
+    color: #e0e0e0;
     font-size: 0.95rem;
+    border: 1px solid #333;
 }
 
 .allergens-box {
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    border: 2px solid #ef4444;
-    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
 }
 
 .allergens-box h4 {
-    color: #991b1b;
+    color: #f87171;
     margin-bottom: 8px;
 }
 
 .allergens-box p {
-    color: #7f1d1d;
+    color: #e0e0e0;
 }
 
 .additives-box {
-    background: linear-gradient(135deg, #fef9c3, #fef08a);
-    border: 2px solid #eab308;
-    border-radius: 12px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 8px;
     padding: 15px;
     margin-top: 15px;
 }
 
 .additives-box h4 {
-    color: #713f12;
+    color: #fbbf24;
     margin-bottom: 8px;
 }
 
 .additives-box p {
-    color: #78350f;
+    color: #e0e0e0;
     font-size: 0.9rem;
 }
 
 .qr-result {
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    border-radius: 15px;
+    background: rgba(255, 153, 0, 0.1);
+    border-radius: 8px;
     padding: 20px;
     text-align: center;
+    border: 1px solid #333;
 }
 
 .qr-result h3 {
-    color: #0369a1;
+    color: var(--amz-orange);
     margin-bottom: 15px;
 }
 
 .qr-result .qr-content {
-    background: white;
+    background: var(--amz-card);
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 8px;
     word-break: break-all;
     margin-bottom: 15px;
+    color: #e0e0e0;
+    border: 1px solid #333;
 }
 
 .qr-result .action-btn {
     padding: 12px 25px;
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    color: white;
-    border: none;
-    border-radius: 10px;
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+    color: #111;
+    border: 1px solid #a88734;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
@@ -388,12 +440,12 @@
 
 .not-found i {
     font-size: 4rem;
-    color: #d1d5db;
+    color: #444;
     margin-bottom: 15px;
 }
 
 .not-found h3 {
-    color: #6b7280;
+    color: #9ca3af;
     margin-bottom: 10px;
 }
 
@@ -405,7 +457,7 @@
 
 .loading i {
     font-size: 3rem;
-    color: #667eea;
+    color: var(--amz-orange);
     animation: spin 1s linear infinite;
 }
 
@@ -418,9 +470,10 @@
 .ai-camera-section {
     position: relative;
     background: #000;
-    border-radius: 20px;
+    border-radius: 12px;
     overflow: hidden;
     min-height: 400px;
+    border: 1px solid #333;
 }
 
 .ai-camera-section video {
@@ -442,7 +495,7 @@
     left: 0;
     right: 0;
     padding: 20px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
     display: flex;
     justify-content: center;
     align-items: center;
@@ -454,7 +507,7 @@
     height: 70px;
     border-radius: 50%;
     background: transparent;
-    border: 4px solid #4ade80;
+    border: 4px solid var(--amz-orange);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -464,24 +517,29 @@
 
 .capture-btn:hover {
     transform: scale(1.05);
+    border-color: #f0c14b;
 }
 
 .capture-btn-inner {
     width: 54px;
     height: 54px;
     border-radius: 50%;
-    background: #4ade80;
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
 }
 
 .side-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    border: none;
+    background: rgba(255,153,0,0.2);
+    border: 1px solid rgba(255,153,0,0.3);
     color: white;
     font-size: 1.3rem;
     cursor: pointer;
+}
+
+.side-btn:hover {
+    background: rgba(255,153,0,0.3);
 }
 
 .action-buttons {
@@ -491,22 +549,30 @@
 
 .retake-btn, .analyze-btn {
     padding: 12px 25px;
-    border-radius: 25px;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     font-size: 1rem;
 }
 
 .retake-btn {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #444;
     color: white;
 }
 
+.retake-btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+
 .analyze-btn {
-    background: linear-gradient(135deg, #4ade80, #22c55e);
-    border: none;
-    color: white;
+    background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+    border: 1px solid #a88734;
+    color: #111;
+}
+
+.analyze-btn:hover {
+    background: linear-gradient(to bottom, #f5d78e, #eeb933);
 }
 
 .camera-instruction {
@@ -514,12 +580,13 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0,0,0,0.6);
+    background: rgba(19, 25, 33, 0.9);
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 8px;
     color: white;
     text-align: center;
     font-size: 0.9rem;
+    border: 1px solid #333;
 }
 
 /* AI Natija modali */
@@ -532,7 +599,7 @@
     bottom: 0;
     width: 100%;
     height: 100%;
-    background-color: #000000;
+    background-color: var(--amz-bg);
     z-index: 99999;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -547,7 +614,7 @@
     margin: 0 auto;
     padding: 20px;
     padding-bottom: 100px;
-    background-color: #000000;
+    background-color: var(--amz-bg);
     min-height: 100%;
 }
 
@@ -558,7 +625,7 @@
     margin-bottom: 20px;
     position: sticky;
     top: 0;
-    background-color: #0a0a0a;
+    background-color: var(--amz-dark);
     padding: 15px 0;
     padding-top: calc(15px + env(safe-area-inset-top, 0px));
     z-index: 10;
@@ -568,11 +635,15 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    border: none;
+    background: rgba(255,153,0,0.1);
+    border: 1px solid #333;
     color: white;
     font-size: 1.5rem;
     cursor: pointer;
+}
+
+.close-ai-result:hover {
+    background: rgba(255,153,0,0.2);
 }
 
 .ai-result-header h2 {
@@ -582,11 +653,12 @@
 
 /* AI Product Card */
 .ai-product-card {
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border-radius: 20px;
+    background: linear-gradient(135deg, var(--amz-dark), var(--amz-light-dark));
+    border-radius: 12px;
     padding: 20px;
     margin-bottom: 15px;
     color: white;
+    border: 1px solid #333;
 }
 
 .ai-product-header {
@@ -598,7 +670,7 @@
 .ai-product-img {
     width: 80px;
     height: 80px;
-    border-radius: 15px;
+    border-radius: 8px;
     object-fit: cover;
 }
 
@@ -609,10 +681,10 @@
 
 .ai-product-info .category {
     display: inline-block;
-    background: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
+    background: rgba(255, 153, 0, 0.2);
+    color: var(--amz-orange);
     padding: 4px 12px;
-    border-radius: 15px;
+    border-radius: 8px;
     font-size: 0.8rem;
 }
 
@@ -631,7 +703,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    border-radius: 8px;
+    border-radius: 6px;
     opacity: 0.3;
     transition: all 0.3s;
 }
@@ -639,6 +711,7 @@
 .ns-letter.active {
     opacity: 1;
     transform: scale(1.2);
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);
 }
 
 .ns-a { background: #038141; color: white; }
@@ -679,7 +752,7 @@
 .cal-value {
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    background: linear-gradient(135deg, var(--amz-orange), #f0c14b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -695,25 +768,27 @@
 }
 
 .macro-card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
+    background: rgba(255,153,0,0.05);
+    border-radius: 8px;
     padding: 12px;
     text-align: center;
+    border: 1px solid #333;
 }
 
 .macro-val { font-weight: 700; font-size: 1.1rem; color: white; }
 .macro-name { font-size: 0.8rem; margin-top: 3px; }
 .macro-name.protein { color: #10b981; }
-.macro-name.carbs { color: #f59e0b; }
+.macro-name.carbs { color: var(--amz-orange); }
 .macro-name.fat { color: #ef4444; }
 
 /* Info boxes */
 .ai-info-box {
-    background: rgba(255,255,255,0.05);
-    border-radius: 15px;
+    background: rgba(255,153,0,0.05);
+    border-radius: 12px;
     padding: 15px;
     margin-bottom: 12px;
     color: white;
+    border: 1px solid #333;
 }
 
 .ai-info-box h4 {
@@ -722,6 +797,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    color: var(--amz-orange);
 }
 
 .benefit-row, .risk-row {
@@ -736,7 +812,7 @@
 .benefit-icon {
     width: 28px; height: 28px;
     background: rgba(34, 197, 94, 0.2);
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -747,7 +823,7 @@
 .risk-icon {
     width: 28px; height: 28px;
     background: rgba(239, 68, 68, 0.2);
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -762,20 +838,21 @@
 }
 
 .storage-item {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,153,0,0.05);
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 8px;
+    border: 1px solid #333;
 }
 
 .storage-item .label { font-size: 0.75rem; color: #9ca3af; }
-.storage-item .value { font-weight: 600; margin-top: 3px; }
+.storage-item .value { font-weight: 600; margin-top: 3px; color: var(--amz-orange); }
 
 /* Loading overlay */
 .ai-loading {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.9);
+    background: rgba(15, 17, 17, 0.95);
     z-index: 10000;
     flex-direction: column;
     align-items: center;
@@ -787,7 +864,7 @@
 .ai-spinner {
     width: 60px; height: 60px;
     border: 4px solid rgba(255,255,255,0.1);
-    border-top-color: #4ade80;
+    border-top-color: var(--amz-orange);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20px;
@@ -799,6 +876,8 @@
     .scanner-hero h1 { font-size: 1.5rem; }
     .manual-input { flex-direction: column; }
     .health-scores { flex-direction: column; }
+    .mode-tabs { flex-direction: column; }
+    .mode-tab { border-radius: 8px; }
 }
 {% endblock %}
 
@@ -833,7 +912,7 @@
     
     <div id="cameraSection" class="scanner-section" style="display: none;">
         <div id="reader"></div>
-        <p style="text-align: center; margin-top: 15px; color: #6b7280;">
+        <p style="text-align: center; margin-top: 15px; color: #9ca3af;">
             <i class="fas fa-info-circle"></i> QR kod yoki barcode'ni kameraga ko'rsating
         </p>
     </div>

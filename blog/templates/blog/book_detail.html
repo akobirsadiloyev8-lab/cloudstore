@@ -5,487 +5,1047 @@
 
 {% block head %}
 <style>
-    .book-detail-container {
-        max-width: 1200px;
-        margin: 30px auto;
+    :root {
+        --amz-orange: #ff9900;
+        --amz-orange-hover: #fa8900;
+        --amz-yellow: #ffd814;
+        --amz-yellow-hover: #f7ca00;
+        --amz-dark: #131921;
+        --amz-light-dark: #232f3e;
+        --amz-text: #0f1111;
+        --amz-link: #007185;
+        --amz-link-hover: #c7511f;
+        --amz-price: #b12704;
+        --amz-border: #ddd;
+        --amz-bg: #eaeded;
+        --amz-card: #fff;
+        --amz-star: #de7921;
+        --amz-green: #007600;
+    }
+
+    body.dark-mode {
+        --amz-text: #e0e0e0;
+        --amz-bg: #0f1111;
+        --amz-card: #1a1a1a;
+        --amz-border: #333;
+        --amz-link: #4fc3f7;
+        --amz-price: #ff8f8f;
+    }
+
+    .amz-product-page {
+        background: var(--amz-bg);
+        min-height: 100vh;
+        padding-top: 80px;
+    }
+
+    /* Breadcrumb */
+    .amz-breadcrumb {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+
+    .amz-breadcrumb a {
+        color: var(--amz-link);
+        text-decoration: none;
+    }
+
+    .amz-breadcrumb a:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-breadcrumb span {
+        color: var(--amz-text);
+        opacity: 0.7;
+    }
+
+    /* Main Product Container */
+    .amz-product-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 400px 1fr 300px;
+        gap: 20px;
         padding: 20px;
+        background: var(--amz-card);
+        border-radius: 8px;
     }
-    
-    .book-header {
-        display: flex;
-        gap: 40px;
-        margin-bottom: 40px;
-        background: var(--card-bg, #fff);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
+    /* Left Column - Image */
+    .amz-product-images {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
     }
-    
-    .book-cover {
-        flex-shrink: 0;
-        width: 250px;
-    }
-    
-    .book-cover img {
+
+    .amz-main-image {
         width: 100%;
-        height: 350px;
-        object-fit: cover;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    .no-cover {
-        width: 100%;
-        height: 350px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        border-radius: 10px;
+        height: 450px;
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 80px;
-        color: white;
+        overflow: hidden;
+        background: #fff;
+        cursor: zoom-in;
+        position: relative;
     }
-    
-    .book-info {
-        flex: 1;
+
+    .amz-main-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s;
     }
-    
-    .book-info h1 {
-        font-size: 2rem;
+
+    .amz-main-image:hover img {
+        transform: scale(1.1);
+    }
+
+    .amz-main-image .no-cover-icon {
+        font-size: 100px;
+        color: var(--amz-light-dark);
+        opacity: 0.3;
+    }
+
+    .amz-image-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #cc0c39;
+        color: #fff;
+        padding: 5px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        border-radius: 3px;
+        z-index: 1;
+    }
+
+    /* Middle Column - Product Info */
+    .amz-product-info {
+        padding: 0 20px;
+    }
+
+    .amz-product-title {
+        font-size: 1.6rem;
+        font-weight: 400;
+        color: var(--amz-text);
+        line-height: 1.3;
+        margin-bottom: 5px;
+    }
+
+    .amz-author-line {
+        font-size: 0.95rem;
+        color: var(--amz-text);
         margin-bottom: 10px;
-        color: var(--text-color, #333);
     }
-    
-    .author-name {
-        font-size: 1.2rem;
-        color: #6366f1;
-        margin-bottom: 20px;
+
+    .amz-author-line a {
+        color: var(--amz-link);
+        text-decoration: none;
     }
-    
-    .author-name img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-        vertical-align: middle;
+
+    .amz-author-line a:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
     }
-    
-    .book-meta {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
-    
-    .meta-item {
+
+    .amz-rating-line {
         display: flex;
         align-items: center;
         gap: 8px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-stars {
+        color: var(--amz-star);
+        font-size: 1rem;
+        display: flex;
+        gap: 1px;
+    }
+
+    .amz-rating-text {
+        color: var(--amz-link);
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .amz-rating-text:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-separator {
+        color: #999;
+        margin: 0 5px;
+    }
+
+    /* Format Options */
+    .amz-format-section {
+        margin: 15px 0;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-format-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .amz-format-btn {
+        padding: 10px 15px;
+        border: 2px solid var(--amz-border);
+        border-radius: 8px;
+        background: var(--amz-card);
+        cursor: pointer;
+        text-align: left;
+        min-width: 100px;
+        transition: all 0.2s;
+    }
+
+    .amz-format-btn:hover {
+        border-color: var(--amz-orange);
+    }
+
+    .amz-format-btn.selected {
+        border-color: var(--amz-orange);
+        box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
+    }
+
+    .amz-format-type {
+        font-size: 0.8rem;
+        color: var(--amz-text);
+        font-weight: 600;
+    }
+
+    .amz-format-info {
+        font-size: 0.75rem;
         color: #666;
+        margin-top: 3px;
     }
-    
-    .meta-item i {
-        color: #6366f1;
+
+    /* Product Details */
+    .amz-details-section {
+        margin: 20px 0;
     }
-    
-    .rating-display {
+
+    .amz-details-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--amz-text);
+        margin-bottom: 10px;
+    }
+
+    .amz-details-grid {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .amz-detail-label {
+        color: var(--amz-text);
+        font-weight: 600;
+    }
+
+    .amz-detail-value {
+        color: var(--amz-text);
+    }
+
+    .amz-detail-value a {
+        color: var(--amz-link);
+        text-decoration: none;
+    }
+
+    /* Description */
+    .amz-description {
+        margin: 20px 0;
+        padding: 20px 0;
+        border-top: 1px solid var(--amz-border);
+    }
+
+    .amz-description-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--amz-text);
+        margin-bottom: 15px;
+    }
+
+    .amz-description-text {
+        color: var(--amz-text);
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    /* Right Column - Buy Box */
+    .amz-buy-box {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        padding: 20px;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    .amz-price-section {
+        margin-bottom: 15px;
+    }
+
+    .amz-price-label {
+        font-size: 0.85rem;
+        color: #565959;
+    }
+
+    .amz-price {
+        font-size: 1.8rem;
+        color: var(--amz-price);
+        font-weight: 400;
+    }
+
+    .amz-free-badge {
+        display: inline-block;
+        background: var(--amz-green);
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .amz-availability {
+        color: var(--amz-green);
+        font-size: 1rem;
+        margin: 15px 0;
+    }
+
+    .amz-delivery-info {
+        font-size: 0.9rem;
+        color: var(--amz-text);
+        margin-bottom: 15px;
+    }
+
+    .amz-delivery-info strong {
+        color: var(--amz-text);
+    }
+
+    /* Action Buttons */
+    .amz-btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .amz-btn-yellow {
+        background: var(--amz-yellow);
+        color: #0f1111;
+    }
+
+    .amz-btn-yellow:hover {
+        background: var(--amz-yellow-hover);
+    }
+
+    .amz-btn-orange {
+        background: var(--amz-orange);
+        color: #fff;
+    }
+
+    .amz-btn-orange:hover {
+        background: var(--amz-orange-hover);
+    }
+
+    .amz-btn-outline {
+        background: transparent;
+        border: 1px solid var(--amz-border);
+        color: var(--amz-text);
+    }
+
+    .amz-btn-outline:hover {
+        background: #f7f8f8;
+    }
+
+    .amz-btn-favorite {
+        background: #fff;
+        border: 1px solid #d5d9d9;
+        color: var(--amz-text);
+    }
+
+    .amz-btn-favorite:hover {
+        background: #f7f8f8;
+    }
+
+    .amz-btn-favorite.active {
+        background: #fef2f2;
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    /* AI Box */
+    .amz-ai-box {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--amz-border);
+    }
+
+    .amz-ai-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--amz-text);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .amz-ai-title i {
+        color: var(--amz-orange);
+    }
+
+    /* Progress Bar */
+    .amz-progress-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+
+    .amz-progress-label {
+        font-size: 0.85rem;
+        color: var(--amz-text);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .amz-progress-bar {
+        height: 8px;
+        background: #d1d5db;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .amz-progress-fill {
+        height: 100%;
+        background: var(--amz-green);
+        border-radius: 4px;
+        transition: width 0.3s;
+    }
+
+    /* Reviews Section */
+    .amz-reviews-section {
+        max-width: 1500px;
+        margin: 20px auto;
+        padding: 20px;
+        background: var(--amz-card);
+        border-radius: 8px;
+    }
+
+    .amz-section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--amz-text);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    /* Review Summary */
+    .amz-review-summary {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 30px;
+    }
+
+    .amz-overall-rating {
+        text-align: center;
+    }
+
+    .amz-big-rating {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--amz-text);
+    }
+
+    .amz-rating-bars {
+        flex: 1;
+        max-width: 300px;
+    }
+
+    .amz-rating-bar-row {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
+        font-size: 0.85rem;
     }
-    
-    .stars {
-        color: #fbbf24;
-        font-size: 1.3rem;
-    }
-    
-    .rating-number {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #333;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 15px;
-        margin-top: 30px;
-        flex-wrap: wrap;
-    }
-    
-    .btn-action {
-        padding: 12px 30px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 500;
-        transition: all 0.3s;
+
+    .amz-rating-bar-row a {
+        color: var(--amz-link);
         text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+        white-space: nowrap;
     }
-    
-    .btn-read {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
+
+    .amz-rating-bar-track {
+        flex: 1;
+        height: 20px;
+        background: #f0f2f2;
+        border-radius: 3px;
+        overflow: hidden;
     }
-    
-    .btn-read:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+
+    .amz-rating-bar-fill {
+        height: 100%;
+        background: var(--amz-star);
     }
-    
-    .btn-favorite {
-        background: #fff;
-        border: 2px solid #ef4444 !important;
-        color: #ef4444;
-    }
-    
-    .btn-favorite.active {
-        background: #ef4444;
-        color: white;
-    }
-    
-    .btn-summary {
-        background: #10b981;
-        color: white;
-    }
-    
-    /* Tabs */
-    .tabs-container {
-        background: var(--card-bg, #fff);
-        border-radius: 15px;
+
+    /* Review Form */
+    .amz-review-form {
+        background: #f7f8f8;
+        border-radius: 8px;
         padding: 20px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
+        margin-bottom: 25px;
     }
-    
-    .tabs {
-        display: flex;
-        border-bottom: 2px solid #eee;
-        margin-bottom: 20px;
-    }
-    
-    .tab {
-        padding: 15px 25px;
-        cursor: pointer;
-        border: none;
-        background: none;
+
+    .amz-form-title {
         font-size: 1rem;
-        color: #666;
-        position: relative;
-    }
-    
-    .tab.active {
-        color: #6366f1;
-        font-weight: 600;
-    }
-    
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #6366f1;
-        border-radius: 3px 3px 0 0;
-    }
-    
-    .tab-content {
-        display: none;
-    }
-    
-    .tab-content.active {
-        display: block;
-    }
-    
-    /* Description */
-    .description {
-        line-height: 1.8;
-        color: var(--text-color, #444);
-    }
-    
-    /* Rating Form */
-    .rating-form {
-        background: #f8fafc;
-        padding: 25px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    }
-    
-    .rating-form h3 {
+        font-weight: 700;
+        color: var(--amz-text);
         margin-bottom: 15px;
     }
-    
-    .star-rating {
+
+    .amz-star-select {
         display: flex;
         gap: 5px;
         margin-bottom: 15px;
     }
-    
-    .star-rating i {
-        font-size: 2rem;
+
+    .amz-star-select i {
+        font-size: 1.8rem;
         color: #ddd;
         cursor: pointer;
         transition: color 0.2s;
     }
-    
-    .star-rating i:hover,
-    .star-rating i.active {
-        color: #fbbf24;
+
+    .amz-star-select i:hover,
+    .amz-star-select i.active {
+        color: var(--amz-star);
     }
-    
-    .rating-form textarea {
-        width: 100%;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        resize: vertical;
-        min-height: 100px;
-    }
-    
-    .rating-form input[type="text"] {
+
+    .amz-form-input {
         width: 100%;
         padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 15px;
+        border: 1px solid var(--amz-border);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        background: var(--amz-card);
+        color: var(--amz-text);
     }
-    
-    /* Reviews */
-    .review-item {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
+
+    .amz-form-textarea {
+        min-height: 100px;
+        resize: vertical;
     }
-    
-    .review-header {
+
+    /* Individual Review */
+    .amz-review {
+        padding: 20px 0;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-review-header {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 10px;
     }
-    
-    .reviewer-name {
-        font-weight: 600;
-    }
-    
-    .review-stars {
-        color: #fbbf24;
-    }
-    
-    .review-text {
-        color: #666;
-        line-height: 1.6;
-    }
-    
-    /* Q&A */
-    .qa-form {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .qa-form input {
-        flex: 1;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-    
-    .qa-form button {
-        padding: 15px 25px;
-        background: #6366f1;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-    
-    .qa-answer {
-        background: #f0fdf4;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 4px solid #10b981;
-        display: none;
-    }
-    
-    /* Summary */
-    .summary-box {
-        background: #fef3c7;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 4px solid #f59e0b;
-        display: none;
-    }
-    
-    /* Similar Books */
-    .similar-books {
-        margin-top: 30px;
-    }
-    
-    .similar-books h2 {
-        margin-bottom: 20px;
-    }
-    
-    .books-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-    }
-    
-    .book-card {
-        background: var(--card-bg, #fff);
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s;
-    }
-    
-    .book-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .book-card-cover {
-        height: 200px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+    .amz-reviewer-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--amz-light-dark);
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
     }
-    
-    .book-card-cover img {
+
+    .amz-reviewer-name {
+        font-size: 0.9rem;
+        color: var(--amz-text);
+        font-weight: 600;
+    }
+
+    .amz-review-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .amz-review-stars {
+        color: var(--amz-star);
+        font-size: 0.9rem;
+    }
+
+    .amz-review-title {
+        font-weight: 700;
+        color: var(--amz-text);
+    }
+
+    .amz-review-date {
+        font-size: 0.85rem;
+        color: #565959;
+        margin-bottom: 10px;
+    }
+
+    .amz-review-text {
+        color: var(--amz-text);
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    /* Q&A Section */
+    .amz-qa-section {
+        max-width: 1500px;
+        margin: 20px auto;
+        padding: 20px;
+        background: var(--amz-card);
+        border-radius: 8px;
+    }
+
+    .amz-qa-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .amz-qa-input {
+        flex: 1;
+        padding: 12px 15px;
+        border: 1px solid var(--amz-border);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        background: var(--amz-card);
+        color: var(--amz-text);
+    }
+
+    .amz-qa-btn {
+        padding: 12px 25px;
+        background: var(--amz-yellow);
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #0f1111;
+    }
+
+    .amz-qa-answer {
+        background: #f0fdf4;
+        border-left: 4px solid var(--amz-green);
+        padding: 20px;
+        border-radius: 0 8px 8px 0;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .amz-qa-answer h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--amz-green);
+        margin-bottom: 10px;
+    }
+
+    /* Summary Box */
+    .amz-summary-box {
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 15px;
+        display: none;
+    }
+
+    .amz-summary-box h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #d97706;
+        margin-bottom: 10px;
+    }
+
+    /* Similar Books */
+    .amz-similar-section {
+        max-width: 1500px;
+        margin: 20px auto;
+        padding: 20px;
+        background: var(--amz-card);
+        border-radius: 8px;
+    }
+
+    .amz-similar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .amz-similar-card {
+        text-decoration: none;
+        transition: transform 0.2s;
+    }
+
+    .amz-similar-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .amz-similar-cover {
+        height: 200px;
+        background: linear-gradient(135deg, var(--amz-light-dark), #37475a);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+
+    .amz-similar-cover img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-    
-    .book-card-info {
-        padding: 15px;
+
+    .amz-similar-cover i {
+        font-size: 3rem;
+        color: #fff;
+        opacity: 0.5;
     }
-    
-    .book-card-title {
-        font-weight: 600;
-        margin-bottom: 5px;
-        color: var(--text-color, #333);
-    }
-    
-    .book-card-author {
-        color: #666;
+
+    .amz-similar-title {
         font-size: 0.9rem;
+        color: var(--amz-link);
+        line-height: 1.3;
+        margin-bottom: 5px;
     }
-    
-    /* Loading */
-    .loading {
+
+    .amz-similar-card:hover .amz-similar-title {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-similar-author {
+        font-size: 0.8rem;
+        color: #565959;
+    }
+
+    /* Loading Spinner */
+    .amz-loading {
         display: none;
         text-align: center;
         padding: 20px;
     }
-    
-    .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid #eee;
-        border-top-color: #6366f1;
+
+    .amz-spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--amz-border);
+        border-top-color: var(--amz-orange);
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: amzSpin 0.8s linear infinite;
+        margin: 0 auto 10px;
     }
-    
-    @keyframes spin {
+
+    @keyframes amzSpin {
         to { transform: rotate(360deg); }
     }
-    
-    /* Dark Mode */
-    body.dark-mode .book-header,
-    body.dark-mode .tabs-container,
-    body.dark-mode .book-card {
-        background: #1e1e1e;
-    }
-    
-    body.dark-mode .rating-form {
-        background: #2d2d2d;
-    }
-    
-    body.dark-mode .rating-form input,
-    body.dark-mode .rating-form textarea,
-    body.dark-mode .qa-form input {
-        background: #333;
-        border-color: #444;
-        color: #fff;
-    }
-    
-    @media (max-width: 768px) {
-        .book-header {
-            flex-direction: column;
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .amz-product-container {
+            grid-template-columns: 350px 1fr;
         }
-        
-        .book-cover {
-            width: 100%;
-            max-width: 250px;
+
+        .amz-buy-box {
+            position: static;
+            grid-column: 1 / -1;
+            order: -1;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .amz-product-container {
+            grid-template-columns: 1fr;
+        }
+
+        .amz-product-images {
+            position: static;
+            max-width: 350px;
             margin: 0 auto;
         }
-        
-        .action-buttons {
-            justify-content: center;
+
+        .amz-main-image {
+            height: 350px;
+        }
+
+        .amz-review-summary {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .amz-product-page {
+            padding-top: 70px;
+        }
+
+        .amz-product-container {
+            padding: 15px;
+        }
+
+        .amz-product-title {
+            font-size: 1.3rem;
+        }
+
+        .amz-main-image {
+            height: 280px;
+        }
+
+        .amz-qa-form {
+            flex-direction: column;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Orqaga tugmasi -->
-<a href="{% url 'all_books' %}" class="back-btn" style="position:fixed; top:80px; left:20px; background:linear-gradient(45deg,#667eea,#764ba2); color:white; padding:10px 20px; border-radius:25px; text-decoration:none; font-weight:600; z-index:999; display:flex; align-items:center; gap:8px; box-shadow:0 4px 15px rgba(102,126,234,0.3);">
-    <i class="fas fa-arrow-left"></i> Orqaga
-</a>
+<div class="amz-product-page">
+    <!-- Breadcrumb -->
+    <div class="amz-breadcrumb">
+        <a href="{% url 'boshlash' %}">Bosh sahifa</a>
+        <span> › </span>
+        <a href="{% url 'all_books' %}">Kitoblar</a>
+        <span> › </span>
+        {% if book.category %}
+        <a href="{% url 'all_books' %}?category={{ book.category.slug }}">{{ book.category.name }}</a>
+        <span> › </span>
+        {% endif %}
+        <span>{{ book.title }}</span>
+    </div>
 
-<div class="book-detail-container" style="position:relative; z-index:1; padding-top:30px;">
-    <!-- Book Header -->
-    <div class="book-header">
-        <div class="book-cover">
-            {% if book.cover_image %}
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
-            {% else %}
-                <div class="no-cover"><i class="fas fa-book"></i></div>
-            {% endif %}
-        </div>
-        
-        <div class="book-info">
-            <h1>{{ book.title }}</h1>
-            <p class="author-name">
-                {% if book.author.image %}
-                    <img src="{{ book.author.image.url }}" alt="{{ book.author.name }}">
+    <!-- Main Product Container -->
+    <div class="amz-product-container">
+        <!-- Left Column - Images -->
+        <div class="amz-product-images">
+            <div class="amz-main-image">
+                {% if book.average_rating >= 4.5 %}
+                <span class="amz-image-badge">Bestseller</span>
                 {% endif %}
-                {{ book.author.name }}
-            </p>
-            
-            <div class="book-meta">
-                {% if book.year_written %}
-                <div class="meta-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>{{ book.year_written }} yil</span>
-                </div>
-                {% endif %}
-                <div class="meta-item">
-                    <i class="fas fa-file-alt"></i>
-                    <span>{{ total_pages }} sahifa</span>
-                </div>
-                <div class="meta-item">
-                    <i class="fas fa-eye"></i>
-                    <span>{{ book.views_count }} ko'rilgan</span>
-                </div>
-                {% if book.category %}
-                <div class="meta-item">
-                    <i class="fas fa-folder"></i>
-                    <span>{{ book.category.name }}</span>
-                </div>
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" id="mainImage">
+                {% else %}
+                    <i class="fas fa-book no-cover-icon"></i>
                 {% endif %}
             </div>
+        </div>
+
+        <!-- Middle Column - Product Info -->
+        <div class="amz-product-info">
+            <h1 class="amz-product-title">{{ book.title }}</h1>
             
-            <div class="rating-display">
-                <div class="stars">
+            <p class="amz-author-line">
+                <a href="{% url 'all_books' %}?author={{ book.author.id }}">{{ book.author.name }}</a> (muallif)
+            </p>
+
+            <div class="amz-rating-line">
+                <div class="amz-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= book.average_rating %}
+                            <i class="fas fa-star"></i>
+                        {% elif forloop.counter <= book.average_rating|add:"0.5" %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="amz-rating-text" onclick="document.getElementById('reviewsSection').scrollIntoView({behavior: 'smooth'})">
+                    {{ book.average_rating|floatformat:1 }}
+                </span>
+                <span class="amz-separator">|</span>
+                <span class="amz-rating-text" onclick="document.getElementById('reviewsSection').scrollIntoView({behavior: 'smooth'})">
+                    {{ book.total_ratings }} ta baho
+                </span>
+            </div>
+
+            <!-- Format Options -->
+            <div class="amz-format-section">
+                <div class="amz-format-options">
+                    {% if book.file %}
+                    <button class="amz-format-btn selected">
+                        <div class="amz-format-type">
+                            {% if '.pdf' in book.file.name|lower %}
+                            <i class="fas fa-file-pdf" style="color: #e74c3c;"></i> PDF
+                            {% elif '.docx' in book.file.name|lower or '.doc' in book.file.name|lower %}
+                            <i class="fas fa-file-word" style="color: #2980b9;"></i> DOCX
+                            {% elif '.txt' in book.file.name|lower %}
+                            <i class="fas fa-file-alt" style="color: #7f8c8d;"></i> TXT
+                            {% elif '.epub' in book.file.name|lower %}
+                            <i class="fas fa-book" style="color: #8e44ad;"></i> EPUB
+                            {% else %}
+                            <i class="fas fa-file"></i> Fayl
+                            {% endif %}
+                        </div>
+                        <div class="amz-format-info">Yuklab olish uchun tayyor</div>
+                    </button>
+                    {% else %}
+                    <button class="amz-format-btn" disabled>
+                        <div class="amz-format-type"><i class="fas fa-times-circle"></i> Fayl yo'q</div>
+                        <div class="amz-format-info">Mavjud emas</div>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="amz-details-section">
+                <h3 class="amz-details-title">Kitob ma'lumotlari</h3>
+                <div class="amz-details-grid">
+                    {% if book.year_written %}
+                    <span class="amz-detail-label">Yozilgan yil</span>
+                    <span class="amz-detail-value">{{ book.year_written }}</span>
+                    {% endif %}
+                    
+                    <span class="amz-detail-label">Sahifalar soni</span>
+                    <span class="amz-detail-value">{{ total_pages }} sahifa</span>
+                    
+                    <span class="amz-detail-label">Ko'rishlar</span>
+                    <span class="amz-detail-value">{{ book.views_count }} marta</span>
+                    
+                    {% if file_format %}
+                    <span class="amz-detail-label">Fayl formati</span>
+                    <span class="amz-detail-value">{{ file_format }}</span>
+                    {% endif %}
+                    
+                    {% if file_size %}
+                    <span class="amz-detail-label">Fayl hajmi</span>
+                    <span class="amz-detail-value">{{ file_size }}</span>
+                    {% endif %}
+                    
+                    {% if book.category %}
+                    <span class="amz-detail-label">Kategoriya</span>
+                    <span class="amz-detail-value">
+                        <a href="{% url 'all_books' %}?category={{ book.category.slug }}">{{ book.category.name }}</a>
+                    </span>
+                    {% endif %}
+                    
+                    <span class="amz-detail-label">Muallif</span>
+                    <span class="amz-detail-value">
+                        <a href="{% url 'all_books' %}?author={{ book.author.id }}">{{ book.author.name }}</a>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="amz-description">
+                <h3 class="amz-description-title">Kitob haqida</h3>
+                <div class="amz-description-text">
+                    {% if book.description %}
+                        {{ book.description|linebreaks }}
+                    {% else %}
+                        <p style="color:#999">Tavsif mavjud emas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Buy Box -->
+        <div class="amz-buy-box">
+            <div class="amz-price-section">
+                <span class="amz-price-label">Narxi:</span>
+                <span class="amz-price">Bepul</span>
+                <span class="amz-free-badge">FREE</span>
+            </div>
+
+            <div class="amz-availability">
+                <i class="fas fa-check-circle"></i> Mavjud
+            </div>
+
+            <div class="amz-delivery-info">
+                <i class="fas fa-download" style="color: var(--amz-orange);"></i>
+                <strong>Darhol yuklab oling</strong> - hech qanday kutish yo'q
+            </div>
+
+            <!-- Action Buttons -->
+            {% if book.file %}
+            <a href="{% url 'download_book' book.id %}" class="amz-btn amz-btn-yellow">
+                <i class="fas fa-download"></i> Yuklab olish {% if file_format %}({{ file_format }}){% endif %}
+            </a>
+            {% if file_size %}
+            <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: -5px; margin-bottom: 10px;">
+                <i class="fas fa-file"></i> {{ file_size }}
+            </div>
+            {% endif %}
+            {% else %}
+            <button class="amz-btn amz-btn-yellow" disabled style="opacity: 0.6; cursor: not-allowed;">
+                <i class="fas fa-exclamation-circle"></i> Fayl mavjud emas
+            </button>
+            {% endif %}
+            
+            <button class="amz-btn amz-btn-favorite {% if is_favorite %}active{% endif %}" 
+                    onclick="toggleFavorite({{ book.id }})" id="favoriteBtn">
+                <i class="fas fa-heart"></i> 
+                <span>{% if is_favorite %}Sevimlilardan o'chirish{% else %}Sevimlilarga qo'shish{% endif %}</span>
+            </button>
+
+            <!-- AI Box -->
+            <div class="amz-ai-box">
+                <div class="amz-ai-title">
+                    <i class="fas fa-robot"></i> AI Xulosa
+                </div>
+                <button class="amz-btn amz-btn-outline" onclick="getSummary({{ book.id }})">
+                    <i class="fas fa-magic"></i> Xulosa olish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Summary Box -->
+    <div class="amz-summary-box" id="summaryBox" style="max-width: 1500px; margin: 20px auto;">
+        <h4><i class="fas fa-magic"></i> AI Xulosa</h4>
+        <p id="summaryText"></p>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="amz-reviews-section" id="reviewsSection">
+        <h2 class="amz-section-title">Mijozlar sharhlari</h2>
+        
+        <!-- Review Summary -->
+        <div class="amz-review-summary">
+            <div class="amz-overall-rating">
+                <div class="amz-big-rating">{{ book.average_rating|floatformat:1 }}</div>
+                <div class="amz-stars" style="justify-content: center;">
                     {% for i in "12345" %}
                         {% if forloop.counter <= book.average_rating %}
                             <i class="fas fa-star"></i>
@@ -494,149 +1054,146 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <span class="rating-number">{{ book.average_rating|floatformat:1 }}</span>
-                <span style="color:#666">({{ book.total_ratings }} baho)</span>
-            </div>
-            
-            <div class="action-buttons">
-                <a href="{% url 'read_book' book.id %}" class="btn-action btn-read">
-                    <i class="fas fa-book-reader"></i> O'qish
-                </a>
-                <button class="btn-action btn-favorite {% if is_favorite %}active{% endif %}" 
-                        onclick="toggleFavorite({{ book.id }})" id="favoriteBtn">
-                    <i class="fas fa-heart"></i> 
-                    <span>{% if is_favorite %}Sevimlilardan o'chirish{% else %}Sevimlilarga qo'shish{% endif %}</span>
-                </button>
-                <button class="btn-action btn-summary" onclick="getSummary({{ book.id }})">
-                    <i class="fas fa-magic"></i> AI Xulosa
-                </button>
-            </div>
-            
-            {% if reading_progress %}
-            <div style="margin-top:20px; padding:15px; background:#f0fdf4; border-radius:8px;">
-                <strong>O'qish jarayoni:</strong> {{ reading_progress.progress_percent }}% 
-                ({{ reading_progress.current_page }}/{{ reading_progress.total_pages }} sahifa)
-                <div style="margin-top:10px; background:#ddd; height:8px; border-radius:4px;">
-                    <div style="width:{{ reading_progress.progress_percent }}%; background:#10b981; height:100%; border-radius:4px;"></div>
+                <div style="font-size: 0.9rem; color: #565959; margin-top: 5px;">
+                    {{ book.total_ratings }} global baho
                 </div>
             </div>
-            {% endif %}
-        </div>
-    </div>
-    
-    <!-- Summary Box -->
-    <div class="summary-box" id="summaryBox">
-        <h3><i class="fas fa-magic"></i> AI Xulosa</h3>
-        <p id="summaryText"></p>
-    </div>
-    
-    <!-- Tabs -->
-    <div class="tabs-container">
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('description')">Tavsif</button>
-            <button class="tab" onclick="showTab('reviews')">Baholar ({{ book.total_ratings }})</button>
-            <button class="tab" onclick="showTab('qa')">Savol-Javob</button>
-        </div>
-        
-        <!-- Description Tab -->
-        <div class="tab-content active" id="description-tab">
-            <div class="description">
-                {% if book.description %}
-                    {{ book.description|linebreaks }}
-                {% else %}
-                    <p style="color:#999">Tavsif mavjud emas</p>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Reviews Tab -->
-        <div class="tab-content" id="reviews-tab">
-            <div class="rating-form">
-                <h3>Baho qo'yish</h3>
-                <div class="star-rating" id="starRating">
-                    <i class="far fa-star" data-rating="1"></i>
-                    <i class="far fa-star" data-rating="2"></i>
-                    <i class="far fa-star" data-rating="3"></i>
-                    <i class="far fa-star" data-rating="4"></i>
-                    <i class="far fa-star" data-rating="5"></i>
-                </div>
-                {% if not user.is_authenticated %}
-                <input type="text" id="reviewerName" placeholder="Ismingiz" required>
-                {% endif %}
-                <textarea id="reviewComment" placeholder="Fikringizni yozing..."></textarea>
-                <button class="btn-action btn-read" style="margin-top:15px" onclick="submitRating({{ book.id }})">
-                    <i class="fas fa-paper-plane"></i> Yuborish
-                </button>
-            </div>
-            
-            <div id="reviewsList">
-                {% for rating in ratings %}
-                <div class="review-item">
-                    <div class="review-header">
-                        <span class="reviewer-name">
-                            {% if rating.user %}{{ rating.user.username }}{% else %}{{ rating.name|default:"Anonim" }}{% endif %}
-                        </span>
-                        <div class="review-stars">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= rating.rating %}
-                                    <i class="fas fa-star"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+            <div class="amz-rating-bars">
+                <div class="amz-rating-bar-row">
+                    <a>5 yulduz</a>
+                    <div class="amz-rating-bar-track">
+                        <div class="amz-rating-bar-fill" style="width: 60%"></div>
                     </div>
-                    <p class="review-text">{{ rating.comment }}</p>
-                    <small style="color:#999">{{ rating.created_at|date:"d.m.Y H:i" }}</small>
                 </div>
-                {% empty %}
-                <p style="text-align:center; color:#999; padding:30px">Hali baho yo'q</p>
-                {% endfor %}
+                <div class="amz-rating-bar-row">
+                    <a>4 yulduz</a>
+                    <div class="amz-rating-bar-track">
+                        <div class="amz-rating-bar-fill" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div class="amz-rating-bar-row">
+                    <a>3 yulduz</a>
+                    <div class="amz-rating-bar-track">
+                        <div class="amz-rating-bar-fill" style="width: 10%"></div>
+                    </div>
+                </div>
+                <div class="amz-rating-bar-row">
+                    <a>2 yulduz</a>
+                    <div class="amz-rating-bar-track">
+                        <div class="amz-rating-bar-fill" style="width: 3%"></div>
+                    </div>
+                </div>
+                <div class="amz-rating-bar-row">
+                    <a>1 yulduz</a>
+                    <div class="amz-rating-bar-track">
+                        <div class="amz-rating-bar-fill" style="width: 2%"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <!-- Q&A Tab -->
-        <div class="tab-content" id="qa-tab">
-            <h3>Kitob haqida savol bering</h3>
-            <p style="color:#666; margin-bottom:20px">AI sizning savolingizga kitob mazmuni asosida javob beradi</p>
-            
-            <div class="qa-form">
-                <input type="text" id="questionInput" placeholder="Savolingizni yozing...">
-                <button onclick="askQuestion({{ book.id }})">
-                    <i class="fas fa-paper-plane"></i> So'rash
-                </button>
+
+        <!-- Review Form -->
+        <div class="amz-review-form">
+            <h3 class="amz-form-title">Sharh qoldiring</h3>
+            <div class="amz-star-select" id="starRating">
+                <i class="far fa-star" data-rating="1"></i>
+                <i class="far fa-star" data-rating="2"></i>
+                <i class="far fa-star" data-rating="3"></i>
+                <i class="far fa-star" data-rating="4"></i>
+                <i class="far fa-star" data-rating="5"></i>
             </div>
-            
-            <div class="loading" id="qaLoading">
-                <div class="spinner" style="margin:0 auto"></div>
-                <p>AI javob yozmoqda...</p>
+            {% if not user.is_authenticated %}
+            <input type="text" class="amz-form-input" id="reviewerName" placeholder="Ismingiz">
+            {% endif %}
+            <textarea class="amz-form-input amz-form-textarea" id="reviewComment" placeholder="Fikringizni yozing..."></textarea>
+            <button class="amz-btn amz-btn-yellow" style="width: auto; padding: 10px 30px;" onclick="submitRating({{ book.id }})">
+                <i class="fas fa-paper-plane"></i> Yuborish
+            </button>
+        </div>
+
+        <!-- Reviews List -->
+        <div id="reviewsList">
+            {% for rating in ratings %}
+            <div class="amz-review">
+                <div class="amz-review-header">
+                    <span class="amz-reviewer-avatar">
+                        {% if rating.user %}{{ rating.user.username|slice:":1"|upper }}{% else %}{{ rating.name|slice:":1"|upper|default:"A" }}{% endif %}
+                    </span>
+                    <span class="amz-reviewer-name">
+                        {% if rating.user %}{{ rating.user.username }}{% else %}{{ rating.name|default:"Anonim" }}{% endif %}
+                    </span>
+                </div>
+                <div class="amz-review-rating">
+                    <div class="amz-review-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= rating.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="amz-review-title">Tasdiqlangan xarid</span>
+                </div>
+                <div class="amz-review-date">
+                    <i class="far fa-calendar-alt"></i> {{ rating.created_at|date:"d F, Y" }}
+                </div>
+                <p class="amz-review-text">{{ rating.comment }}</p>
             </div>
-            
-            <div class="qa-answer" id="qaAnswer">
-                <h4><i class="fas fa-robot"></i> AI Javobi:</h4>
-                <p id="answerText"></p>
-            </div>
+            {% empty %}
+            <p style="text-align:center; color:#999; padding:40px">
+                <i class="far fa-comment-dots" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+                Hali sharh yo'q. Birinchi bo'lib sharh qoldiring!
+            </p>
+            {% endfor %}
         </div>
     </div>
-    
+
+    <!-- Q&A Section -->
+    <div class="amz-qa-section">
+        <h2 class="amz-section-title">
+            <i class="fas fa-question-circle"></i> Kitob haqida savol bering
+        </h2>
+        <p style="color: #565959; margin-bottom: 20px;">
+            AI sizning savolingizga kitob mazmuni asosida javob beradi
+        </p>
+        
+        <div class="amz-qa-form">
+            <input type="text" class="amz-qa-input" id="questionInput" placeholder="Savolingizni yozing...">
+            <button class="amz-qa-btn" onclick="askQuestion({{ book.id }})">
+                <i class="fas fa-paper-plane"></i> So'rash
+            </button>
+        </div>
+
+        <div class="amz-loading" id="qaLoading">
+            <div class="amz-spinner"></div>
+            <p>AI javob yozmoqda...</p>
+        </div>
+
+        <div class="amz-qa-answer" id="qaAnswer">
+            <h4><i class="fas fa-robot"></i> AI Javobi:</h4>
+            <p id="answerText"></p>
+        </div>
+    </div>
+
     <!-- Similar Books -->
     {% if similar_books %}
-    <div class="similar-books">
-        <h2><i class="fas fa-book"></i> O'xshash Kitoblar</h2>
-        <div class="books-grid">
+    <div class="amz-similar-section">
+        <h2 class="amz-section-title">
+            <i class="fas fa-book"></i> Shunga o'xshash kitoblar
+        </h2>
+        <div class="amz-similar-grid">
             {% for similar in similar_books %}
-            <a href="{% url 'book_detail' similar.id %}" class="book-card" style="text-decoration:none">
-                <div class="book-card-cover">
+            <a href="{% url 'book_detail' similar.id %}" class="amz-similar-card">
+                <div class="amz-similar-cover">
                     {% if similar.cover_image %}
                         <img src="{{ similar.cover_image.url }}" alt="{{ similar.title }}">
                     {% else %}
                         <i class="fas fa-book"></i>
                     {% endif %}
                 </div>
-                <div class="book-card-info">
-                    <div class="book-card-title">{{ similar.title }}</div>
-                    <div class="book-card-author">{{ similar.author.name }}</div>
-                </div>
+                <div class="amz-similar-title">{{ similar.title }}</div>
+                <div class="amz-similar-author">{{ similar.author.name }}</div>
             </a>
             {% endfor %}
         </div>
@@ -652,15 +1209,6 @@ function getCSRFToken() {
 }
 
 let selectedRating = 0;
-
-// Tab switching
-function showTab(tabName) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
-    event.target.classList.add('active');
-    document.getElementById(tabName + '-tab').classList.add('active');
-}
 
 // Star rating
 document.querySelectorAll('#starRating i').forEach(star => {
@@ -760,6 +1308,7 @@ async function getSummary(bookId) {
     
     text.textContent = "Yuklanmoqda...";
     box.style.display = "block";
+    box.scrollIntoView({behavior: 'smooth'});
     
     try {
         const response = await fetch('/get-summary/', {
@@ -819,6 +1368,17 @@ async function askQuestion(bookId) {
         document.getElementById('qaLoading').style.display = 'none';
         alert("Xatolik yuz berdi");
     }
+}
+
+// Image zoom effect
+const mainImage = document.getElementById('mainImage');
+if (mainImage) {
+    mainImage.parentElement.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width * 100;
+        const y = (e.clientY - rect.top) / rect.height * 100;
+        mainImage.style.transformOrigin = `${x}% ${y}%`;
+    });
 }
 </script>
 {% endblock %}

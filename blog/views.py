@@ -2501,11 +2501,16 @@ def feedback_list(request):
 
 
 def submit_feedback(request):
+    from django.contrib import messages
     if request.method == 'POST':
         name = request.POST.get('name', 'Anonim' if not request.user.is_authenticated else request.user.username)
-        message = request.POST.get('message', '')
-        if message:
-            Feedback.objects.create(user=request.user if request.user.is_authenticated else None, name=name, message=message)
+        message_text = request.POST.get('message', '')
+        redirect_to = request.POST.get('redirect_to', 'boshlash')
+        if message_text:
+            Feedback.objects.create(user=request.user if request.user.is_authenticated else None, name=name, message=message_text)
+            messages.success(request, "Fikringiz muvaffaqiyatli yuborildi! Rahmat!")
+        if redirect_to == 'about':
+            return redirect('about')
         return redirect('boshlash')
     return redirect('boshlash')
 
@@ -3357,6 +3362,7 @@ def book_detail(request, book_id):
     """Kitob haqida batafsil sahifa"""
     from .models import Book, BookRating, Favorite, ReadingProgress, SearchQuery
     from django.shortcuts import get_object_or_404
+    import os
     
     book = get_object_or_404(Book, id=book_id)
     book.views_count += 1
@@ -3365,6 +3371,23 @@ def book_detail(request, book_id):
     ratings = book.ratings.all()[:10]
     is_favorite = False
     reading_progress = None
+    
+    # Fayl formati
+    file_format = None
+    file_size = None
+    if book.file:
+        file_ext = os.path.splitext(book.file.name)[1].upper().replace('.', '')
+        file_format = file_ext if file_ext else 'Noma\'lum'
+        try:
+            file_size_bytes = book.file.size
+            if file_size_bytes < 1024:
+                file_size = f"{file_size_bytes} B"
+            elif file_size_bytes < 1024 * 1024:
+                file_size = f"{file_size_bytes / 1024:.1f} KB"
+            else:
+                file_size = f"{file_size_bytes / (1024 * 1024):.1f} MB"
+        except:
+            file_size = None
     
     if request.user.is_authenticated:
         is_favorite = Favorite.objects.filter(user=request.user, book=book).exists()
@@ -3391,8 +3414,46 @@ def book_detail(request, book_id):
         'reading_progress': reading_progress,
         'similar_books': similar_books,
         'total_pages': book.pages.count(),
+        'file_format': file_format,
+        'file_size': file_size,
     }
     return render(request, 'blog/book_detail.html', context)
+
+
+def download_book(request, book_id):
+    """Kitobni yuklab olish - asl formatda"""
+    from .models import Book
+    from django.shortcuts import get_object_or_404
+    from django.http import FileResponse, HttpResponse
+    import os
+    import mimetypes
+    
+    book = get_object_or_404(Book, id=book_id)
+    
+    if not book.file:
+        return HttpResponse("Kitob fayli mavjud emas", status=404)
+    
+    file_path = book.file.path
+    
+    if not os.path.exists(file_path):
+        return HttpResponse("Fayl topilmadi", status=404)
+    
+    # Fayl nomini olish
+    original_filename = os.path.basename(book.file.name)
+    # Kitob nomi + asl kengaytma
+    file_ext = os.path.splitext(original_filename)[1]
+    safe_title = "".join(c for c in book.title if c.isalnum() or c in (' ', '-', '_')).strip()
+    download_filename = f"{safe_title}{file_ext}"
+    
+    # MIME type aniqlash
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if not mime_type:
+        mime_type = 'application/octet-stream'
+    
+    # Faylni yuborish
+    response = FileResponse(open(file_path, 'rb'), content_type=mime_type)
+    response['Content-Disposition'] = f'attachment; filename="{download_filename}"'
+    return response
 
 
 @login_required

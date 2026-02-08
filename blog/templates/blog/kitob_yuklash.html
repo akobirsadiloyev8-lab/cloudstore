@@ -1,693 +1,707 @@
+{% extends 'blog/boshlash.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitob yuklash</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
+{% block title %}Kitob yuklash - Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --amz-orange: #ff9900;
+        --amz-orange-hover: #ffad33;
+        --amz-dark: #131921;
+        --amz-light-dark: #232f3e;
+        --amz-text: #0f1111;
+        --amz-link: #007185;
+        --amz-link-hover: #c7511f;
+        --amz-border: #ddd;
+        --amz-bg: #eaeded;
+        --amz-card: #fff;
+        --amz-green: #067d62;
+        --amz-success: #067d62;
+        --amz-error: #c40000;
+    }
+
+    body.dark-mode {
+        --amz-text: #e0e0e0;
+        --amz-bg: #0f1111;
+        --amz-card: #1a1a1a;
+        --amz-border: #333;
+        --amz-link: #4fc3f7;
+    }
+
+    .amz-upload-wrapper {
+        background: var(--amz-bg);
+        min-height: 100vh;
+    }
+
+    /* Hero Banner */
+    .amz-hero-banner {
+        background: linear-gradient(135deg, rgba(19, 25, 33, 0.75) 0%, rgba(35, 47, 62, 0.85) 100%),
+                    url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        padding: 50px 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    body.dark-mode .amz-hero-banner {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(19, 25, 33, 0.9) 100%),
+                    url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+    }
+
+    .amz-hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff9900' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+
+    .amz-hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .amz-hero-logo {
+        width: 80px;
+        height: 80px;
+        background: var(--amz-orange);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.5rem;
+        box-shadow: 0 8px 30px rgba(255, 153, 0, 0.3);
+        color: #fff;
+    }
+
+    .amz-hero-title {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .amz-hero-title span {
+        color: var(--amz-orange);
+    }
+
+    .amz-hero-subtitle {
+        color: rgba(255,255,255,0.85);
+        font-size: 1.05rem;
+        line-height: 1.5;
+    }
+
+    /* Main Container */
+    .amz-upload-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 25px 20px 40px;
+    }
+
+    /* Quick Nav */
+    .amz-quick-nav {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .amz-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        color: var(--amz-link);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .amz-nav-btn:hover {
+        border-color: var(--amz-orange);
+        color: var(--amz-orange);
+        background: #fef8e8;
+    }
+
+    body.dark-mode .amz-nav-btn:hover {
+        background: #2a2510;
+    }
+
+    /* Success Card */
+    .amz-success-card {
+        background: linear-gradient(135deg, var(--amz-green), #055c49);
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .amz-success-card i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+
+    .amz-success-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+
+    .amz-success-card p {
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+
+    .amz-success-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .amz-success-actions a {
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .amz-success-actions .primary-btn {
+        background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+        border: 1px solid #a88734;
+        color: #111;
+    }
+
+    .amz-success-actions .primary-btn:hover {
+        background: linear-gradient(to bottom, #f5d78e, #eeb933);
+    }
+
+    .amz-success-actions .secondary-btn {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #fff;
+    }
+
+    .amz-success-actions .secondary-btn:hover {
+        background: rgba(255,255,255,0.25);
+    }
+
+    /* Section Card */
+    .amz-section-card {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .amz-section-header {
+        background: var(--amz-light-dark);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-section-header i {
+        color: var(--amz-orange);
+        font-size: 1rem;
+    }
+
+    .amz-section-header h2 {
+        color: #fff;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .amz-section-body {
+        padding: 25px;
+    }
+
+    /* Messages */
+    .amz-alert {
+        padding: 12px 18px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+    }
+
+    .amz-alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .amz-alert-error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    body.dark-mode .amz-alert-success {
+        background: #0d2117;
+        border-color: #0d4b22;
+        color: #4caf50;
+    }
+
+    body.dark-mode .amz-alert-error {
+        background: #2a0f0f;
+        border-color: #4a1515;
+        color: #ff6b6b;
+    }
+
+    /* Form Styles */
+    .amz-form-group {
+        margin-bottom: 20px;
+    }
+
+    .amz-form-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--amz-text);
+        margin-bottom: 6px;
+    }
+
+    .amz-form-label .required {
+        color: var(--amz-error);
+    }
+
+    .amz-form-input,
+    .amz-form-textarea,
+    .amz-form-select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: var(--amz-text);
+        background: var(--amz-card);
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+
+    .amz-form-input:focus,
+    .amz-form-textarea:focus,
+    .amz-form-select:focus {
+        outline: none;
+        border-color: var(--amz-orange);
+        box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.15);
+    }
+
+    .amz-form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    /* Author Section */
+    .amz-author-box {
+        background: #f7f8fa;
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    body.dark-mode .amz-author-box {
+        background: #1a1a1a;
+    }
+
+    .amz-author-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--amz-text);
+        margin-bottom: 15px;
+    }
+
+    .amz-author-title i {
+        color: var(--amz-orange);
+    }
+
+    .amz-toggle-btns {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .amz-toggle-btn {
+        flex: 1;
+        padding: 12px 15px;
+        border: 2px solid var(--amz-border);
+        border-radius: 8px;
+        background: var(--amz-card);
+        color: var(--amz-text);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .amz-toggle-btn:hover {
+        border-color: var(--amz-orange);
+    }
+
+    .amz-toggle-btn.active {
+        border-color: var(--amz-orange);
+        background: linear-gradient(to bottom, #fef8e8, #fdf3d9);
+        color: #854d0e;
+    }
+
+    body.dark-mode .amz-toggle-btn.active {
+        background: linear-gradient(to bottom, #2a2510, #231f0c);
+        color: var(--amz-orange);
+    }
+
+    .amz-author-input {
+        display: none;
+    }
+
+    .amz-author-input.active {
+        display: block;
+    }
+
+    /* File Upload */
+    .amz-file-upload {
+        position: relative;
+        border: 2px dashed var(--amz-border);
+        border-radius: 8px;
+        padding: 35px 20px;
+        text-align: center;
+        transition: all 0.2s;
+        background: #fafafa;
+        cursor: pointer;
+    }
+
+    body.dark-mode .amz-file-upload {
+        background: #1a1a1a;
+    }
+
+    .amz-file-upload:hover {
+        border-color: var(--amz-orange);
+        background: #fef8e8;
+    }
+
+    body.dark-mode .amz-file-upload:hover {
+        background: #2a2510;
+    }
+
+    .amz-file-upload.dragover {
+        border-color: var(--amz-orange);
+        background: #fef8e8;
+        transform: scale(1.01);
+    }
+
+    .amz-file-upload input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .amz-file-icon {
+        font-size: 2.5rem;
+        color: var(--amz-orange);
+        margin-bottom: 12px;
+    }
+
+    .amz-file-text {
+        color: var(--amz-text);
+        font-size: 0.95rem;
+    }
+
+    .amz-file-text strong {
+        color: var(--amz-link);
+    }
+
+    .amz-file-info {
+        display: none;
+        margin-top: 15px;
+        padding: 12px 15px;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 8px;
+        color: #155724;
+        font-size: 0.9rem;
+    }
+
+    body.dark-mode .amz-file-info {
+        background: #0d2117;
+        border-color: #0d4b22;
+        color: #4caf50;
+    }
+
+    .amz-file-info.show {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-format-hint {
+        margin-top: 12px;
+        padding: 12px 15px;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #856404;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    body.dark-mode .amz-format-hint {
+        background: #2a2510;
+        border-color: #6b5900;
+        color: #ffc107;
+    }
+
+    /* Submit Button */
+    .amz-submit-btn {
+        width: 100%;
+        padding: 14px 28px;
+        background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+        border: 1px solid #a88734;
+        border-radius: 8px;
+        color: #111;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .amz-submit-btn:hover {
+        background: linear-gradient(to bottom, #f5d78e, #eeb933);
+    }
+
+    .amz-submit-btn:active {
+        background: linear-gradient(to bottom, #e8c445, #ddaa20);
+    }
+
+    .amz-submit-btn:disabled {
+        background: #e0e0e0;
+        border-color: #ccc;
+        color: #888;
+        cursor: not-allowed;
+    }
+
+    /* Back Link */
+    .amz-back-section {
+        text-align: center;
+        padding: 25px 0;
+    }
+
+    .amz-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--amz-link);
+        text-decoration: none;
+        font-size: 0.95rem;
+        padding: 10px 25px;
+        border: 1px solid var(--amz-link);
+        border-radius: 20px;
+        transition: all 0.2s;
+    }
+
+    .amz-back-link:hover {
+        background: var(--amz-link);
+        color: #fff;
+    }
+
+    /* Tips Card */
+    .amz-tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .amz-tips-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--amz-border);
+        color: var(--amz-text);
+        font-size: 0.95rem;
+    }
+
+    .amz-tips-list li:last-child {
+        border-bottom: none;
+    }
+
+    .amz-tips-list li i {
+        color: var(--amz-green);
+        margin-top: 3px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .amz-hero-title {
+            font-size: 1.6rem;
+        }
+        .amz-toggle-btns {
             flex-direction: column;
-            align-items: center;
-            padding: 20px;
         }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateX(-5px);
-        }
-
-        .books-btn:hover {
-            transform: translateX(5px);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1em;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 15px 15px 0 0;
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: #667eea;
-        }
-
-        .tab-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Form Card */
-        .form-card {
-            background: white;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            animation: slideUp 0.5s ease;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .messages {
-            margin-bottom: 20px;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-
-        .form-group label .required {
-            color: #e74c3c;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .author-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .author-section h3 {
-            color: #333;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .author-toggle {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-            text-align: center;
-        }
-
-        .toggle-btn.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .toggle-btn:hover:not(.active) {
-            border-color: #667eea;
-        }
-
-        .author-input {
-            display: none;
-        }
-
-        .author-input.active {
-            display: block;
-        }
-
-        .file-upload {
-            position: relative;
-            border: 3px dashed #d0d0d0;
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-            cursor: pointer;
-        }
-
-        .file-upload:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .file-upload.dragover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .file-upload input {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload-icon {
-            font-size: 3em;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .file-upload-text {
-            color: #666;
-            font-size: 1em;
-        }
-
-        .file-upload-text strong {
-            color: #667eea;
-        }
-
-        .file-info {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .file-info.show {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .file-info i {
-            color: #4caf50;
-            font-size: 1.5em;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .success-card {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .success-card i {
-            font-size: 4em;
-            margin-bottom: 15px;
-        }
-
-        .success-card h2 {
-            margin-bottom: 10px;
-        }
-
-        .success-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .success-actions a {
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .success-actions .primary {
-            background: white;
-            color: #4CAF50;
-        }
-
-        .success-actions .secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .format-info {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #856404;
-        }
-
-        .format-info i {
-            margin-right: 8px;
-        }
-
-        /* ZIP Section Styles */
-        .zip-info {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border: 1px solid #2196f3;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .zip-info h3 {
-            color: #1565c0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .zip-info ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .zip-info li {
-            padding: 8px 0;
-            color: #1976d2;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .zip-info li i {
-            color: #4caf50;
-        }
-
-        /* Results */
-        .results-container {
-            display: none;
-            margin-top: 25px;
-        }
-
-        .results-container.show {
-            display: block;
-        }
-
-        .results-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .results-header h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .results-stats {
-            display: flex;
-            gap: 15px;
-        }
-
-        .stat {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .results-list {
-            background: #f8f9fa;
-            border-radius: 0 0 15px 15px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .result-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-
-        .result-icon.success {
-            background: #d4edda;
-            color: #28a745;
-        }
-
-        .result-icon.error {
-            background: #f8d7da;
-            color: #dc3545;
-        }
-
-        .result-icon.skipped {
-            background: #fff3cd;
-            color: #ffc107;
-        }
-
-        .result-icon.exists {
-            background: #e3f2fd;
-            color: #2196f3;
-        }
-
-        .result-content {
-            flex: 1;
-        }
-
-        .result-content h4 {
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .result-content p {
-            color: #666;
-            font-size: 0.9em;
-            margin: 3px 0;
-        }
-
-        .result-content .meta {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .result-content .meta span {
-            background: #e9ecef;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            color: #495057;
-        }
-
-        /* Progress */
-        .progress-container {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .progress-container.show {
-            display: block;
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 5px;
-            transition: width 0.3s ease;
-            animation: progressPulse 1.5s infinite;
-        }
-
-        @keyframes progressPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #666;
-            font-size: 0.95em;
-        }
-
-        @media (max-width: 600px) {
-            .form-card {
-                padding: 25px;
-            }
-            .header h1 {
-                font-size: 1.8em;
-            }
-            .author-toggle, .tabs {
-                flex-direction: column;
-            }
-            .results-stats {
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="nav-buttons">
-            <a href="{% url 'boshlash' %}" class="back-btn">
+        .amz-quick-nav {
+            flex-direction: column;
+        }
+        .amz-success-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="amz-upload-wrapper">
+    <!-- Hero Banner -->
+    <div class="amz-hero-banner">
+        <div class="amz-hero-content">
+            <div class="amz-hero-logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h1 class="amz-hero-title">Kitob <span>yuklash</span></h1>
+            <p class="amz-hero-subtitle">
+                Yangi kitob qo'shing va Cloudstore kutubxonasini boyiting
+            </p>
+        </div>
+    </div>
+
+    <div class="amz-upload-container">
+        <!-- Quick Navigation -->
+        <div class="amz-quick-nav">
+            <a href="{% url 'boshlash' %}" class="amz-nav-btn">
                 <i class="fas fa-arrow-left"></i> Orqaga
             </a>
-            <a href="{% url 'all_books' %}" class="back-btn books-btn">
-                <i class="fas fa-book-open"></i> Kitoblar ro'yxati
+            <a href="{% url 'all_books' %}" class="amz-nav-btn">
+                <i class="fas fa-book-open"></i> Barcha kitoblar
             </a>
-        </div>
-
-        <div class="header">
-            <h1><i class="fas fa-book"></i> Kitob yuklash</h1>
-            <p>Yangi kitob qo'shish va kutubxonani boyitish</p>
         </div>
 
         {% if success %}
-        <div class="success-card">
+        <!-- Success Card -->
+        <div class="amz-success-card">
             <i class="fas fa-check-circle"></i>
             <h2>Muvaffaqiyatli yuklandi!</h2>
             <p>"{{ book.title }}" kitobi kutubxonaga qo'shildi</p>
-            <div class="success-actions">
-                <a href="{% url 'book_list' book.author.id %}" class="primary">
+            <div class="amz-success-actions">
+                <a href="{% url 'book_list' book.author.id %}" class="primary-btn">
                     <i class="fas fa-eye"></i> Kitobni ko'rish
                 </a>
-                <a href="{% url 'kitob_yuklash' %}" class="secondary">
+                <a href="{% url 'kitob_yuklash' %}" class="secondary-btn">
                     <i class="fas fa-plus"></i> Yana yuklash
                 </a>
             </div>
         </div>
         {% endif %}
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="single">
-                <i class="fas fa-file"></i> Bitta kitob
-            </button>
-            <!-- ZIP papka yuklash tugmasi olib tashlandi -->
+        <!-- Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="amz-alert amz-alert-{{ message.tags }}">
+            {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle"></i>
+            {% else %}
+            <i class="fas fa-exclamation-circle"></i>
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Upload Tips -->
+        <div class="amz-section-card">
+            <div class="amz-section-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Yuklash bo'yicha maslahatlar</h2>
+            </div>
+            <div class="amz-section-body">
+                <ul class="amz-tips-list">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Qabul qilinadigan formatlar: DOCX, DOC, TXT</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Kitob nomi aniq va to'g'ri yozilganiga ishonch hosil qiling</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Mavjud muallifni tanlashingiz yoki yangi muallif qo'shishingiz mumkin</span>
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        <div class="form-card">
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {% if message.tags == 'success' %}
-                    <i class="fas fa-check-circle"></i>
-                    {% else %}
-                    <i class="fas fa-exclamation-circle"></i>
-                    {% endif %}
-                    {{ message }}
-                </div>
-                {% endfor %}
+        <!-- Upload Form -->
+        <div class="amz-section-card">
+            <div class="amz-section-header">
+                <i class="fas fa-upload"></i>
+                <h2>Kitob ma'lumotlari</h2>
             </div>
-            {% endif %}
-
-            <!-- Tab 1: Single Book -->
-            <div class="tab-content active" id="single">
+            <div class="amz-section-body">
                 <form method="POST" enctype="multipart/form-data" id="uploadForm">
                     {% csrf_token %}
                     
-                    <div class="form-group">
-                        <label><i class="fas fa-book-open"></i> Kitob nomi <span class="required">*</span></label>
-                        <input type="text" name="title" placeholder="Kitob nomini kiriting..." required>
+                    <div class="amz-form-group">
+                        <label class="amz-form-label">
+                            <i class="fas fa-book"></i> Kitob nomi <span class="required">*</span>
+                        </label>
+                        <input type="text" name="title" class="amz-form-input" 
+                               placeholder="Kitob nomini kiriting..." required>
                     </div>
 
-                    <div class="author-section">
-                        <h3><i class="fas fa-user-pen"></i> Muallif</h3>
+                    <!-- Author Section -->
+                    <div class="amz-author-box">
+                        <div class="amz-author-title">
+                            <i class="fas fa-user-pen"></i> Muallif
+                        </div>
                         
-                        <div class="author-toggle">
-                            <div class="toggle-btn active" data-target="existing">
+                        <div class="amz-toggle-btns">
+                            <div class="amz-toggle-btn active" data-target="existing">
                                 <i class="fas fa-list"></i> Mavjud muallifdan
                             </div>
-                            <div class="toggle-btn" data-target="new">
+                            <div class="amz-toggle-btn" data-target="new">
                                 <i class="fas fa-user-plus"></i> Yangi muallif
                             </div>
                         </div>
 
-                        <div class="author-input active" id="existing">
-                            <select name="author_id">
+                        <div class="amz-author-input active" id="existing">
+                            <select name="author_id" class="amz-form-select" title="Muallif tanlang">
                                 <option value="">-- Muallif tanlang --</option>
                                 {% for author in authors %}
                                 <option value="{{ author.id }}">{{ author.name }}</option>
@@ -695,244 +709,126 @@
                             </select>
                         </div>
 
-                        <div class="author-input" id="new">
-                            <input type="text" name="new_author_name" placeholder="Yangi muallif ismini kiriting...">
+                        <div class="amz-author-input" id="new">
+                            <input type="text" name="new_author_name" class="amz-form-input"
+                                   placeholder="Yangi muallif ismini kiriting...">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Qisqacha tavsif</label>
-                        <textarea name="description" placeholder="Kitob haqida qisqacha ma'lumot..."></textarea>
+                    <div class="amz-form-group">
+                        <label class="amz-form-label">
+                            <i class="fas fa-align-left"></i> Qisqacha tavsif
+                        </label>
+                        <textarea name="description" class="amz-form-textarea" 
+                                  placeholder="Kitob haqida qisqacha ma'lumot..."></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar"></i> Nashr yili</label>
-                        <input type="number" name="published_year" placeholder="Masalan: 2024" min="1000" max="2100">
+                    <div class="amz-form-group">
+                        <label class="amz-form-label">
+                            <i class="fas fa-calendar"></i> Nashr yili
+                        </label>
+                        <input type="number" name="published_year" class="amz-form-input"
+                               placeholder="Masalan: 2024" min="1000" max="2100">
                     </div>
 
-                    <div class="form-group">
-                        <label><i class="fas fa-file-upload"></i> Kitob fayli <span class="required">*</span></label>
-                        <div class="file-upload" id="fileUpload">
-                            <input type="file" name="book_file" id="bookFile" accept=".pdf,.doc,.docx,.txt" required>
-                            <div class="file-upload-icon">
+                    <div class="amz-form-group">
+                        <label class="amz-form-label">
+                            <i class="fas fa-file-upload"></i> Kitob fayli <span class="required">*</span>
+                        </label>
+                        <div class="amz-file-upload" id="fileUpload">
+                            <input type="file" name="book_file" id="bookFile" 
+                                   accept=".pdf,.doc,.docx,.txt" required title="Kitob faylini tanlang">
+                            <div class="amz-file-icon">
                                 <i class="fas fa-cloud-upload-alt"></i>
                             </div>
-                            <div class="file-upload-text">
+                            <div class="amz-file-text">
                                 <strong>Faylni tanlash</strong> yoki bu yerga tashlang
                             </div>
                         </div>
-                        <div class="file-info" id="fileInfo">
+                        <div class="amz-file-info" id="fileInfo">
                             <i class="fas fa-file-check"></i>
                             <span id="fileName"></span>
                         </div>
-                        <div class="format-info">
+                        <div class="amz-format-hint">
                             <i class="fas fa-info-circle"></i>
-                            Qabul qilinadigan formatlar:  DOCX, DOC, TXT
+                            Qabul qilinadigan formatlar: DOCX, DOC, TXT
                         </div>
                     </div>
 
-                    <button type="submit" class="submit-btn" id="submitBtn">
+                    <button type="submit" class="amz-submit-btn" id="submitBtn">
                         <i class="fas fa-upload"></i> Kitobni yuklash
                     </button>
                 </form>
             </div>
+        </div>
 
-            <!-- ZIP papka yuklash bo'limi olib tashlandi -->
+        <!-- Back Link -->
+        <div class="amz-back-section">
+            <a href="{% url 'boshlash' %}" class="amz-back-link">
+                <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+            </a>
         </div>
     </div>
+</div>
 
-    <script>
-        // Tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                this.classList.add('active');
-                document.getElementById(this.dataset.tab).classList.add('active');
-            });
-        });
-
-        // Author toggle
-        document.querySelectorAll('.toggle-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.author-input').forEach(i => i.classList.remove('active'));
-                
-                this.classList.add('active');
-                document.getElementById(this.dataset.target).classList.add('active');
-                
-                if (this.dataset.target === 'existing') {
-                    document.querySelector('input[name="new_author_name"]').value = '';
-                } else {
-                    document.querySelector('select[name="author_id"]').value = '';
-                }
-            });
-        });
-
-        // Single file upload
-        const fileInput = document.getElementById('bookFile');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-
-        fileInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                fileName.textContent = this.files[0].name;
-                fileInfo.classList.add('show');
+<script>
+    // Author toggle
+    document.querySelectorAll('.amz-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.amz-toggle-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.amz-author-input').forEach(i => i.classList.remove('active'));
+            
+            this.classList.add('active');
+            document.getElementById(this.dataset.target).classList.add('active');
+            
+            if (this.dataset.target === 'existing') {
+                document.querySelector('input[name="new_author_name"]').value = '';
             } else {
-                fileInfo.classList.remove('show');
+                document.querySelector('select[name="author_id"]').value = '';
             }
         });
+    });
 
-        // Drag and drop faqat bitta kitob uchun
-        ['fileUpload'].forEach(id => {
-            const upload = document.getElementById(id);
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                upload.addEventListener(eventName, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-            ['dragenter', 'dragover'].forEach(eventName => {
-                upload.addEventListener(eventName, () => upload.classList.add('dragover'));
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                upload.addEventListener(eventName, () => upload.classList.remove('dragover'));
-            });
-            upload.addEventListener('drop', function(e) {
-                const files = e.dataTransfer.files;
-                const input = this.querySelector('input');
-                input.files = files;
-                input.dispatchEvent(new Event('change'));
-            });
-        });
+    // File upload
+    const fileInput = document.getElementById('bookFile');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
 
-        // Form submit loading
-        document.getElementById('uploadForm').addEventListener('submit', function() {
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
-        });
-
-        // ZIP Upload Function
-        async function uploadZip() {
-            const zipFile = document.getElementById('zipFile').files[0];
-            
-            if (!zipFile) {
-                alert('Iltimos, ZIP faylni tanlang!');
-                return;
-            }
-
-            const btn = document.getElementById('zipSubmitBtn');
-            const progress = document.getElementById('progressContainer');
-            const results = document.getElementById('resultsContainer');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
-            progress.classList.add('show');
-            results.classList.remove('show');
-
-            const formData = new FormData();
-            formData.append('zip_file', zipFile);
-
-            try {
-                const response = await fetch('{% url "upload_zip_books" %}', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                progress.classList.remove('show');
-                
-                if (data.success) {
-                    displayResults(data.results);
-                } else {
-                    alert('Xatolik: ' + (data.error || 'Noma\'lum xatolik'));
-                }
-            } catch (error) {
-                progress.classList.remove('show');
-                alert('Tarmoq xatoligi: ' + error.message);
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-robot"></i> AI bilan yuklash';
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            fileName.textContent = this.files[0].name;
+            fileInfo.classList.add('show');
+        } else {
+            fileInfo.classList.remove('show');
         }
+    });
 
-        function displayResults(results) {
-            const container = document.getElementById('resultsContainer');
-            const list = document.getElementById('resultsList');
-            const successCount = document.getElementById('successCount');
-            const errorCount = document.getElementById('errorCount');
-            
-            let success = 0, errors = 0, exists = 0;
-            let html = '';
+    // Drag and drop
+    const upload = document.getElementById('fileUpload');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        upload.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+        upload.addEventListener(eventName, () => upload.classList.add('dragover'));
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        upload.addEventListener(eventName, () => upload.classList.remove('dragover'));
+    });
+    upload.addEventListener('drop', function(e) {
+        const files = e.dataTransfer.files;
+        const input = this.querySelector('input');
+        input.files = files;
+        input.dispatchEvent(new Event('change'));
+    });
 
-            results.forEach(item => {
-                if (item.status === 'success') {
-                    success++;
-                    html += `
-                        <div class="result-item">
-                            <div class="result-icon success">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4>${item.title}</h4>
-                                <p><i class="fas fa-user"></i> ${item.author}</p>
-                                ${item.description ? `<p><i class="fas fa-align-left"></i> ${item.description}</p>` : ''}
-                                <div class="meta">
-                                    <span><i class="fas fa-file"></i> ${item.file}</span>
-                                    ${item.year ? `<span><i class="fas fa-calendar"></i> ${item.year}</span>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else if (item.status === 'exists') {
-                    exists++;
-                    html += `
-                        <div class="result-item">
-                            <div class="result-icon exists">
-                                <i class="fas fa-database"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4>${item.file}</h4>
-                                <p style="color: #1976d2;"><i class="fas fa-info-circle"></i> ${item.message}</p>
-                            </div>
-                        </div>
-                    `;
-                } else if (item.status === 'error') {
-                    errors++;
-                    html += `
-                        <div class="result-item">
-                            <div class="result-icon error">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4>${item.file}</h4>
-                                <p style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> ${item.message}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    html += `
-                        <div class="result-item">
-                            <div class="result-icon skipped">
-                                <i class="fas fa-forward"></i>
-                            </div>
-                            <div class="result-content">
-                                <h4>${item.file}</h4>
-                                <p style="color: #856404;"><i class="fas fa-info-circle"></i> ${item.message}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            successCount.textContent = `✅ ${success} ta yuklandi`;
-            errorCount.textContent = `❌ ${errors} ta xato | 📚 ${exists} ta mavjud`;
-            list.innerHTML = html;
-            container.classList.add('show');
-        }
-    </script>
-</body>
-</html>
+    // Form submit loading
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+    });
+</script>
+{% endblock %}

@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/get-authors/', views.get_authors, name='get_authors'),
     path('api/upload-zip/', views.upload_zip_books, name='upload_zip_books'),
     path('kitob/<int:book_id>/', views.book_detail, name='book_detail'),
+    path('kitob/<int:book_id>/download/', views.download_book, name='download_book'),
     path('kitob/<int:book_id>/read/', views.read_book, name='read_book'),
     path('rate-book/', views.rate_book, name='rate_book'),
     path('toggle-favorite/', views.toggle_favorite, name='toggle_favorite'),

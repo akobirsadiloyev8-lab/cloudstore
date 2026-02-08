@@ -6,6 +6,36 @@
 {% block page_title %}Xabarlar{% endblock %}
 
 {% block extra_styles %}
+    /* ========== TELEGRAM WEB K DESIGN ========== */
+    :root {
+        --tg-blue: #3390ec;
+        --tg-blue-light: #54a5f0;
+        --tg-green: #4fae4e;
+        --tg-bg-light: #f4f4f5;
+        --tg-bg-chat: #e6ebee;
+        --tg-sidebar-bg: #ffffff;
+        --tg-msg-out: #effdde;
+        --tg-msg-in: #ffffff;
+        --tg-text-primary: #000000;
+        --tg-text-secondary: #707579;
+        --tg-border: #e5e5e5;
+    }
+    
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --tg-blue: #3390ec;
+            --tg-bg-light: #212121;
+            --tg-bg-chat: #0e0e0e;
+            --tg-sidebar-bg: #212121;
+            --tg-msg-out: #2b5278;
+            --tg-msg-in: #212121;
+            --tg-text-primary: #ffffff;
+            --tg-text-secondary: #aaaaaa;
+            --tg-border: #2f2f2f;
+        }
+    }
+    
     /* ========== HIDE MAIN SIDEBAR ========== */
     .sidebar, .sidebar-overlay, .menu-toggle-btn, .page-header, .messages-container {
         display: none !important;
@@ -34,46 +64,51 @@
     .telegram-chat-container {
         display: flex;
         height: 100vh;
-        background: var(--bg-color);
+        background: var(--tg-bg-chat);
         overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     }
     
     /* ========== CHAT SIDEBAR (Foydalanuvchilar ro'yxati) ========== */
     .chat-sidebar {
-        width: 350px;
-        background: var(--card-bg);
-        border-right: 1px solid var(--border-color);
+        width: 420px;
+        max-width: 30vw;
+        min-width: 320px;
+        background: var(--tg-sidebar-bg);
+        border-right: 1px solid var(--tg-border);
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
     }
     
     .chat-sidebar-header {
-        padding: 15px;
-        border-bottom: 1px solid var(--border-color);
+        padding: 8px 13px;
+        border-bottom: 1px solid var(--tg-border);
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        min-height: 56px;
     }
     
     .home-btn {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--tg-blue);
         border: none;
         color: white;
-        font-size: 1rem;
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.15s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
+        flex-shrink: 0;
     }
     
     .home-btn:hover {
-        transform: scale(1.05);
+        background: var(--tg-blue-light);
     }
     
     .chat-search-box {
@@ -83,61 +118,437 @@
     
     .chat-search-box input {
         width: 100%;
-        padding: 10px 15px 10px 40px;
+        padding: 10px 15px 10px 42px;
         border: none;
-        border-radius: 20px;
-        background: var(--bg-color);
-        color: var(--text-color);
-        font-size: 0.95rem;
+        border-radius: 22px;
+        background: var(--tg-bg-light);
+        color: var(--tg-text-primary);
+        font-size: 15px;
+        transition: all 0.2s;
     }
     
     .chat-search-box input:focus {
         outline: none;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        background: var(--tg-bg-light);
+        box-shadow: 0 0 0 2px rgba(51, 144, 236, 0.3);
     }
     
     .chat-search-box i {
         position: absolute;
-        left: 15px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #64748b;
+        color: var(--tg-text-secondary);
+        font-size: 15px;
     }
     
     .new-chat-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: transparent;
+        border: none;
+        color: var(--tg-text-secondary);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .new-chat-btn:hover {
+        background: rgba(51, 144, 236, 0.08);
+        color: var(--tg-blue);
+    }
+    
+    /* Search Clear Button */
+    .search-clear-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--tg-text-secondary);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        transition: all 0.15s;
+    }
+    
+    .search-clear-btn:hover {
+        background: rgba(0,0,0,0.08);
+        color: var(--tg-text-primary);
+    }
+    
+    /* Search Results Section */
+    .search-results-section {
+        border-bottom: 1px solid var(--tg-border);
+    }
+    
+    .search-results-header {
+        padding: 12px 16px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .search-results-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--tg-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .search-results-count {
+        font-size: 12px;
+        background: var(--tg-blue);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+    
+    .search-results-list {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 0 8px 8px;
+    }
+    
+    .search-result-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+        text-decoration: none;
+        color: var(--tg-text-primary);
+    }
+    
+    .search-result-item:hover {
+        background: rgba(51, 144, 236, 0.08);
+    }
+    
+    .search-result-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    
+    .search-result-avatar.default {
+        background: linear-gradient(135deg, #54a5f0 0%, #3390ec 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 500;
+        font-size: 1rem;
+    }
+    
+    .search-result-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .search-result-name {
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .search-result-username {
+        font-size: 13px;
+        color: var(--tg-text-secondary);
+    }
+    
+    .search-result-bio {
+        font-size: 12px;
+        color: var(--tg-text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 2px;
+    }
+    
+    .search-result-stats {
+        font-size: 11px;
+        color: var(--tg-text-secondary);
+        margin-top: 2px;
+    }
+    
+    .search-follow-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--tg-blue);
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.15s;
+        flex-shrink: 0;
+    }
+    
+    .search-follow-btn:hover {
+        background: #1c8de4;
+    }
+    
+    .search-follow-btn.following {
+        background: var(--tg-green);
+    }
+    
+    .search-follow-btn.following:hover {
+        background: #d44;
+    }
+
+    .online-indicator {
+        width: 8px;
+        height: 8px;
+        background: var(--tg-green);
+        border-radius: 50%;
+    }
+    
+    .search-loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--tg-text-secondary);
+    }
+    
+    .search-loading i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: var(--tg-blue);
+    }
+    
+    .search-no-results {
+        text-align: center;
+        padding: 30px 20px;
+        color: var(--tg-text-secondary);
+    }
+    
+    .search-no-results i {
+        font-size: 2.5rem;
+        opacity: 0.3;
+        margin-bottom: 12px;
+    }
+    
+    /* Search Filter Tabs */
+    .search-filter-tabs {
+        display: flex;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 6px;
+        border-bottom: 1px solid var(--tg-border);
+        scrollbar-width: none;
+    }
+    
+    .search-filter-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .search-filter-tab {
+        flex-shrink: 0;
+        padding: 6px 12px;
+        border-radius: 16px;
+        border: none;
+        background: var(--tg-bg-light);
+        color: var(--tg-text-secondary);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .search-filter-tab:hover {
+        background: rgba(51, 144, 236, 0.1);
+        color: var(--tg-blue);
+    }
+    
+    .search-filter-tab.active {
+        background: var(--tg-blue);
+        color: white;
+    }
+    
+    .search-filter-tab i {
+        font-size: 11px;
+    }
+
+    /* Settings Panel */
+    .settings-panel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--tg-sidebar-bg);
+        z-index: 100;
+        overflow-y: auto;
+        animation: slideInRight 0.2s ease;
+    }
+    
+    @keyframes slideInRight {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+    
+    .settings-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        border-bottom: 1px solid var(--tg-border);
+        font-weight: 600;
+        font-size: 17px;
+    }
+    
+    .settings-back-btn {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: var(--bg-color);
+        background: none;
         border: none;
-        color: var(--text-color);
-        font-size: 1rem;
+        color: var(--tg-text-secondary);
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
+        transition: all 0.15s;
         display: flex;
         align-items: center;
         justify-content: center;
     }
     
-    .new-chat-btn:hover {
-        background: rgba(102, 126, 234, 0.1);
-        color: #667eea;
+    .settings-back-btn:hover {
+        background: rgba(0,0,0,0.04);
+        color: var(--tg-blue);
     }
     
+    .settings-content {
+        padding: 8px 0;
+    }
+    
+    .settings-section {
+        padding: 8px 0;
+    }
+    
+    .settings-title {
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--tg-blue);
+        text-transform: uppercase;
+    }
+    
+    .settings-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        color: var(--tg-text-primary);
+    }
+    
+    .settings-item.clickable {
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    
+    .settings-item.clickable:hover {
+        background: rgba(0,0,0,0.04);
+    }
+    
+    .settings-item span:first-child {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .settings-item i {
+        width: 20px;
+        text-align: center;
+        color: var(--tg-text-secondary);
+    }
+    
+    .settings-value {
+        color: var(--tg-text-secondary);
+        font-size: 14px;
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 24px;
+    }
+    
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+        background-color: var(--tg-blue);
+    }
+    
+    input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+    }
+    
+    /* Chats Section */
+    .chats-section {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
     /* Chat List */
     .chat-user-list {
         flex: 1;
         overflow-y: auto;
-        padding: 8px;
+        padding: 0 8px;
     }
     
     .chat-user-list::-webkit-scrollbar {
-        width: 5px;
+        width: 6px;
     }
     
     .chat-user-list::-webkit-scrollbar-thumb {
-        background: rgba(102, 126, 234, 0.3);
+        background: rgba(0,0,0,0.15);
         border-radius: 3px;
     }
     
@@ -145,26 +556,37 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px;
-        border-radius: 12px;
+        padding: 9px 12px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: background 0.15s;
         text-decoration: none;
-        color: var(--text-color);
-        margin-bottom: 4px;
+        color: var(--tg-text-primary);
+        margin: 0;
     }
     
     .chat-user-item:hover {
-        background: rgba(102, 126, 234, 0.08);
+        background: rgba(0,0,0,0.04);
     }
     
     .chat-user-item.active {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+        background: var(--tg-blue);
+        color: white;
+    }
+    
+    .chat-user-item.active .msg-time,
+    .chat-user-item.active .last-msg {
+        color: rgba(255,255,255,0.8);
+    }
+    
+    .chat-user-item.active .unread-count {
+        background: white;
+        color: var(--tg-blue);
     }
     
     .user-avatar {
-        width: 50px;
-        height: 50px;
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
@@ -172,23 +594,23 @@
     }
     
     .user-avatar.default {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #54a5f0 0%, #3390ec 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
+        font-weight: 500;
+        font-size: 1.25rem;
     }
     
     .user-avatar .online-dot {
         position: absolute;
-        bottom: 2px;
-        right: 2px;
-        width: 12px;
-        height: 12px;
-        background: #22c55e;
-        border: 2px solid var(--card-bg);
+        bottom: 1px;
+        right: 1px;
+        width: 14px;
+        height: 14px;
+        background: var(--tg-green);
+        border: 2px solid var(--tg-sidebar-bg);
         border-radius: 50%;
     }
     
@@ -201,20 +623,20 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     
     .user-name {
-        font-weight: 600;
-        font-size: 0.95rem;
+        font-weight: 500;
+        font-size: 16px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     
     .msg-time {
-        font-size: 0.75rem;
-        color: #64748b;
+        font-size: 12px;
+        color: var(--tg-text-secondary);
         flex-shrink: 0;
     }
     
@@ -226,41 +648,43 @@
     
     .last-msg {
         flex: 1;
-        font-size: 0.85rem;
-        color: #64748b;
+        font-size: 14px;
+        color: var(--tg-text-secondary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     
     .unread-count {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--tg-blue);
         color: white;
-        font-size: 0.7rem;
-        font-weight: bold;
-        padding: 3px 8px;
-        border-radius: 10px;
-        min-width: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 2px 7px;
+        border-radius: 12px;
+        min-width: 22px;
         text-align: center;
     }
     
     .empty-chats {
         text-align: center;
-        padding: 50px 20px;
-        color: #64748b;
+        padding: 60px 20px;
+        color: var(--tg-text-secondary);
     }
     
     .empty-chats i {
         font-size: 4rem;
-        opacity: 0.2;
+        opacity: 0.15;
         margin-bottom: 20px;
+        color: var(--tg-blue);
     }
     
     .empty-chats a {
-        color: #667eea;
+        color: var(--tg-blue);
         text-decoration: none;
         margin-top: 15px;
         display: inline-block;
+        font-weight: 500;
     }
     
     /* ========== MAIN CHAT AREA ========== */
@@ -268,32 +692,34 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        background: var(--bg-color);
+        background: var(--tg-bg-chat);
         position: relative;
         height: 100vh;
         min-height: 0;
         overflow: hidden;
     }
     
-    /* Background pattern */
+    /* Telegram-style chat background pattern */
     .chat-main-area::before {
         content: '';
         position: absolute;
         inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23667eea' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-color: var(--tg-bg-chat);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cdefs%3E%3Cpattern id='pattern' patternUnits='userSpaceOnUse' width='40' height='40' patternTransform='rotate(45)'%3E%3Crect width='100%25' height='100%25' fill='%23e6ebee'/%3E%3Ccircle cx='20' cy='20' r='1.5' fill='%23d9dfe6' fill-opacity='0.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect fill='url(%23pattern)' width='100%25' height='100%25'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 0;
     }
     
-    /* Chat Header */
+    /* Chat Header - Telegram style */
     .chat-header {
-        padding: 12px 20px;
-        background: var(--card-bg);
-        border-bottom: 1px solid var(--border-color);
+        padding: 8px 16px;
+        background: var(--tg-sidebar-bg);
+        border-bottom: 1px solid var(--tg-border);
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 12px;
         z-index: 10;
+        min-height: 56px;
     }
     
     .back-btn {
@@ -301,19 +727,19 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: rgba(102, 126, 234, 0.1);
+        background: transparent;
         border: none;
-        color: #667eea;
+        color: var(--tg-text-secondary);
         font-size: 1.2rem;
         cursor: pointer;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
+        transition: all 0.15s;
     }
     
     .back-btn:hover {
-        background: rgba(102, 126, 234, 0.2);
-        transform: translateX(-3px);
+        background: rgba(0,0,0,0.04);
+        color: var(--tg-blue);
     }
     
     .chat-partner-avatar {
@@ -324,12 +750,12 @@
     }
     
     .chat-partner-avatar.default {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #54a5f0 0%, #3390ec 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: bold;
+        font-weight: 500;
     }
     
     .chat-partner-info {
@@ -337,22 +763,23 @@
     }
     
     .chat-partner-name {
-        font-weight: 600;
-        font-size: 1rem;
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--tg-text-primary);
     }
     
     .chat-partner-status {
-        font-size: 0.8rem;
-        color: #22c55e;
+        font-size: 14px;
+        color: var(--tg-blue);
     }
     
     .chat-partner-status.offline {
-        color: #64748b;
+        color: var(--tg-text-secondary);
     }
     
     .chat-actions {
         display: flex;
-        gap: 5px;
+        gap: 4px;
     }
     
     .chat-action-btn {
@@ -361,10 +788,10 @@
         border-radius: 50%;
         background: none;
         border: none;
-        color: var(--text-color);
+        color: var(--tg-text-secondary);
         font-size: 1.1rem;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.15s;
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -372,19 +799,26 @@
     }
     
     .chat-action-btn:hover {
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(0,0,0,0.04);
+        color: var(--tg-blue);
     }
     
-    /* Messages Area */
+    /* Messages Area - Telegram style */
     .chat-messages {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
+        padding: 12px 8%;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
         z-index: 1;
         min-height: 0;
+        background-color: #0e0e0e;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(51, 144, 236, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(79, 174, 78, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(51, 144, 236, 0.04) 0%, transparent 30%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%233390ec' fill-opacity='0.03'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
     
     .chat-messages::-webkit-scrollbar {
@@ -392,54 +826,59 @@
     }
     
     .chat-messages::-webkit-scrollbar-thumb {
-        background: rgba(102, 126, 234, 0.3);
+        background: rgba(0,0,0,0.15);
         border-radius: 3px;
     }
     
+    /* Message Bubbles - Telegram style */
     .message-bubble {
-        max-width: 65%;
-        padding: 10px 14px;
-        border-radius: 16px;
+        max-width: 480px;
+        padding: 7px 12px 8px;
+        border-radius: 12px;
         position: relative;
         word-wrap: break-word;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
     
     .message-bubble.sent {
         align-self: flex-end;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
+        background: var(--tg-msg-out);
+        color: var(--tg-text-primary);
         border-bottom-right-radius: 4px;
     }
     
     .message-bubble.received {
         align-self: flex-start;
-        background: var(--card-bg);
-        color: var(--text-color);
+        background: var(--tg-msg-in);
+        color: var(--tg-text-primary);
         border-bottom-left-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .message-content {
-        font-size: 0.95rem;
-        line-height: 1.4;
+        font-size: 15px;
+        line-height: 1.35;
     }
     
     .message-footer {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        gap: 5px;
-        margin-top: 5px;
-        font-size: 0.7rem;
-        opacity: 0.7;
+        gap: 4px;
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--tg-text-secondary);
     }
     
     .message-bubble.sent .message-footer {
-        color: rgba(255,255,255,0.8);
+        color: #4fae4e;
     }
     
     .message-status .read {
-        color: #60a5fa;
+        color: var(--tg-green);
+    }
+    
+    .message-bubble.sent .message-status i {
+        color: var(--tg-green);
     }
     
     /* Typing Indicator */
@@ -448,8 +887,8 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        color: #64748b;
-        font-size: 0.85rem;
+        color: var(--tg-text-secondary);
+        font-size: 14px;
         z-index: 1;
     }
     
@@ -458,9 +897,9 @@
     }
     
     .typing-dots span {
-        width: 6px;
-        height: 6px;
-        background: #667eea;
+        width: 7px;
+        height: 7px;
+        background: var(--tg-blue);
         border-radius: 50%;
         animation: typingAnim 1.4s infinite;
         display: inline-block;
@@ -472,15 +911,14 @@
     
     @keyframes typingAnim {
         0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-        30% { transform: translateY(-5px); opacity: 1; }
+        30% { transform: translateY(-6px); opacity: 1; }
     }
     
-    /* ========== INPUT AREA ========== */
+    /* ========== INPUT AREA - Telegram style ========== */
     .chat-input-area {
-        padding: 10px 15px;
-        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-        background: var(--card-bg);
-        border-top: 1px solid var(--border-color);
+        padding: 8px 8% 12px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        background: transparent;
         z-index: 100;
         flex-shrink: 0;
         position: sticky;
@@ -490,12 +928,13 @@
     /* File Preview */
     .file-preview-container {
         display: none;
-        padding: 10px;
-        background: rgba(102, 126, 234, 0.1);
+        padding: 10px 14px;
+        background: var(--tg-sidebar-bg);
         border-radius: 12px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
     .file-preview-container.show {
@@ -503,22 +942,22 @@
     }
     
     .file-preview-image {
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
         border-radius: 8px;
         object-fit: cover;
     }
     
     .file-preview-icon {
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
         border-radius: 8px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--tg-blue);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
     
     .file-preview-info {
@@ -526,35 +965,42 @@
     }
     
     .file-preview-name {
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 3px;
+        font-weight: 500;
+        font-size: 14px;
+        margin-bottom: 2px;
         word-break: break-all;
+        color: var(--tg-text-primary);
     }
     
     .file-preview-size {
-        font-size: 0.8rem;
-        color: #64748b;
+        font-size: 13px;
+        color: var(--tg-text-secondary);
     }
     
     .file-preview-remove {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(244, 67, 54, 0.1);
         border: none;
-        color: #ef4444;
+        color: #f44336;
         cursor: pointer;
-        font-size: 1rem;
+        font-size: 0.9rem;
+        transition: all 0.15s;
+    }
+    
+    .file-preview-remove:hover {
+        background: rgba(244, 67, 54, 0.2);
     }
     
     .input-container {
         display: flex;
         align-items: flex-end;
         gap: 8px;
-        background: var(--bg-color);
-        border-radius: 24px;
-        padding: 5px 8px;
+        background: var(--tg-sidebar-bg);
+        border-radius: 22px;
+        padding: 4px 6px;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.08);
     }
     
     .input-actions {
@@ -563,15 +1009,15 @@
     }
     
     .input-btn {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: none;
         border: none;
-        color: #64748b;
-        font-size: 1.1rem;
+        color: var(--tg-text-secondary);
+        font-size: 1.2rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s;
         flex-shrink: 0;
         display: flex;
         align-items: center;
@@ -579,21 +1025,21 @@
     }
     
     .input-btn:hover {
-        color: #667eea;
-        background: rgba(102, 126, 234, 0.1);
+        color: var(--tg-blue);
+        background: rgba(51, 144, 236, 0.08);
     }
     
     .chat-textarea {
         flex: 1;
         border: none;
         background: none;
-        padding: 8px 5px;
-        font-size: 0.95rem;
-        color: var(--text-color);
+        padding: 8px 4px;
+        font-size: 15px;
+        color: var(--tg-text-primary);
         resize: none;
-        max-height: 100px;
+        max-height: 150px;
         line-height: 1.4;
-        min-height: 36px;
+        min-height: 38px;
     }
     
     .chat-textarea:focus {
@@ -601,19 +1047,19 @@
     }
     
     .chat-textarea::placeholder {
-        color: #64748b;
+        color: var(--tg-text-secondary);
     }
     
     .send-btn {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--tg-blue);
         border: none;
         color: white;
-        font-size: 1rem;
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s;
         flex-shrink: 0;
         display: flex;
         align-items: center;
@@ -621,7 +1067,7 @@
     }
     
     .send-btn:hover {
-        transform: scale(1.05);
+        background: var(--tg-blue-light);
     }
     
     .send-btn:disabled {
@@ -629,45 +1075,51 @@
         cursor: not-allowed;
     }
     
-    /* Message Media Styles */
+    /* Message Media Styles - Telegram style */
     .message-image {
-        max-width: 250px;
-        max-height: 300px;
-        border-radius: 12px;
+        max-width: 320px;
+        max-height: 320px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: transform 0.15s;
     }
     
     .message-image:hover {
-        transform: scale(1.02);
+        transform: scale(1.01);
     }
     
     .message-video {
-        max-width: 300px;
-        max-height: 250px;
-        border-radius: 12px;
+        max-width: 320px;
+        max-height: 280px;
+        border-radius: 10px;
     }
     
     .message-file {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px;
-        background: rgba(255,255,255,0.1);
+        gap: 12px;
+        padding: 10px 12px;
+        background: rgba(0,0,0,0.04);
         border-radius: 10px;
         text-decoration: none;
         color: inherit;
+        min-width: 200px;
+    }
+    
+    .message-bubble.sent .message-file {
+        background: rgba(0,0,0,0.06);
     }
     
     .message-file-icon {
-        width: 40px;
-        height: 40px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 8px;
+        width: 44px;
+        height: 44px;
+        background: var(--tg-blue);
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
+        color: white;
     }
     
     .message-file-info {
@@ -676,13 +1128,18 @@
     
     .message-file-name {
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 14px;
         margin-bottom: 2px;
     }
     
     .message-file-size {
-        font-size: 0.75rem;
-        opacity: 0.7;
+        font-size: 12px;
+        color: var(--tg-text-secondary);
+    }
+    
+    .message-bubble.sent .message-file-size {
+        color: var(--tg-green);
+        opacity: 0.8;
     }
     
     /* Image Viewer Modal */
@@ -690,7 +1147,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.95);
+        background: rgba(0,0,0,0.92);
         z-index: 10000;
         align-items: center;
         justify-content: center;
@@ -704,20 +1161,26 @@
         max-width: 90vw;
         max-height: 90vh;
         object-fit: contain;
+        border-radius: 4px;
     }
     
     .image-viewer-close {
         position: absolute;
         top: 20px;
         right: 20px;
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background: rgba(255,255,255,0.1);
         border: none;
         color: white;
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         cursor: pointer;
+        transition: background 0.15s;
+    }
+    
+    .image-viewer-close:hover {
+        background: rgba(255,255,255,0.2);
     }
     
     /* ========== EMPTY CHAT STATE ========== */
@@ -727,35 +1190,38 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #64748b;
+        color: var(--tg-text-secondary);
         z-index: 1;
     }
     
     .empty-chat i {
         font-size: 5rem;
-        opacity: 0.2;
+        opacity: 0.15;
         margin-bottom: 25px;
+        color: var(--tg-blue);
     }
     
     .empty-chat h3 {
-        margin-bottom: 10px;
-        font-size: 1.3rem;
+        margin-bottom: 8px;
+        font-size: 1.25rem;
+        font-weight: 500;
     }
     
     .empty-chat p {
         opacity: 0.8;
+        font-size: 14px;
     }
     
-    /* ========== EMOJI PICKER ========== */
+    /* ========== EMOJI PICKER - Telegram style ========== */
     .emoji-picker-container {
         position: absolute;
-        bottom: 80px;
-        right: 20px;
-        width: 320px;
-        max-height: 350px;
-        background: var(--card-bg);
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        bottom: 70px;
+        right: 8%;
+        width: 340px;
+        max-height: 380px;
+        background: var(--tg-sidebar-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         display: none;
         z-index: 100;
         overflow: hidden;
@@ -763,17 +1229,17 @@
     
     .emoji-picker-container.show {
         display: block;
-        animation: slideUp 0.2s ease;
+        animation: slideUp 0.15s ease;
     }
     
     @keyframes slideUp {
-        from { opacity: 0; transform: translateY(10px); }
+        from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
     }
     
     .emoji-header {
         display: flex;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--tg-border);
     }
     
     .emoji-tab-btn {
@@ -781,21 +1247,22 @@
         padding: 12px;
         border: none;
         background: none;
-        color: var(--text-color);
+        color: var(--tg-text-secondary);
         cursor: pointer;
-        font-size: 0.9rem;
+        font-size: 14px;
+        transition: all 0.15s;
     }
     
     .emoji-tab-btn.active {
-        color: #667eea;
-        border-bottom: 2px solid #667eea;
+        color: var(--tg-blue);
+        border-bottom: 2px solid var(--tg-blue);
     }
     
     .emoji-category-nav {
         display: flex;
         padding: 8px;
-        gap: 5px;
-        border-bottom: 1px solid var(--border-color);
+        gap: 4px;
+        border-bottom: 1px solid var(--tg-border);
         overflow-x: auto;
     }
     
@@ -805,12 +1272,13 @@
         background: none;
         border-radius: 8px;
         cursor: pointer;
-        font-size: 1.2rem;
+        font-size: 1.15rem;
+        transition: all 0.15s;
     }
     
     .emoji-cat-btn:hover,
     .emoji-cat-btn.active {
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(51, 144, 236, 0.1);
     }
     
     .emoji-grid-content {
@@ -818,7 +1286,7 @@
         grid-template-columns: repeat(8, 1fr);
         gap: 2px;
         padding: 8px;
-        max-height: 200px;
+        max-height: 220px;
         overflow-y: auto;
     }
     
@@ -827,12 +1295,12 @@
         text-align: center;
         cursor: pointer;
         border-radius: 6px;
-        font-size: 1.3rem;
-        transition: transform 0.1s;
+        font-size: 1.35rem;
+        transition: all 0.1s;
     }
     
     .emoji-item:hover {
-        background: rgba(102, 126, 234, 0.1);
+        background: rgba(51, 144, 236, 0.1);
         transform: scale(1.15);
     }
     
@@ -841,7 +1309,7 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
         padding: 12px;
-        max-height: 220px;
+        max-height: 240px;
         overflow-y: auto;
     }
     
@@ -849,14 +1317,14 @@
         padding: 12px;
         text-align: center;
         cursor: pointer;
-        border-radius: 12px;
+        border-radius: 10px;
         font-size: 2.2rem;
-        background: rgba(102, 126, 234, 0.05);
-        transition: all 0.2s;
+        background: rgba(51, 144, 236, 0.04);
+        transition: all 0.15s;
     }
     
     .sticker-item:hover {
-        background: rgba(102, 126, 234, 0.15);
+        background: rgba(51, 144, 236, 0.12);
         transform: scale(1.05);
     }
     
@@ -868,7 +1336,7 @@
         display: block;
     }
     
-    /* ========== MOBILE RESPONSIVE ========== */
+    /* ========== MOBILE RESPONSIVE - Telegram style ========== */
     @media (max-width: 768px) {
         .telegram-chat-container {
             position: relative;
@@ -881,9 +1349,10 @@
             bottom: 0;
             width: 100% !important;
             max-width: 100% !important;
+            min-width: 100% !important;
             z-index: 1000;
             transform: translateX(0);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .chat-sidebar.hidden {
@@ -899,7 +1368,7 @@
             width: 100% !important;
             z-index: 999;
             transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
         }
@@ -913,11 +1382,13 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 10px 15px 15px;
+            padding: 8px 12px 14px;
             z-index: 1001;
+            background: var(--tg-bg-chat);
         }
         
         .chat-messages {
+            padding: 12px;
             padding-bottom: 80px;
         }
         
@@ -925,55 +1396,66 @@
             display: flex !important;
         }
         
-        .chat-header-info h3 {
-            font-size: 1rem;
+        .chat-header {
+            padding: 8px 12px;
+        }
+        
+        .chat-partner-name {
+            font-size: 15px;
         }
         
         .message-bubble {
             max-width: 85%;
-            padding: 10px 14px;
-        }
-        
-        .message-input-area {
-            padding: 10px;
+            padding: 8px 12px;
         }
         
         .message-input-container input {
             font-size: 16px; /* Prevents zoom on iOS */
         }
         
-        .emoji-sticker-picker {
-            left: 5px;
-            right: 5px;
+        .emoji-picker-container {
+            left: 12px;
+            right: 12px;
             width: auto;
+            bottom: 70px;
         }
         
         .chat-user-item {
-            padding: 10px;
+            padding: 10px 12px;
         }
         
         .user-avatar {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
+        }
+        
+        .input-container {
+            padding: 4px;
         }
     }
     
     /* Small phones */
     @media (max-width: 380px) {
         .chat-header {
-            padding: 10px;
+            padding: 8px 10px;
+            gap: 10px;
         }
         
-        .emoji-sticker-picker {
-            height: 250px;
+        .emoji-picker-container {
+            height: 280px;
         }
         
-        .emoji-grid, .sticker-grid {
+        .emoji-grid-content, .sticker-grid-content {
             grid-template-columns: repeat(6, 1fr);
+        }
+        
+        .chat-partner-avatar {
+            width: 38px;
+            height: 38px;
         }
     }
     
-    /* ========== PWA / iOS SAFE AREA ========== */
+    /* ========== PWA / iOS SAFE AREA - Telegram style ========== */
     @supports (padding-top: env(safe-area-inset-top)) {
         .telegram-chat-container {
             height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
@@ -981,15 +1463,15 @@
         }
         
         .chat-header {
-            padding-top: calc(10px + env(safe-area-inset-top));
+            padding-top: calc(8px + env(safe-area-inset-top));
         }
         
         .chat-sidebar-header {
-            padding-top: calc(15px + env(safe-area-inset-top));
+            padding-top: calc(8px + env(safe-area-inset-top));
         }
         
         .chat-input-area {
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
     }
     
@@ -1016,6 +1498,26 @@
             max-height: 50vh;
         }
     }
+    
+    /* ========== TABLET RESPONSIVE ========== */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .chat-sidebar {
+            width: 320px;
+            min-width: 280px;
+        }
+        
+        .chat-messages {
+            padding: 12px 5%;
+        }
+        
+        .chat-input-area {
+            padding: 8px 5% 12px;
+        }
+        
+        .emoji-picker-container {
+            right: 5%;
+        }
+    }
 {% endblock %}
 
 {% block content %}
@@ -1028,62 +1530,147 @@
             </a>
             <div class="chat-search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Foydalanuvchilarni qidirish..." id="chatSearchInput" onkeyup="searchChats()">
+                <input type="text" placeholder="Foydalanuvchilarni qidirish..." id="chatSearchInput" oninput="searchUsers(this.value)">
+                <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <a href="{% url 'search_users' %}" class="new-chat-btn" title="Yangi suhbat">
-                <i class="fas fa-plus"></i>
-            </a>
+            <button class="new-chat-btn" onclick="toggleSettings()" title="Sozlamalar">
+                <i class="fas fa-cog"></i>
+            </button>
         </div>
         
-        <div class="chat-user-list" id="chatUserList">
-            {% for chat in chats %}
-            <a href="{% url 'telegram_chat_with_user' chat.user.username %}" 
-               class="chat-user-item {% if active_chat == chat.user.username %}active{% endif %}" 
-               data-name="{{ chat.user.first_name|default:chat.user.username }} {{ chat.user.last_name }}"
-               data-username="{{ chat.user.username }}">
-                <div class="user-avatar {% if not chat.profile.avatar %}default{% endif %}">
-                    {% if chat.profile.avatar %}
-                    <img src="{{ chat.profile.avatar.url }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
-                    {% else %}
-                    {{ chat.user.username|first|upper }}
-                    {% endif %}
-                    {% if chat.profile.is_online %}
-                    <span class="online-dot"></span>
-                    {% endif %}
-                </div>
-                <div class="user-info">
-                    <div class="user-top-row">
-                        <span class="user-name">{{ chat.user.first_name|default:chat.user.username }}</span>
-                        <span class="msg-time">
-                            {% if chat.last_message and chat.last_message.created_at %}
-                            {{ chat.last_message.created_at|date:"H:i" }}
-                            {% endif %}
-                        </span>
-                    </div>
-                    <div class="user-bottom-row">
-                        <span class="last-msg">
-                            {% if chat.last_message %}
-                                {% if chat.last_message.sender == user %}Siz: {% endif %}
-                                {{ chat.last_message.content|truncatechars:25 }}
-                            {% else %}
-                                Suhbatni boshlang
-                            {% endif %}
-                        </span>
-                        {% if chat.unread_count > 0 %}
-                        <span class="unread-count">{{ chat.unread_count }}</span>
+        <!-- Search Results Section -->
+        <div class="search-results-section" id="searchResultsSection" style="display: none;">
+            <div class="search-results-header">
+                <span class="search-results-title">Qidiruv natijalari</span>
+                <span class="search-results-count" id="searchResultsCount">0</span>
+            </div>
+            <!-- Filter Tabs -->
+            <div class="search-filter-tabs" id="searchFilterTabs">
+                <button class="search-filter-tab active" data-tab="all" onclick="setSearchTab('all')">
+                    <i class="fas fa-globe"></i> Barchasi
+                </button>
+                {% if user.is_authenticated %}
+                <button class="search-filter-tab" data-tab="discover" onclick="setSearchTab('discover')">
+                    <i class="fas fa-compass"></i> Tavsiyalar
+                </button>
+                <button class="search-filter-tab" data-tab="followers" onclick="setSearchTab('followers')">
+                    <i class="fas fa-user-friends"></i> Kuzatuvchilar
+                </button>
+                <button class="search-filter-tab" data-tab="following" onclick="setSearchTab('following')">
+                    <i class="fas fa-heart"></i> Kuzatyapsiz
+                </button>
+                {% endif %}
+            </div>
+            <div class="search-results-list" id="searchResultsList">
+                <!-- Search results will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Chats Section -->
+        <div class="chats-section" id="chatsSection">
+            <div class="chat-user-list" id="chatUserList">
+                {% for chat in chats %}
+                <a href="{% url 'telegram_chat_with_user' chat.user.username %}" 
+                   class="chat-user-item {% if active_chat == chat.user.username %}active{% endif %}" 
+                   data-name="{{ chat.user.first_name|default:chat.user.username }} {{ chat.user.last_name }}"
+                   data-username="{{ chat.user.username }}">
+                    <div class="user-avatar {% if not chat.profile.avatar %}default{% endif %}">
+                        {% if chat.profile.avatar %}
+                        <img src="{{ chat.profile.avatar.url }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                        {% else %}
+                        {{ chat.user.username|first|upper }}
+                        {% endif %}
+                        {% if chat.profile.is_online %}
+                        <span class="online-dot"></span>
                         {% endif %}
                     </div>
-                </div>
-            </a>
-            {% empty %}
-            <div class="empty-chats">
-                <i class="fas fa-comments"></i>
-                <p>Hali suhbatlar yo'q</p>
-                <a href="{% url 'search_users' %}">
-                    <i class="fas fa-user-plus"></i> Yangi suhbat boshlash
+                    <div class="user-info">
+                        <div class="user-top-row">
+                            <span class="user-name">{{ chat.user.first_name|default:chat.user.username }}</span>
+                            <span class="msg-time">
+                                {% if chat.last_message and chat.last_message.created_at %}
+                                {{ chat.last_message.created_at|date:"H:i" }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="user-bottom-row">
+                            <span class="last-msg">
+                                {% if chat.last_message %}
+                                    {% if chat.last_message.sender == user %}Siz: {% endif %}
+                                    {{ chat.last_message.content|truncatechars:25 }}
+                                {% else %}
+                                    Suhbatni boshlang
+                                {% endif %}
+                            </span>
+                            {% if chat.unread_count > 0 %}
+                            <span class="unread-count">{{ chat.unread_count }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </a>
+                {% empty %}
+                <div class="empty-chats">
+                    <i class="fas fa-comments"></i>
+                    <p>Hali suhbatlar yo'q</p>
+                    <p style="font-size: 13px; margin-top: 10px;">Yuqoridagi qidiruv orqali foydalanuvchi toping</p>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+        </div>
+        
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel" style="display: none;">
+            <div class="settings-header">
+                <button class="settings-back-btn" onclick="toggleSettings()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <span>Sozlamalar</span>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <div class="settings-title">Xabar sozlamalari</div>
+                    <div class="settings-item">
+                        <span><i class="fas fa-bell"></i> Bildirishnomalar</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notificationsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-item">
+                        <span><i class="fas fa-volume-up"></i> Ovozlar</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="soundsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <div class="settings-title">Maxfiylik</div>
+                    <div class="settings-item">
+                        <span><i class="fas fa-eye"></i> Online holatni ko'rsatish</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="onlineStatusToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-item">
+                        <span><i class="fas fa-check-double"></i> O'qilganligini ko'rsatish</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="readReceiptsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <div class="settings-title">Ma'lumotlar</div>
+                    <div class="settings-item clickable" onclick="clearLocalFiles()">
+                        <span><i class="fas fa-trash"></i> Keshni tozalash</span>
+                        <span class="settings-value" id="cacheSize">0 MB</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -1464,6 +2051,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Eski fayllarni tozalash
     cleanOldFiles();
     
+    // Settings ni ishga tushirish
+    initSettings();
+    
     scrollToBottom();
     initEmojis();
     initTextarea();
@@ -1652,20 +2242,248 @@ function scrollToBottom() {
 }
 
 // ========== SEARCH ==========
-function searchChats() {
-    const query = document.getElementById('chatSearchInput').value.toLowerCase().trim();
-    const items = document.querySelectorAll('.chat-user-item');
+let searchTimeout = null;
+let currentSearchTab = 'all';
+
+function setSearchTab(tab) {
+    currentSearchTab = tab;
     
-    items.forEach(item => {
-        const name = (item.dataset.name || '').toLowerCase();
-        const username = (item.dataset.username || '').toLowerCase();
-        
-        if (name.includes(query) || username.includes(query)) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
+    // Update tab styles
+    document.querySelectorAll('.search-filter-tab').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tab) {
+            btn.classList.add('active');
         }
     });
+    
+    // Re-search with new tab
+    const query = document.getElementById('chatSearchInput').value.trim();
+    performSearch(query);
+}
+
+function searchUsers(query) {
+    query = query.trim();
+    const clearBtn = document.getElementById('searchClearBtn');
+    const searchResults = document.getElementById('searchResultsSection');
+    const chatsSection = document.getElementById('chatsSection');
+    
+    // Show/hide clear button
+    clearBtn.style.display = query ? 'block' : 'none';
+    
+    // If empty and tab is 'all', hide search results and show chats
+    if (!query && currentSearchTab === 'all') {
+        searchResults.style.display = 'none';
+        chatsSection.style.display = 'block';
+        return;
+    }
+    
+    // Show search section, hide chats
+    searchResults.style.display = 'block';
+    chatsSection.style.display = 'none';
+    
+    // Debounce search
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        performSearch(query);
+    }, 300);
+}
+
+function performSearch(query) {
+    const searchResultsList = document.getElementById('searchResultsList');
+    
+    // Show loading
+    searchResultsList.innerHTML = `
+        <div class="search-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Qidirilmoqda...</p>
+        </div>
+    `;
+    
+    let url = `/users/?format=json&tab=${currentSearchTab}`;
+    if (query) {
+        url += `&q=${encodeURIComponent(query)}`;
+    }
+    
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.users.length > 0) {
+            renderSearchResults(data.users, data.total_count);
+        } else {
+            let emptyMsg = 'Foydalanuvchi topilmadi';
+            if (currentSearchTab === 'followers') {
+                emptyMsg = 'Sizni hali hech kim kuzatmayapti';
+            } else if (currentSearchTab === 'following') {
+                emptyMsg = 'Siz hali hech kimni kuzatmayapsiz';
+            } else if (currentSearchTab === 'discover') {
+                emptyMsg = 'Tavsiyalar mavjud emas';
+            }
+            
+            searchResultsList.innerHTML = `
+                <div class="search-no-results">
+                    <i class="fas fa-user-slash"></i>
+                    <p>${emptyMsg}</p>
+                </div>
+            `;
+            document.getElementById('searchResultsCount').textContent = '0';
+        }
+    })
+    .catch(err => {
+        console.error('Search error:', err);
+        searchResultsList.innerHTML = `
+            <div class="search-no-results">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Xatolik yuz berdi</p>
+            </div>
+        `;
+    });
+}
+
+function renderSearchResults(users, totalCount) {
+    const searchResultsList = document.getElementById('searchResultsList');
+    const countEl = document.getElementById('searchResultsCount');
+    
+    countEl.textContent = totalCount;
+    
+    let html = '';
+    users.forEach(user => {
+        const initial = user.first_name ? user.first_name[0].toUpperCase() : user.username[0].toUpperCase();
+        const avatarHtml = user.avatar 
+            ? `<img src="${user.avatar}" class="search-result-avatar" alt="${user.username}">`
+            : `<div class="search-result-avatar default">${initial}</div>`;
+        
+        const followBtnHtml = user.is_following 
+            ? `<button class="search-follow-btn following" onclick="event.preventDefault(); toggleUserFollow('${user.username}', this)"><i class="fas fa-user-check"></i></button>`
+            : `<button class="search-follow-btn" onclick="event.preventDefault(); toggleUserFollow('${user.username}', this)"><i class="fas fa-user-plus"></i></button>`;
+        
+        html += `
+            <a href="/telegram-chat/${user.username}/" class="search-result-item">
+                ${avatarHtml}
+                <div class="search-result-info">
+                    <div class="search-result-name">
+                        ${user.first_name} ${user.last_name}
+                        ${user.is_online ? '<span class="online-indicator"></span>' : ''}
+                    </div>
+                    <div class="search-result-username">@${user.username}</div>
+                    <div class="search-result-stats">${user.followers_count || 0} kuzatuvchi</div>
+                    ${user.bio ? `<div class="search-result-bio">${user.bio}</div>` : ''}
+                </div>
+                ${followBtnHtml}
+            </a>
+        `;
+    });
+    
+    searchResultsList.innerHTML = html;
+}
+
+function toggleUserFollow(username, btn) {
+    fetch(`/users/${username}/follow/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.is_following) {
+                btn.classList.add('following');
+                btn.innerHTML = '<i class="fas fa-user-check"></i>';
+            } else {
+                btn.classList.remove('following');
+                btn.innerHTML = '<i class="fas fa-user-plus"></i>';
+            }
+        }
+    });
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('chatSearchInput');
+    const searchResults = document.getElementById('searchResultsSection');
+    const chatsSection = document.getElementById('chatsSection');
+    
+    searchInput.value = '';
+    currentSearchTab = 'all';
+    
+    // Reset tab styles
+    document.querySelectorAll('.search-filter-tab').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === 'all') {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Hide search results, show chats
+    searchResults.style.display = 'none';
+    chatsSection.style.display = 'block';
+    document.getElementById('searchClearBtn').style.display = 'none';
+    searchInput.focus();
+}
+
+// ========== SETTINGS ==========
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    const chatsSection = document.getElementById('chatsSection');
+    const searchSection = document.getElementById('searchResultsSection');
+    
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        chatsSection.style.display = 'none';
+        searchSection.style.display = 'none';
+        loadCacheSize();
+    } else {
+        panel.style.display = 'none';
+        chatsSection.style.display = 'block';
+    }
+}
+
+async function loadCacheSize() {
+    const size = await getLocalStorageSize();
+    const el = document.getElementById('cacheSize');
+    if (el) {
+        el.textContent = formatFileSize(size);
+    }
+}
+
+async function clearLocalFiles() {
+    if (!chatDB) await initIndexedDB();
+    
+    if (confirm("Barcha keshni tozalashni xohlaysizmi?")) {
+        const transaction = chatDB.transaction(['files'], 'readwrite');
+        const store = transaction.objectStore('files');
+        store.clear();
+        
+        transaction.oncomplete = () => {
+            alert('Kesh tozalandi!');
+            loadCacheSize();
+        };
+    }
+}
+
+// Initialize settings from localStorage
+function initSettings() {
+    // Notifications
+    const notificationsToggle = document.getElementById('notificationsToggle');
+    if (notificationsToggle) {
+        notificationsToggle.checked = localStorage.getItem('notifications') !== 'false';
+        notificationsToggle.addEventListener('change', function() {
+            localStorage.setItem('notifications', this.checked);
+        });
+    }
+    
+    // Sounds
+    const soundsToggle = document.getElementById('soundsToggle');
+    if (soundsToggle) {
+        soundsToggle.checked = localStorage.getItem('sounds') !== 'false';
+        soundsToggle.addEventListener('change', function() {
+            localStorage.setItem('sounds', this.checked);
+        });
+    }
 }
 
 // ========== TEXTAREA ==========
