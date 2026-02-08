@@ -92,7 +92,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # XFrameOptionsMiddleware olib tashlandi - mobil ilova iframe uchun
     # Custom middleware
     'blog.middleware.RequestLoggingMiddleware',
     'blog.middleware.OnlineStatusMiddleware',
@@ -346,5 +346,5 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# X-Frame-Options - iframe uchun ruxsat
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+# X-Frame-Options - iframe uchun ruxsat (mobil ilova uchun)
+X_FRAME_OPTIONS = 'ALLOWALL'

@@ -73,7 +73,7 @@ class SecurityHeadersMiddleware:
         
         # Xavfsizlik headerlari
         response['X-Content-Type-Options'] = 'nosniff'
-        response['X-Frame-Options'] = 'DENY'
+        # X-Frame-Options olib tashlandi - mobil ilova iframe uchun kerak
         response['X-XSS-Protection'] = '1; mode=block'
         response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         
