@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'blog', 
 ]
 
@@ -85,6 +86,7 @@ except ImportError:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -305,3 +307,44 @@ if not EMAIL_HOST_USER:
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===== CORS SOZLAMALARI =====
+# Barcha originlardan so'rovlarga ruxsat berish (development uchun)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Yoki aniq originlar ro'yxati (production uchun tavsiya etiladi)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://cloudstore.uz",
+    "https://www.cloudstore.uz",
+]
+
+# Credentials (cookies, authorization headers) bilan so'rovlarga ruxsat
+CORS_ALLOW_CREDENTIALS = True
+
+# Ruxsat berilgan HTTP metodlar
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+# Ruxsat berilgan headerlar
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# X-Frame-Options - iframe uchun ruxsat
+X_FRAME_OPTIONS = 'SAMEORIGIN'

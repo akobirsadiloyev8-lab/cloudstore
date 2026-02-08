@@ -1,19 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary-color: #2563eb;
-    --secondary-color: #1e40af;
-    --accent-color: #f59e0b;
-    --success-color: #10b981;
-    --danger-color: #ef4444;
-    --background-color: #f8fafc;
-    --text-color: #1f2937;
+    --primary-color: #191919;
+    --secondary-color: #383838;
+    --accent-color: #87e64b;
+    --accent-hover: #6cc832;
+    --accent-text: #1a4200;
+    --success-color: #2e7400;
+    --danger-color: #b9004b;
+    --background-color: #fafafa;
+    --text-color: #191919;
     --card-bg: #ffffff;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --border-radius: 12px;
-    --transition: all 0.3s ease;
-    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+    --border-radius: 4px;
+    --border-radius-lg: 16px;
+    --transition: all 0.15s ease;
+    --gradient: linear-gradient(135deg, #191919, #383838);
 }
 
 /* Umumiy sozlamalar */
@@ -209,7 +212,7 @@ body {
 
 .btn {
     background: var(--accent-color);
-    color: var(--text-color);
+    color: var(--accent-text);
     padding: 1rem 2rem;
     text-decoration: none;
     border-radius: var(--border-radius);
@@ -221,7 +224,7 @@ body {
     z-index: 1;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 15px rgba(135, 230, 75, 0.3);
     overflow: hidden;
 }
 
@@ -241,9 +244,9 @@ body {
 }
 
 .btn:hover {
-    background: #d97706;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(           245, 158, 11, 0.4);
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(135, 230, 75, 0.4);
 }
 
 .btn:active {
@@ -365,12 +368,12 @@ body {
 }
 
 .btn-danger {
-    background: #ef4444;
+    background: #b9004b;
     color: #fff;
 }
 
 .btn-danger:hover {
-    background: #dc2626;
+    background: #8a0038;
 }
 
 .btn-secondary {
@@ -389,23 +392,23 @@ body {
 .btn-primary {
     background: var(--primary-color);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 15px rgba(25, 25, 25, 0.3);
 }
 
 .btn-primary:hover {
     background: var(--secondary-color);
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 8px 25px rgba(25, 25, 25, 0.4);
 }
 
 .btn-success {
-    background: var(--success-color);
+    background: #2e7400;
     color: #fff;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(46, 116, 0, 0.3);
 }
 
 .btn-success:hover {
-    background: #059669;
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    background: #1a4200;
+    box-shadow: 0 8px 25px rgba(46, 116, 0, 0.4);
 }
 
 .btn-outline {
@@ -766,8 +769,8 @@ body {
 
 .search-controls input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(135, 230, 75, 0.15);
 }
 
 .export-buttons {
@@ -1005,8 +1008,8 @@ mark {
 
 .edit-textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(135, 230, 75, 0.15);
     background: #fff;
 }
 
