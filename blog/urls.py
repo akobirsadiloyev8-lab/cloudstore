@@ -99,7 +99,19 @@ urlpatterns = [
     
     # ===== AI FOOD SCANNER =====
     path('food-scanner/', views.food_scanner, name='food_scanner'),
+    path('food-scanner1/', views.food_scanner1, name='food_scanner1'),
     path('api/analyze-food/', views.analyze_food_image, name='analyze_food_image'),
+    path('api/save-food/', views.save_food_to_list, name='save_food_to_list'),
+    path('api/delete-food/<int:food_id>/', views.delete_food_from_list, name='delete_food_from_list'),
+    path('api/lookup-barcode/', views.lookup_barcode, name='lookup_barcode'),
+    
+    # ===== KUNLIK OVQATLANISH RO'YXATI =====
+    path('ovqatlanish/', views.food_diary, name='food_diary'),
+    path('api/food-intake/add/', views.add_food_intake, name='add_food_intake'),
+    path('api/food-intake/<int:intake_id>/delete/', views.delete_food_intake, name='delete_food_intake'),
+    path('api/food-intake/<int:intake_id>/update/', views.update_food_intake, name='update_food_intake'),
+    path('api/food-intake/daily-stats/', views.get_daily_stats, name='get_daily_stats'),
+    path('api/delete-daily-stats/', views.delete_daily_stats, name='delete_daily_stats'),
     
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),

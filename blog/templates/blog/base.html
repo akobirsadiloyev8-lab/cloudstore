@@ -1,0 +1,724 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>{% block title %}Cloudstore {% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&amp;family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
+        }
+        
+        /* Bottom Tab Bar Styles */
+        .bottom-tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #e9ecef;
+            z-index: 1030;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .bottom-tab-bar .nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        .bottom-tab-bar .nav-item {
+            flex: 1;
+            text-align: center;
+        }
+        .bottom-tab-bar .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 8px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.2s;
+        }
+        .bottom-tab-bar .nav-link i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .bottom-tab-bar .nav-link.active {
+            color: #0d6efd;
+        }
+        .bottom-tab-bar .nav-link:hover {
+            color: #0d6efd;
+        }
+        .bottom-tab-bar .nav-link .profile-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 2px;
+        }
+        /* Add padding to body for bottom tab bar */
+        body {
+            padding-bottom: 70px;
+        }
+        /* Hide bottom tab bar on large screens */
+        @media (min-width: 992px) {
+            .bottom-tab-bar {
+                display: none;
+            }
+            body {
+                padding-bottom: 0;
+            }
+        }
+        /* Move theming buttons up on mobile to avoid overlap with tab bar */
+        @media (max-width: 991.98px) {
+            #fixedbuttons {
+                bottom: 70px !important;
+            }
+        }
+    </style>
+
+<link href="{% static 'assets/css/app8051.css' %}" rel="stylesheet">
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+
+    <body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-bggradient="bg-r-gradient" data-headerfill="adminuiux-header-transparent">
+        <!-- Pageloader -->
+<!-- Pageloader -->
+<div class="pageloader">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center text-center h-100">
+            <div class="col-12 mb-auto pt-4"></div>
+            <div class="col-auto">
+                <p class="h3 mb-0"><span class="text-gradient">Cloudstore</span></p>
+                
+                <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+            </div>
+            <div class="col-12 mt-auto pb-4">
+                <p class="text-secondary">Yuklanmoqda...</p>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- standard header -->
+<header class="adminuiux-header">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+
+            <!-- main sidebar toggle -->
+            <button class="btn btn-link btn-square sidebar-toggler" type="button" onclick="initSidebar()">
+                <i class="sidebar-svg" data-feather="menu"></i>
+            </button>
+
+            <!-- logo -->
+            <!-- logo -->
+            <a class="navbar-brand" href="{% url 'boshlash' %}">
+                <div class="d-block ps-2">
+                    <span class="h4 text-gradient">Cloud<span class="fw-bold">store</span></span>
+                
+                </div>
+            </a>
+
+            <!-- search -->
+            <div class="px-3 justify-content-center d-none d-lg-flex">
+                <div class="input-group input-group-md rounded search-wrap width-300 mx-auto">
+                    <span class="input-group-text border-0 bg-none">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input class="form-control border-0 bg-none" type="search" placeholder="Qidiruv..." id="searchglobal">
+                    <div class="dropdown input-group-text border-0 px-2">
+                        
+                        <div class="dropdown-menu dropdown-menu-end dropdown-dontclose width-300" aria-labelledby="searchfilter" style="">
+                           
+                            <div class="tab-content py-3" id="searchtabContent">
+                                <div class="tab-pane fade active show" id="searchall" role="tabpanel" aria-labelledby="searchall-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="searchorders" role="tabpanel" aria-labelledby="searchorders-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Show order ID</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch5"> <label class="form-check-label" for="isearchswitch5"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">International Order</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch6" checked=""> <label class="form-check-label" for="isearchswitch6"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Taxable Product</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch7" checked=""> <label class="form-check-label" for="isearchswitch7"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Published Product</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch8"> <label class="form-check-label" for="isearchswitch8"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="searchcontacts" role="tabpanel" aria-labelledby="searchcontacts-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Have email ID</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch9"> <label class="form-check-label" for="isearchswitch9"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Have phone number</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch10" checked=""> <label class="form-check-label" for="isearchswitch10"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Photo available</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch11" checked=""> <label class="form-check-label" for="isearchswitch11"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Referral</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch12"> <label class="form-check-label" for="isearchswitch12"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- right icons button -->
+            <div class="ms-auto">
+                <!-- global search toggle -->
+                <button class="btn btn-link btn-square btn-icon btn-link-header d-lg-none" type="button" onclick="openSearch()">
+                    <i data-feather="search"></i>
+                </button>
+
+                <!-- dark mode -->
+                <button class="btn btn-link btn-square btnsunmoon btn-link-header" id="btn-layout-modes-dark-page">
+                    <i class="sun mx-auto" data-feather="sun"></i>
+                    <i class="moon mx-auto" data-feather="moon"></i>
+                </button>
+
+                <!-- notification dropdown -->
+                <button class="btn btn-link btn-square btn-icon btn-link-header dropdown-toggle position-relative no-caret" type="button" data-bs-toggle="offcanvas" data-bs-target="#view-notification" aria-expanded="false">
+                    <i data-feather="bell"></i>
+                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger p-1">
+                        <small>9+</small>
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                </button>
+
+            </div>
+        </div>
+    </nav>
+    <!-- global search-->
+    <div class="adminuiux-search-full">
+        <div class="row gx-2 align-items-center">
+            <div class="col-auto">
+                <!-- close global search toggle -->
+                <button class="btn btn-link btn-square " type="button" onclick="closeSearch()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div class="col">
+                <input class="form-control pe-0 border-0" type="search" placeholder="Type something here...">
+            </div>
+            <div class="col-auto">
+                <!-- filter dropdown -->
+                <div class="dropdown input-group-text border-0 p-0">
+                    <button class="dropdown-toggle btn btn-link btn-square no-caret" type="button" id="searchfilter2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i data-feather="sliders"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-dontclose width-300">
+                        <ul class="nav adminuiux-nav" id="searchtab2" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="searchall-tab2" data-bs-toggle="tab" data-bs-target="#searchall2" type="button" role="tab" aria-controls="searchall2" aria-selected="true">All</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="searchorders-tab2" data-bs-toggle="tab" data-bs-target="#searchorders2" type="button" role="tab" aria-controls="searchorders2" aria-selected="false" tabindex="-1">Orders</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="searchcontacts-tab2" data-bs-toggle="tab" data-bs-target="#searchcontacts2" type="button" role="tab" aria-controls="searchcontacts2" aria-selected="false" tabindex="-1">Contacts</button>
+                            </li>
+                        </ul>
+                       
+                            <div class="tab-pane fade" id="searchorders2" role="tabpanel" aria-labelledby="searchorders-tab2">
+                                <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Show order ID</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch5">
+                                                    <label class="form-check-label" for="searchswitch5"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">International Order</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch6" checked="">
+                                                    <label class="form-check-label" for="searchswitch6"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Taxable Product</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch7" checked="">
+                                                    <label class="form-check-label" for="searchswitch7"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Published Product</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch8">
+                                                    <label class="form-check-label" for="searchswitch8"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="searchcontacts2" role="tabpanel" aria-labelledby="searchcontacts-tab2">
+                                <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Have email ID</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch9">
+                                                    <label class="form-check-label" for="searchswitch9"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Have phone number</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch10" checked="">
+                                                    <label class="form-check-label" for="searchswitch10"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Photo available</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch11" checked="">
+                                                    <label class="form-check-label" for="searchswitch11"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Referral</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch12">
+                                                    <label class="form-check-label" for="searchswitch12"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="row gx-3 mb-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-theme">Apply</button>
+                                </div>
+                                <div class="col-auto"><button class="btn btn-sm btn-link theme-red">Cancel</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Notification Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="view-notification" aria-labelledby="view-notification-label">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="view-notification-label">Bildirishnomalar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <p class="text-secondary">Hozircha bildirishnomalar yo'q</p>
+    </div>
+</div>
+
+<!-- Theming Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="theming" aria-labelledby="theming-label">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="theming-label">Mavzu sozlamalari</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h6>Rang tanlash</h6>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <button class="btn btn-primary btn-sm rounded-circle p-3" data-theme="theme-blue"></button>
+            <button class="btn btn-success btn-sm rounded-circle p-3" data-theme="theme-green"></button>
+            <button class="btn btn-danger btn-sm rounded-circle p-3" data-theme="theme-red"></button>
+            <button class="btn btn-warning btn-sm rounded-circle p-3" data-theme="theme-yellow"></button>
+            <button class="btn btn-info btn-sm rounded-circle p-3" data-theme="theme-teal"></button>
+            <button class="btn btn-secondary btn-sm rounded-circle p-3" data-theme="theme-grey"></button>
+        </div>
+    </div>
+</div>
+
+<div class="adminuiux-wrap">
+    <!-- Standard sidebar -->
+    <div class="adminuiux-sidebar shadow-sm">
+    <div class="adminuiux-sidebar-inner">
+        <div class="px-3 not-iconic mt-2">
+            <div class="row gx-3 gx-lg-4">
+                <div class="col align-self-center menu-name">
+                    <h6>Navigatsiya tugmalari</h6>
+                </div>
+                <div class="col-auto">
+                    <a class="collapsed btn btn-link btn-square" data-bs-toggle="collapse" data-bs-target="#usersidebarprofile" aria-expanded="false" role="button" aria-controls="usersidebarprofile">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- user information -->
+        <div class="px-3 text-center not-iconic collapse" id="usersidebarprofile">
+            <div class="avatar avatar-100 rounded-circle shadow-sm my-3 bg-white">
+                <figure class="avatar avatar-90 rounded-circle coverimg">
+                    <img src="{% static 'assets/img/modern-ai-image/user-4.jpg' %}" alt="" id="userphotoonboarding" style="display: none;">
+                </figure>
+            </div>
+            <h5 class="mb-0" id="usernamedisplay">The AdminUIUX</h5>
+            <p class="text-secondary small mb-3">United States</p>
+        </div>
+
+        <!-- user menu navigation -->
+        <ul class="nav flex-column menu-active-line">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'boshlash' %}">
+                    <i class="menu-icon bi bi-house-door"></i>
+                    <div class="col menu-name">Bosh sahifa</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'all_books' %}">
+                    <i class="menu-icon bi bi-egg-fried"></i>
+                    <div class="col menu-name">Ovqat ma'lumotlari</div>
+                </a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'food_scanner' %}">
+                    <i class="menu-icon bi bi-bar-chart"></i>
+                    <div class="col menu-name">Ovqat tahlili</div>
+                </a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'food_diary' %}">
+                    <i class="menu-icon bi bi-calendar-week"></i>
+                    <div class="col menu-name">Kunlik ro'yxat</div>
+                </a>
+            </li>
+
+             <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'about' %}">
+                    <i class="menu-icon bi bi-info-circle"></i>
+                    <div class="col menu-name">Haqida</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'food_scanner1' %}">
+                    <i class="nav-icon bi bi-upc-scan "></i>
+                    <div class="col menu-name">Skanerlangan mahsulot</div>
+                </a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="#" id="installBtn" onclick="installApp()">
+                    <i class="menu-icon bi bi-download"></i>
+                    <div class="col menu-name"> Ilovani o'rnatish</div>
+                </a>
+            </li>
+        </ul>
+
+        <!-- applications -->
+        
+        
+        <!-- user secondary menu navigation -->
+        <div class="px-3 not-iconic">
+            <h6>Sahifalar</h6>
+        </div>
+        <ul class="nav flex-column menu-active-line">
+        {% if user.is_authenticated %}
+         <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'user_profile' user.username %}">
+                    <i class="menu-icon bi bi-person-circle"></i>
+                    <div class="col menu-name">Profile</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'edit_profile' %}">
+                    <i class="menu-icon bi bi-gear"></i>
+                    <div class="col menu-name">Settings</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'logout' %}">
+                    <i class="menu-icon bi bi-box-arrow-right"></i>
+                    <div class="col menu-name">Sign Out</div>
+                </a>
+            </li>
+            
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'login' %}">
+                    <i class="menu-icon bi bi-box-arrow-in-right"></i>
+                    <div class="col menu-name">Sign In</div>
+                </a>
+            </li>
+        {% endif %}
+        </ul>
+
+        <div class=" mt-auto "></div>
+
+        <div class="px-3 not-iconic">
+            <div class="card adminuiux-card bg-theme-l-gradient mb-3">
+                <div class="card-body">
+                    <div class="row gx-3 mb-2">
+                        <div class="col">
+                            <p class="mb-0"><i class="bi bi-basket me-1 "></i> Limitlaringiz</p>
+                        </div>
+                        <div class="col-auto">
+                            <p class="small opacity-75">kunlik</p>
+                        </div>
+                    </div>
+                    <div class="progress height-dynamic bg-white-opacity mb-2" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--h-dynamic:5px">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 45%"></div>
+                    </div>
+                    <a href="{% url 'boshlash' %}" class="btn btn-sm btn-accent">Yangilash <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- quick links -->
+        
+
+    </div>
+</div>
+
+    <!-- Main Content Area -->
+<main class="adminuiux-content has-sidebar" onclick="contentClick()">
+    {% block content %}
+    {% endblock %}
+</main>
+<!-- Bottom Tab Bar / Fixed Bottom Navigation -->
+<footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
+    <div class="container">
+        <ul class="nav nav-pills nav-justified">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'boshlash' %}">
+                    <span>
+                        <i class="nav-icon bi bi-house"></i>
+                        <span class="nav-text">Home</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'food_diary' %}">
+                    <span>
+                        <i class="menu-icon bi bi-calendar-week"></i>
+                        <span class="nav-text">Kunlik</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'food_scanner' %}" class="nav-link">
+                    <span>
+                        <i class="nav-icon bi bi-upc-scan"></i>
+                        <span class="nav-text">Skaner</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'all_books' %}">
+                    <span>
+                        <i class="nav-icon bi bi-folder"></i>
+                        <span class="nav-text">Food</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'edit_profile' %}">
+                    <span>
+                        <i class="menu-icon bi bi-person-circle"></i>
+                        <span class="nav-text">Profile</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+<!-- standard footer -->
+<footer class="adminuiux-footer has-adminuiux-sidebar mt-auto bg-theme-1">
+    <div class="container-fluid">
+        <div class="row gx-3 gx-lg-4">
+            <div class="col-10 col-md col-lg py-2">
+                <span class="small">© {% now "Y" %} 
+                    <a href="{% url 'boshlash' %}" class="text-white">Cloudstore</a> 
+                </span>
+            </div>
+            <div class="col-12 col-md-auto col-lg-auto align-self-center">
+                <ul class="nav small">
+                    <li class="nav-item"><a class="nav-link text-white px-2" href="{% url 'feedback_list' %}">Fikr-mulohaza</a></li>
+                    <li class="nav-item opacity-50">|</li>
+                    <li class="nav-item"><a class="nav-link text-white px-2" href="{% url 'boshlash' %}">Bosh sahifa</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</div><!-- /.adminuiux-wrap -->
+
+<!-- Bottom Tab Bar -->
+<nav class="bottom-tab-bar d-lg-none">
+    <ul class="nav">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'boshlash' %}active{% endif %}" href="{% url 'boshlash' %}">
+                <i class="bi bi-house"></i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="bi bi-wallet2"></i>
+                <span>Wallet</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="bi bi-people"></i>
+                <span>Social</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'all_books' %}active{% endif %}" href="{% url 'all_books' %}">
+                <i class="bi bi-folder"></i>
+                <span>Files</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">
+                {% if user.is_authenticated and user.image %}
+                <img src="{{ user.image.url }}" alt="" class="profile-avatar">
+                {% else %}
+                <i class="bi bi-person-circle"></i>
+                {% endif %}
+                <span>Profile</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- theming action-->
+
+
+<!-- Page Level js -->
+<script src="{% static 'assets/js/app8051.js' %}"></script>
+
+<!-- PWA Install Script -->
+<script>
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+});
+
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Ilova o\'rnatildi');
+            }
+            deferredPrompt = null;
+            window.location.href = "{% url 'boshlash' %}";
+        });
+    } else {
+        alert('Ilovani o\'rnatish uchun brauzer menyusidan "Bosh sahifaga qo\'shish" ni tanlang');
+        window.location.href = "{% url 'boshlash' %}";
+    }
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

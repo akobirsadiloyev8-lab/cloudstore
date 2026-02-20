@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- dir="rtl"-->
+
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/component-dropzone.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:09:59 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>AdminUX - AdminUIUX - Bootstrap HTML Admin template - adminuiux.com</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&amp;family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
+        }
+    </style>
+
+<script defer src="assets/js/app8051.js?bd1e16b080f637e63a80"></script><link href="assets/css/app8051.css?bd1e16b080f637e63a80" rel="stylesheet"></head>
+
+    <body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-bggradient="bg-r-gradient"
+        data-headerfill="adminuiux-header-transparent"><!-- -->
+
+        <!-- Pageloader -->
+<div class="pageloader">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center text-center h-100">
+            <div class="col-12 mb-auto pt-4"></div>
+            <div class="col-auto">
+                <img src="assets/img/logo.svg" alt="" class="height-100 mb-3">
+                <p class="h3 mb-0"><span class="text-gradient">AdminUX</span></p>
+                <p class="small text-secondary mb-3"><span class="">Admin Dashboard HTML Template</span></p>
+                <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+            </div>
+            <div class="col-12 mt-auto pb-4">
+                <p class="text-secondary">Petal of flower being ready to <span class="text-gradient">blossom</span>...</p>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- standard header -->
+<header class="adminuiux-header">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <!-- logo -->
+            <a class="navbar-brand" href="adminux-dashboard.html">
+                <img data-bs-img="light" src="assets/img/logo-light.svg" alt="">
+                <img data-bs-img="dark" src="assets/img/logo.svg" alt="">
+                <div class="">
+                    <span class="h4">Admin<span class="fw-bold">UX</span></span>
+                    <p class="company-tagline">Mobile HTML</p>
+                </div>
+            </a>
+
+            <div class="collapse navbar-collapse justify-content-center" id="header-navbar">
+                <ul class="navbar-nav mx-lg-3 mb-2 mb-md-0 ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-dashboard.html">AdminUX</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="components.html" aria-current="page">Components</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="documentation.html">Documentation</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class=" ms-auto "></div>
+            <!-- right icons button -->
+            <div class="ms-auto">
+                <!-- dark mode -->
+                <button class="btn btn-link btn-square btnsunmoon btn-link-header" id="btn-layout-modes-dark-page">
+                    <i class="sun mx-auto" data-feather="sun"></i>
+                    <i class="moon mx-auto" data-feather="moon"></i>
+                </button>
+                <!-- Buy now -->
+                <a href="https://themeforest.net/user/adminuiux-templates/portfolio" class="btn btn-theme btn-link-header">
+                    Buy Now
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+                <div class="adminuiux-wrap">
+                    <main class="adminuiux-content" onclick="contentClick()">
+
+                        <!-- breadcrumb -->
+                        <div class="container-fluid mt-3">
+                            <div class="bg-theme-1-subtle rounded px-3 py-3">
+                                <div class="row gx-3 align-items-center">
+                                    <div class="col col-sm mb-2 mb-sm-0">
+                                        <p class="h5">Avatar</p>
+                                        <nav aria-label="breadcrumb">
+                                            <ol class="breadcrumb mb-0">
+                                                <li class="breadcrumb-item bi"><a href="adminux-dashboard.html">App Demo</a></li>
+                                                <li class="breadcrumb-item bi"><a href="components.html">Components</a></li>
+                                                <li class="breadcrumb-item active bi" aria-current="page">Dropzone</li>
+                                            </ol>
+                                        </nav>
+                                    </div>
+                                    <div class="col-auto ">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content  -->
+                        <div class="container mt-4">
+                            <div class="card adminuiux-card mb-4">
+                                <div class="card-header">
+                                    <div class="row gx-3 gx-lg-4 align-items-center">
+                                        <div class="col">
+                                            <p class="h6">Dropzone</p>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn btn-outline-theme btn-square" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false">
+                                                <i class="bi bi-code-slash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-secondary"></p>
+                                    <form action="https://adminuiux.com/target" class="dropzone mb-2" id="myDropzone1">
+                                        <div class="dz-default dz-message my-2">
+                                            <i class="h1 bi bi-cloud-upload"></i><br>
+                                            <button class="dz-button" type="button">Drag and Drop or Click here to
+                                                upload</button>
+                                        </div>
+                                    </form>
+                                    <p class="text-secondary small">Upload only .jpeg, .png, .mp4, .mpeg4 file format max. file
+                                        size 6MB</p>
+
+                                    <a href="https://www.dropzone.dev/" target="_blank" class="btn btn-link">learn more about dropzone js</a>
+                                </div>
+                                <div class="collapse" id="collapse1">
+                                    <div class="card-footer border-top">
+                                        <div class="bg-dark text-white p-2 rounded my-2">
+                                            <pre class="mb-2"><code class="code rounded language-html">
+            &lt;form action="/target" class="dropzone mb-2" id="myDropzone1"&gt;
+                &lt;div class="dz-default dz-message my-2"&gt;
+                    &lt;i class="h1 bi bi-cloud-upload"&gt;&lt;/i&gt;&lt;br&gt;
+                    &lt;button class="dz-button" type="button"&gt;Drag and Drop or Click here to
+                    upload&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+            
+            &lt;p class="text-secondary small"&gt;Upload only .jpeg, .png, .mp4, .mpeg4 file format max. file size 6MB&lt;/p&gt;
+            
+            &lt;script&gt;
+                Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+                    paramName: "file", // The name that will be used to transfer the file
+                    maxFilesize: 2, // MB
+                    accept: function(file, done) {
+                        if (
+                            file.name == "justinbieber.jpg") {done("Naha, you don't.");
+                        }else { 
+                            done(); 
+                        }
+                    }
+                };
+            &lt;/script&gt;
+            </code></pre>
+                                            <button type="button" class="btn btn-outline-light  btn-square copycode"><i class="bi bi-clipboard"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- component footer -->
+                            <div class="bg-theme-1-subtle rounded px-3 py-2 mb-4">
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col">
+                                        <a href="component-full-calendar.html" class="btn btn-accent me-3 my-2"><i class="bi bi-arrow-left mr-2"></i> Full Calendar</a>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="component-progressbar-js.html" class="btn btn-theme my-2">Progressbar Js <i class="bi bi-arrow-right ms-2"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+
+                <!-- standard index footer -->
+                <footer class="adminuiux-footer mt-auto">
+                    <div class="container-fluid text-center">
+                        <span class="small">Copyright @2024, Creatively designed by
+                            <a href="https://adminuiux.com/" target="_blank">InvestmentUX - Adminuiux</a> on Earth ❤️
+                        </span>
+                    </div>
+                </footer>
+                <!-- Concatenated plugins -->
+                <script src="assets/js/app.js"></script>
+
+                <!-- code highlighter -->
+                <link rel="stylesheet" href="../../../../cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/base16/circus.min.css">
+                <script src="../../../../cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+                <script>
+                    document.querySelectorAll('.code').forEach(el => {
+                        // then highlight each
+                        hljs.highlightElement(el);
+                    });
+                </script>
+
+                <!-- Page Level js -->
+
+                <script src="../../../../unpkg.com/dropzone%405.9.3/dist/min/dropzone.min.js"></script>
+
+                <!-- theming offcanvas-->
+                <div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="theming" data-bs-scroll="true" data-bs-backdrop="false" aria-labelledby="theminglabel">
+                    <div class="offcanvas-header border-bottom">
+                        <div>
+                            <h5 class="offcanvas-title" id="theminglabel">Personalize</h5>
+                            <p class="text-secondary small">Make it more like your own</p>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h6 class="offcanvas-title">Colors</h6>
+                        <p class="text-secondary small mb-4">Change colors of templates</p>
+
+                        <div class="row mb-4 theme-select">
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-blue">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-theme-1 theme-blue"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-indigo">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-indigo"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-purple">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-purple"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-pink">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-pink"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-red">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-red"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-orange">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-orange"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-yellow">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-yellow"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-green">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-green"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-teal">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-teal"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-cyan">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-cyan"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-grey">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-grey"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-brown">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-brown"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-chocolate">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-chocolate"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="theme-black">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-dark"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="offcanvas-title">Backgrounds</h6>
+                        <p class="text-secondary small mb-4">Change color for background</p>
+                        <div class="row mb-4 theme-background">
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-default">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default"><i class="bi bi-arrow-clockwise"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-white">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-white"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-r-gradient">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-r-gradient"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-1">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-1"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-2">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-2"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-3">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-3"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-4">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-4"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-5">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-5"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-6">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-6"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-7">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-7"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-8">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-8"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-9">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-9"></span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="gradient-box text-center mb-2" data-title="bg-gradient-10">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-10"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="offcanvas-title">Sidebar Layout</h6>
+                        <p class="text-secondary small mb-4">Change sidebar layout style</p>
+
+                        <div class="row mb-4 sidebar-layout">
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-standard" data-bs-toggle="tooltip" title="None">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-iconic" data-bs-toggle="tooltip" title="Iconic">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                                        <i class="bi bi-bezier h4"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-boxed" data-bs-toggle="tooltip" title="Boxed">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                                        <i class="bi bi-box h5"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-boxed adminuiux-sidebar-iconic" data-bs-toggle="tooltip" title="Iconic+Boxed">
+                                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                                        <i class="bi bi-bounding-box h5"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="text-center mb-4">
+                            <a href="adminux-personalization.html" class="btn btn-sm btn-outline-theme">More options <i class="bi bi-arrow-right-short"></i></a>
+                        </div>
+                    </div>
+                </div>
+    </body>
+
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/component-dropzone.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:10:00 GMT -->
+</html>

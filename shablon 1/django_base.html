@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>{% block title %}Cloudstore - E-Library{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'blog/favicon.png' %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=SUSE:wght@100..800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
+        }
+    </style>
+
+    <!-- AdminUX CSS -->
+    <link href="{% static 'adminux/css/app.css' %}" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" 
+      data-theme="theme-blue" 
+      data-sidebarfill="adminuiux-sidebar-fill-white" 
+      data-sidebarlayout="adminuiux-sidebar-standard">
+
+    <!-- Pageloader -->
+    <div class="pageloader">
+        <div class="container h-100">
+            <div class="row justify-content-center align-items-center text-center h-100">
+                <div class="col-12 mb-auto pt-4"></div>
+                <div class="col-auto">
+                    <img src="{% static 'blog/logo.svg' %}" alt="Cloudstore" class="height-100 mb-3">
+                    <p class="h3 mb-0"><span class="text-gradient">Cloudstore</span></p>
+                    <p class="small text-secondary mb-3">E-Library Platform</p>
+                    <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+                </div>
+                <div class="col-12 mt-auto pb-4">
+                    <p class="text-secondary">Yuklanmoqda...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="adminuiux-header">
+        <nav class="navbar navbar-expand-lg fixed-top">
+            <div class="container-fluid">
+                <!-- Sidebar toggle -->
+                <button class="btn btn-link btn-square sidebar-toggler" type="button" onclick="initSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <!-- Logo -->
+                <a class="navbar-brand" href="{% url 'bosh_sahifa' %}">
+                    <img data-bs-img="light" src="{% static 'blog/logo-light.svg' %}" alt="Cloudstore">
+                    <img data-bs-img="dark" src="{% static 'blog/logo.svg' %}" alt="Cloudstore">
+                    <div class="d-block ps-2">
+                        <span class="h4 text-gradient">Cloud<span class="fw-bold">store</span></span>
+                        <p class="company-tagline">E-Library</p>
+                    </div>
+                </a>
+
+                <!-- Search -->
+                <div class="px-3 justify-content-center d-none d-lg-flex">
+                    <div class="input-group input-group-md rounded search-wrap width-300 mx-auto">
+                        <span class="input-group-text border-0 bg-none">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input class="form-control border-0 bg-none" type="search" 
+                               placeholder="Kitob, muallif qidirish..." 
+                               id="searchglobal">
+                    </div>
+                </div>
+
+                <!-- Right menu -->
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                        <!-- Notifications -->
+                        <div class="dropdown mx-2">
+                            <button class="btn btn-link btn-square" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell fs-5"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    3
+                                </span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <h6 class="dropdown-header">Xabarnomalar</h6>
+                                <a class="dropdown-item" href="#">Yangi kitob qo'shildi</a>
+                            </div>
+                        </div>
+                        
+                        <!-- User menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
+                                <div class="avatar avatar-32">
+                                    {% if user.image %}
+                                        <img src="{{ user.image.url }}" alt="{{ user.username }}">
+                                    {% else %}
+                                        <i class="bi bi-person-circle fs-4"></i>
+                                    {% endif %}
+                                </div>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <h6 class="dropdown-header">{{ user.username }}</h6>
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="bi bi-person"></i> Profil
+                                </a>
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> Chiqish
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-theme">Kirish</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="adminuiux-wrap">
+        <!-- Sidebar -->
+        <div class="adminuiux-sidebar shadow-sm">
+            <div class="adminuiux-sidebar-inner">
+                <div class="px-3 not-iconic mt-2">
+                    <div class="row gx-3">
+                        <div class="col align-self-center menu-name">
+                            <h6>Asosiy menyu</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User info -->
+                {% if user.is_authenticated %}
+                <div class="px-3 text-center not-iconic">
+                    <div class="avatar avatar-100 rounded-circle shadow-sm my-3 bg-white">
+                        <figure class="avatar avatar-90 rounded-circle">
+                            {% if user.image %}
+                                <img src="{{ user.image.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                <i class="bi bi-person-circle fs-1"></i>
+                            {% endif %}
+                        </figure>
+                    </div>
+                    <h5 class="mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-secondary small mb-3">{{ user.email }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Navigation menu -->
+                <ul class="nav flex-column menu-active-line">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'bosh_sahifa' %}active{% endif %}" 
+                           href="{% url 'bosh_sahifa' %}">
+                            <i class="menu-icon bi bi-house-door"></i>
+                            <div class="col menu-name">Bosh sahifa</div>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'kitoblar' %}active{% endif %}" 
+                           href="{% url 'kitoblar' %}">
+                            <i class="menu-icon bi bi-book"></i>
+                            <div class="col menu-name">Kitoblar</div>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'mualliflar' %}active{% endif %}" 
+                           href="{% url 'mualliflar' %}">
+                            <i class="menu-icon bi bi-people"></i>
+                            <div class="col menu-name">Mualliflar</div>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'kategoriyalar' %}active{% endif %}" 
+                           href="{% url 'kategoriyalar' %}">
+                            <i class="menu-icon bi bi-grid"></i>
+                            <div class="col menu-name">Kategoriyalar</div>
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'my_library' %}active{% endif %}" 
+                           href="{% url 'my_library' %}">
+                            <i class="menu-icon bi bi-bookmark"></i>
+                            <div class="col menu-name">Mening kutubxonam</div>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'downloads' %}active{% endif %}" 
+                           href="{% url 'downloads' %}">
+                            <i class="menu-icon bi bi-download"></i>
+                            <div class="col menu-name">Yuklamalar</div>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'food_diary' %}active{% endif %}" 
+                           href="{% url 'food_diary' %}">
+                            <i class="menu-icon bi bi-journal-text"></i>
+                            <div class="col menu-name">Ovqatlanish kundaligi</div>
+                        </a>
+                    </li>
+
+                    {% if user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                            <i class="menu-icon bi bi-gear"></i>
+                            <div class="col menu-name">Boshqaruv</div>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/">
+                                    <i class="menu-icon bi bi-shield-lock"></i>
+                                    <div class="col menu-name">Admin panel</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'kitob_qoshish' %}">
+                                    <i class="menu-icon bi bi-plus-circle"></i>
+                                    <div class="col menu-name">Kitob qo'shish</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Additional links -->
+                <div class="px-3 not-iconic mt-4">
+                    <h6>Qo'shimcha</h6>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'yordam' %}">
+                            <i class="menu-icon bi bi-question-circle"></i>
+                            <div class="col menu-name">Yordam</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'aloqa' %}">
+                            <i class="menu-icon bi bi-envelope"></i>
+                            <div class="col menu-name">Bog'lanish</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <main class="adminuiux-content py-4">
+                <!-- Django Messages -->
+                {% if messages %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Page content -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="adminuiux-footer has-adminuiux-sidebar mt-auto bg-theme-1">
+        <div class="container-fluid">
+            <div class="row gx-3">
+                <div class="col-12 col-md py-2">
+                    <span class="small">© {{ current_year }} 
+                        <a href="{% url 'bosh_sahifa' %}" class="text-white">Cloudstore</a> - E-Library Platform
+                    </span>
+                </div>
+                <div class="col-12 col-md-auto align-self-center">
+                    <ul class="nav small">
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-2" href="{% url 'yordam' %}">Yordam</a>
+                        </li>
+                        <li class="nav-item opacity-50">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-2" href="{% url 'maxfiylik' %}">Maxfiylik</a>
+                        </li>
+                        <li class="nav-item opacity-50">|</li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white px-2" href="{% url 'aloqa' %}">Bog'lanish</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <div class="position-fixed bottom-0 end-0 m-3 z-index-5">
+        <button class="btn btn-theme btn-square shadow mt-2 d-none rounded-circle" id="backtotop">
+            <i class="bi bi-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- AdminUX JS -->
+    <script src="{% static 'adminux/js/app.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

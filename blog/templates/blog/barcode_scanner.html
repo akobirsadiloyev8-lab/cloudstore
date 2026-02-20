@@ -1,4 +1,4 @@
-{% extends 'blog/boshlash.html' %}
+{% extends 'blog/base.html' %}
 {% load static %}
 
 {% block title %}QR & Barcode Skaner - Cloudstore AI{% endblock %}
@@ -886,6 +886,15 @@
     <div class="scanner-hero">
         <h1><i class="fas fa-qrcode"></i> QR & Barcode Skaner</h1>
         <p>Mahsulot haqida to'liq ma'lumot: kaloriya, vitaminlar, allergenlar, zararlar</p>
+        
+        <!-- Ovqatlanish ro'yxati havola -->
+        <a href="{% url 'food_diary' %}" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;
+           background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2)); 
+           border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 10px 20px; 
+           border-radius: 25px; text-decoration: none; font-weight: 600; transition: all 0.3s;">
+            <span style="font-size: 1.2rem;">📊</span> Kunlik ovqatlanish ro'yxati
+            <i class="fas fa-arrow-right" style="font-size: 0.85rem;"></i>
+        </a>
     </div>
     
     <div class="mode-tabs">
@@ -1206,8 +1215,22 @@ function loadSavedBarcodeResult() {
 // Shtrix kod natijasini tozalash
 function clearBarcodeResult() {
     localStorage.removeItem('lastBarcodeResult');
-    document.getElementById('productResult').style.display = 'none';
-    document.getElementById('productDisplay').innerHTML = '';
+    // resultCard elementini topish va tozalash
+    const resultCard = document.getElementById('resultCard');
+    if (resultCard) {
+        resultCard.style.display = 'none';
+        resultCard.innerHTML = '';
+    }
+    // Input maydonini tozalash
+    const barcodeInput = document.getElementById('barcodeInput');
+    if (barcodeInput) {
+        barcodeInput.value = '';
+        barcodeInput.focus();
+    }
+    // Toast xabar
+    if (window.showToast) {
+        showToast('Tozalandi!');
+    }
 }
 
 function showAiResult(data, usageInfo, isFromCache = false) {
@@ -1265,8 +1288,14 @@ function showAiResult(data, usageInfo, isFromCache = false) {
     
     document.getElementById('aiResultBody').innerHTML = `
         ${limitBanner}
-        <!-- Tozalash tugmasi -->
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <!-- Tugmalar -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+            <button onclick="showAddAiToIntakeModal()" 
+                    style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); 
+                           color: #34d399; padding: 8px 15px; border-radius: 8px; cursor: pointer;
+                           font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: all 0.3s;">
+                <i class="fas fa-plus"></i> Ro'yxatga
+            </button>
             <button onclick="clearAiResult()" 
                     style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); 
                            color: #f87171; padding: 8px 15px; border-radius: 8px; cursor: pointer;
@@ -1694,6 +1723,58 @@ function searchBarcode() {
     });
 }
 
+// Global o'zgaruvchi - 100g uchun asl qiymatlar
+let currentProductNutrition = null;
+
+// Massaga qarab ozuqaviy qiymatlarni hisoblash
+function calculateByMass(massInput) {
+    if (!currentProductNutrition) return;
+    
+    const mass = parseFloat(massInput) || 100;
+    const ratio = mass / 100;
+    
+    // Hisoblangan qiymatlar
+    const calc = {
+        calories: Math.round(currentProductNutrition.calories * ratio),
+        proteins: (currentProductNutrition.proteins * ratio).toFixed(1),
+        carbs: (currentProductNutrition.carbs * ratio).toFixed(1),
+        fat: (currentProductNutrition.fat * ratio).toFixed(1),
+        sugars: (currentProductNutrition.sugars * ratio).toFixed(1),
+        salt: (currentProductNutrition.salt * ratio).toFixed(3)
+    };
+    
+    // Kunlik foizlar (2000 kkal, 50g oqsil, 300g uglevod, 65g yog')
+    const dailyCal = Math.min(100, Math.round((calc.calories / 2000) * 100));
+    const dailyProtein = Math.min(100, Math.round((calc.proteins / 50) * 100));
+    const dailyCarbs = Math.min(100, Math.round((calc.carbs / 300) * 100));
+    const dailyFat = Math.min(100, Math.round((calc.fat / 65) * 100));
+    
+    // UI ni yangilash
+    document.getElementById('calcCalories').textContent = calc.calories;
+    document.getElementById('calcProteins').textContent = calc.proteins + 'g';
+    document.getElementById('calcCarbs').textContent = calc.carbs + 'g';
+    document.getElementById('calcFat').textContent = calc.fat + 'g';
+    document.getElementById('calcSugars').textContent = calc.sugars + 'g';
+    document.getElementById('calcSalt').textContent = calc.salt + 'g';
+    document.getElementById('calcMassLabel').textContent = mass + 'g uchun';
+    
+    // Kunlik foizlarni yangilash
+    document.getElementById('dailyCalBar').style.width = dailyCal + '%';
+    document.getElementById('dailyCalPercent').textContent = dailyCal + '%';
+    document.getElementById('dailyProteinBar').style.width = dailyProtein + '%';
+    document.getElementById('dailyCarbsBar').style.width = dailyCarbs + '%';
+    document.getElementById('dailyFatBar').style.width = dailyFat + '%';
+    
+    // Natija kartasini ko'rsatish
+    document.getElementById('calcResultCard').style.display = 'block';
+}
+
+// Tez hisoblash tugmalari
+function quickCalc(grams) {
+    document.getElementById('massInput').value = grams;
+    calculateByMass(grams);
+}
+
 function showProductResult(product, source, isFromCache = false) {
     // LocalStorage ga saqlash (agar yangi natija bo'lsa)
     if (!isFromCache && product) {
@@ -1706,6 +1787,19 @@ function showProductResult(product, source, isFromCache = false) {
     const fat = parseFloat(product.fat) || 0;
     const sugars = parseFloat(product.sugars) || 0;
     const salt = parseFloat(product.salt) || 0;
+    
+    // Global o'zgaruvchiga saqlash (100g uchun)
+    currentProductNutrition = {
+        calories, proteins, carbs, fat, sugars, salt
+    };
+    
+    // Mahsulot ma'lumotini saqlash (ro'yxatga qo'shish uchun)
+    currentProductForIntake = {
+        name: product.name || 'Nomsiz mahsulot',
+        brand: product.brand,
+        barcode: product.barcode,
+        image_url: product.image_url || (product.image ? product.image : null)
+    };
     
     // AI tahlili mavjudmi
     const ai = product.ai_analysis || {};
@@ -1777,6 +1871,135 @@ function showProductResult(product, source, isFromCache = false) {
             <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #fecb02; color: #333; opacity: ${nutriGrade === 'C' ? '1' : '0.3'}; transform: ${nutriGrade === 'C' ? 'scale(1.15)' : 'scale(1)'};">C</div>
             <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #ee8100; color: white; opacity: ${nutriGrade === 'D' ? '1' : '0.3'}; transform: ${nutriGrade === 'D' ? 'scale(1.15)' : 'scale(1)'};">D</div>
             <div style="width: 40px; height: 45px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; border-radius: 8px; background: #e63e11; color: white; opacity: ${nutriGrade === 'E' ? '1' : '0.3'}; transform: ${nutriGrade === 'E' ? 'scale(1.15)' : 'scale(1)'};">E</div>
+        </div>
+    `;
+    
+    // ===== KALKULYATOR BO'LIMI =====
+    html += `
+        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(16, 185, 129, 0.15)); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 15px; padding: 15px; margin: 15px 0;">
+            <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.3rem;">🧮</span> Ozuqa Kalkulyatori
+                <span style="font-size: 0.7rem; background: rgba(59, 130, 246, 0.3); padding: 3px 10px; border-radius: 10px; margin-left: auto;">Massaga qarab</span>
+            </h4>
+            
+            <!-- Massa kiritish -->
+            <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 120px;">
+                    <label style="color: #9ca3af; font-size: 0.8rem; display: block; margin-bottom: 5px;">Massa (gramm)</label>
+                    <input type="number" id="massInput" placeholder="100" value="100" min="1" max="5000"
+                           style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+                                  background: rgba(255,255,255,0.1); color: white; font-size: 1.1rem; font-weight: 600;
+                                  outline: none; transition: all 0.3s;"
+                           onkeyup="if(event.key === 'Enter') calculateByMass(this.value)"
+                           oninput="calculateByMass(this.value)">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button onclick="calculateByMass(document.getElementById('massInput').value)" 
+                            style="background: linear-gradient(135deg, #3b82f6, #10b981); color: white; border: none;
+                                   padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;
+                                   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: all 0.3s;">
+                        <i class="fas fa-calculator"></i> Hisoblash
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tez hisoblash tugmalari -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
+                <button onclick="quickCalc(50)" style="background: rgba(255,255,255,0.1); color: #d1d5db; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">50g</button>
+                <button onclick="quickCalc(100)" style="background: rgba(59, 130, 246, 0.3); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.5); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">100g</button>
+                <button onclick="quickCalc(150)" style="background: rgba(255,255,255,0.1); color: #d1d5db; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">150g</button>
+                <button onclick="quickCalc(200)" style="background: rgba(255,255,255,0.1); color: #d1d5db; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">200g</button>
+                <button onclick="quickCalc(250)" style="background: rgba(255,255,255,0.1); color: #d1d5db; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">250g</button>
+                <button onclick="quickCalc(500)" style="background: rgba(255,255,255,0.1); color: #d1d5db; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;">500g</button>
+            </div>
+            
+            <!-- Hisoblangan natija -->
+            <div id="calcResultCard" style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 15px; display: block;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <span id="calcMassLabel" style="color: #60a5fa; font-weight: 600; font-size: 0.9rem;">100g uchun</span>
+                </div>
+                
+                <!-- Kaloriya katta ko'rsatish -->
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #feca57); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        <span id="calcCalories">${calories}</span>
+                    </div>
+                    <div style="color: #9ca3af; font-size: 0.8rem;">kaloriya</div>
+                </div>
+                
+                <!-- Makrolar grid -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: rgba(16, 185, 129, 0.15); padding: 10px; border-radius: 10px; text-align: center;">
+                        <div id="calcProteins" style="font-size: 1.2rem; font-weight: 700; color: #10b981;">${proteins}g</div>
+                        <div style="color: #10b981; font-size: 0.7rem;">Oqsil</div>
+                    </div>
+                    <div style="background: rgba(245, 158, 11, 0.15); padding: 10px; border-radius: 10px; text-align: center;">
+                        <div id="calcCarbs" style="font-size: 1.2rem; font-weight: 700; color: #f59e0b;">${carbs}g</div>
+                        <div style="color: #f59e0b; font-size: 0.7rem;">Uglevod</div>
+                    </div>
+                    <div style="background: rgba(239, 68, 68, 0.15); padding: 10px; border-radius: 10px; text-align: center;">
+                        <div id="calcFat" style="font-size: 1.2rem; font-weight: 700; color: #ef4444;">${fat}g</div>
+                        <div style="color: #ef4444; font-size: 0.7rem;">Yog'</div>
+                    </div>
+                </div>
+                
+                <!-- Qo'shimcha qiymatlar -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px;">
+                    <div style="background: rgba(168, 85, 247, 0.15); padding: 8px; border-radius: 8px; text-align: center;">
+                        <div id="calcSugars" style="font-size: 1rem; font-weight: 600; color: #a855f7;">${sugars}g</div>
+                        <div style="color: #a855f7; font-size: 0.65rem;">Shakar</div>
+                    </div>
+                    <div style="background: rgba(99, 102, 241, 0.15); padding: 8px; border-radius: 8px; text-align: center;">
+                        <div id="calcSalt" style="font-size: 1rem; font-weight: 600; color: #6366f1;">${salt}g</div>
+                        <div style="color: #6366f1; font-size: 0.65rem;">Tuz</div>
+                    </div>
+                </div>
+                
+                <!-- Kunlik foiz ko'rsatkichlari -->
+                <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
+                    <div style="color: #9ca3af; font-size: 0.75rem; margin-bottom: 10px; text-align: center;">Kunlik me'yor (2000 kkal asosida)</div>
+                    
+                    <div style="margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px;">
+                            <span style="color: #ff6b6b;">Kaloriya</span>
+                            <span id="dailyCalPercent" style="color: #ff6b6b;">${Math.round((calories / 2000) * 100)}%</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div id="dailyCalBar" style="background: linear-gradient(90deg, #ff6b6b, #feca57); height: 100%; width: ${Math.round((calories / 2000) * 100)}%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px;">
+                            <span style="color: #10b981;">Oqsil</span>
+                            <span style="color: #10b981;">${Math.round((proteins / 50) * 100)}%</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div id="dailyProteinBar" style="background: #10b981; height: 100%; width: ${Math.round((proteins / 50) * 100)}%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px;">
+                            <span style="color: #f59e0b;">Uglevod</span>
+                            <span style="color: #f59e0b;">${Math.round((carbs / 300) * 100)}%</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div id="dailyCarbsBar" style="background: #f59e0b; height: 100%; width: ${Math.round((carbs / 300) * 100)}%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px;">
+                            <span style="color: #ef4444;">Yog'</span>
+                            <span style="color: #ef4444;">${Math.round((fat / 65) * 100)}%</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
+                            <div id="dailyFatBar" style="background: #ef4444; height: 100%; width: ${Math.round((fat / 65) * 100)}%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
     
@@ -1908,8 +2131,11 @@ function showProductResult(product, source, isFromCache = false) {
         </div>
         
         <!-- Tozalash tugmasi -->
-        <div style="text-align: center; margin-top: 15px; padding-bottom: 10px;">
-            <button onclick="clearBarcodeResult()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 8px;">
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 15px; padding-bottom: 10px; flex-wrap: wrap;">
+            <button onclick="showAddToIntakeModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); display: inline-flex; align-items: center; gap: 8px;">
+                <span>📝</span> Ro'yxatga qo'shish
+            </button>
+            <button onclick="clearBarcodeResult()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 8px;">
                 <span>🗑️</span> Tozalash
             </button>
         </div>
@@ -1974,5 +2200,384 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSavedAiResult();
     loadSavedBarcodeResult();
 });
+
+// ===== OVQATLANISH RO'YXATIGA QO'SHISH =====
+
+// Joriy mahsulot ma'lumotlari (showProductResult dan olinadi)
+let currentProductForIntake = null;
+let currentAiProduct = null; // AI tahlil qilingan mahsulot
+
+// Modal ko'rsatish (barcode uchun)
+function showAddToIntakeModal() {
+    if (!currentProductNutrition) {
+        showToast && showToast('Mahsulot ma\'lumoti topilmadi');
+        return;
+    }
+    
+    // Login tekshirish
+    {% if not user.is_authenticated %}
+    if (confirm('Ro\'yxatga qo\'shish uchun tizimga kirish kerak. Kirmoqchimisiz?')) {
+        window.location.href = '/login/?next=/scanner/';
+    }
+    return;
+    {% endif %}
+    
+    // Modal ko'rsatish
+    document.getElementById('intakeModal').classList.add('show');
+    document.getElementById('intakeMass').value = document.getElementById('massInput')?.value || 100;
+    calculateIntakePreview();
+}
+
+// AI natija uchun modal ko'rsatish
+function showAddAiToIntakeModal() {
+    // AI natijani localStorage dan olish
+    const savedAi = localStorage.getItem('lastAiResult');
+    if (!savedAi) {
+        alert('AI tahlil natijasi topilmadi');
+        return;
+    }
+    
+    // Login tekshirish
+    {% if not user.is_authenticated %}
+    if (confirm('Ro\'yxatga qo\'shish uchun tizimga kirish kerak. Kirmoqchimisiz?')) {
+        window.location.href = '/login/?next=/scanner/';
+    }
+    return;
+    {% endif %}
+    
+    try {
+        const aiData = JSON.parse(savedAi);
+        const n = aiData.nutrition_per_100g || {};
+        
+        // AI mahsulot ma'lumotini saqlash
+        currentAiProduct = {
+            name: aiData.name || 'Noma\'lum taom',
+            category: aiData.category,
+            source: 'ai_analysis'
+        };
+        
+        // Ozuqaviy qiymatlarni saqlash
+        currentProductNutrition = {
+            calories: parseFloat(n.calories) || 0,
+            proteins: parseFloat(n.proteins) || 0,
+            carbs: parseFloat(n.carbohydrates) || 0,
+            fat: parseFloat(n.fat) || 0,
+            sugars: parseFloat(n.sugars) || 0,
+            salt: parseFloat(n.salt) || 0
+        };
+        
+        currentProductForIntake = currentAiProduct;
+        
+        // Modal ko'rsatish
+        document.getElementById('intakeModal').classList.add('show');
+        document.getElementById('intakeMass').value = 100;
+        calculateIntakePreview();
+    } catch (e) {
+        console.error('AI ma\'lumotni o\'qishda xato:', e);
+        alert('AI tahlil ma\'lumotini o\'qib bo\'lmadi');
+    }
+}
+
+// Modal yopish
+function closeIntakeModal() {
+    document.getElementById('intakeModal').classList.remove('show');
+}
+
+// Ro'yxatga qo'shishdan oldin preview
+function calculateIntakePreview() {
+    if (!currentProductNutrition) return;
+    
+    const mass = parseFloat(document.getElementById('intakeMass').value) || 100;
+    const ratio = mass / 100;
+    
+    const calories = Math.round(currentProductNutrition.calories * ratio);
+    const proteins = (currentProductNutrition.proteins * ratio).toFixed(1);
+    const carbs = (currentProductNutrition.carbs * ratio).toFixed(1);
+    const fat = (currentProductNutrition.fat * ratio).toFixed(1);
+    
+    document.getElementById('intakePreviewCalories').textContent = calories + ' kkal';
+    document.getElementById('intakePreviewProteins').textContent = proteins + 'g oqsil';
+    document.getElementById('intakePreviewCarbs').textContent = carbs + 'g uglevod';
+    document.getElementById('intakePreviewFat').textContent = fat + 'g yog\'';
+}
+
+// Ro'yxatga qo'shish
+async function addToFoodIntake() {
+    if (!currentProductNutrition || !currentProductForIntake) {
+        showToast && showToast('Mahsulot ma\'lumoti topilmadi', 'error');
+        return;
+    }
+    
+    const mass = parseFloat(document.getElementById('intakeMass').value) || 100;
+    const mealType = document.getElementById('intakeMealType').value;
+    
+    // Button loading
+    const btn = document.querySelector('#intakeModal .btn-save-intake');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Qo\'shilmoqda...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/food-intake/add/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                name: currentProductForIntake.name,
+                brand: currentProductForIntake.brand,
+                barcode: currentProductForIntake.barcode,
+                image_url: currentProductForIntake.image_url,
+                mass: mass,
+                calories_per_100g: currentProductNutrition.calories,
+                proteins_per_100g: currentProductNutrition.proteins,
+                carbs_per_100g: currentProductNutrition.carbs,
+                fat_per_100g: currentProductNutrition.fat,
+                sugars: currentProductNutrition.sugars,
+                salt: currentProductNutrition.salt,
+                meal_type: mealType,
+                source: 'barcode'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            closeIntakeModal();
+            
+            // Success toast
+            const toastDiv = document.createElement('div');
+            toastDiv.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 15px 25px; border-radius: 30px; font-weight: 600; z-index: 10000; box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); animation: slideUp 0.3s ease;';
+            toastDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+            document.body.appendChild(toastDiv);
+            
+            // Toast animatsiyasi
+            setTimeout(() => {
+                toastDiv.style.opacity = '0';
+                toastDiv.style.transform = 'translateX(-50%) translateY(20px)';
+                toastDiv.style.transition = 'all 0.3s ease';
+            }, 2500);
+            setTimeout(() => toastDiv.remove(), 3000);
+            
+            // Kunlik jami ko'rsatish
+            if (data.daily_totals) {
+                console.log('Bugungi jami kaloriya:', data.daily_totals.total_calories);
+            }
+        } else {
+            alert(data.error || 'Xatolik yuz berdi');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Server bilan bog\'lanib bo\'lmadi');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
 </script>
+
+<!-- OVQATLANISH RO'YXATIGA QO'SHISH MODALI -->
+<div id="intakeModal" class="intake-modal-overlay">
+    <div class="intake-modal-content">
+        <div class="intake-modal-header">
+            <h3>📝 Ro'yxatga qo'shish</h3>
+            <button class="intake-modal-close" onclick="closeIntakeModal()">&times;</button>
+        </div>
+        <div class="intake-modal-body">
+            <div class="intake-form-group">
+                <label>Massa (gramm)</label>
+                <input type="number" id="intakeMass" value="100" min="1" max="5000" 
+                       oninput="calculateIntakePreview()">
+            </div>
+            
+            <div class="intake-form-group">
+                <label>Ovqat turi</label>
+                <select id="intakeMealType">
+                    <option value="breakfast">🌅 Nonushta</option>
+                    <option value="lunch">☀️ Tushlik</option>
+                    <option value="dinner">🌙 Kechki ovqat</option>
+                    <option value="snack" selected>🍿 Gazak</option>
+                </select>
+            </div>
+            
+            <div class="intake-preview">
+                <h4>Qo'shiladigan miqdor:</h4>
+                <div class="intake-preview-grid">
+                    <span id="intakePreviewCalories" class="cal">0 kkal</span>
+                    <span id="intakePreviewProteins" class="prot">0g oqsil</span>
+                    <span id="intakePreviewCarbs" class="carb">0g uglevod</span>
+                    <span id="intakePreviewFat" class="fat">0g yog'</span>
+                </div>
+            </div>
+        </div>
+        <div class="intake-modal-footer">
+            <button class="btn-cancel" onclick="closeIntakeModal()">Bekor</button>
+            <button class="btn-save-intake" onclick="addToFoodIntake()">
+                <i class="fas fa-plus"></i> Qo'shish
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Intake Modal Styles */
+.intake-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.intake-modal-overlay.show {
+    display: flex;
+}
+
+.intake-modal-content {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.intake-modal-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.intake-modal-header h3 {
+    color: #10b981;
+    font-size: 1.15rem;
+    margin: 0;
+}
+
+.intake-modal-close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.intake-modal-body {
+    padding: 20px;
+}
+
+.intake-form-group {
+    margin-bottom: 18px;
+}
+
+.intake-form-group label {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.intake-form-group input,
+.intake-form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    color: white;
+    font-size: 1.05rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.intake-form-group input:focus,
+.intake-form-group select:focus {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.intake-preview {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.intake-preview h4 {
+    color: #10b981;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.intake-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.intake-preview-grid span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.intake-preview-grid .cal { color: #ff6b6b; }
+.intake-preview-grid .prot { color: #10b981; }
+.intake-preview-grid .carb { color: #f59e0b; }
+.intake-preview-grid .fat { color: #ef4444; }
+
+.intake-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 12px;
+}
+
+.intake-modal-footer button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.intake-modal-footer .btn-cancel {
+    background: rgba(255,255,255,0.1);
+    color: #9ca3af;
+}
+
+.intake-modal-footer .btn-save-intake {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.intake-modal-footer .btn-save-intake:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+</style>
 {% endblock %}

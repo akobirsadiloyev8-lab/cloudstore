@@ -1,0 +1,1389 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Cloudstore - Mahsulot tahlili{% endblock %}
+
+{% block content %}
+                        
+
+                            <!-- page title -->
+                            <div class="container-fluid py-1 py-lg-3">
+                                <div class="row gx-3 align-items-center page-title">
+                                    <div class="col col-sm">
+                                        <h6 class="mb-0" id="product-name">Mahsulot tahlili</h6>
+                                        <p class="text-secondary small" id="product-description">Ma'lumotlarni yuklash uchun skanerlang yoki shtrix-kodni kiriting</p>
+                                    </div>
+
+                                    <div class="col-auto position-relative">
+                                        <button class="btn btn-link btn-square" data-bs-toggle="offcanvas" data-bs-target="#filter" data-bs-placement="end">
+                                            <i class="bi bi-filter"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Barcode and Mass Calculator Controls -->
+                                <div class="row gx-3 mt-3">
+                                    <!-- Barcode Input -->
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="card adminuiux-card shadow-sm">
+                                            <div class="card-body py-2">
+                                                <div class="row gx-2 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-upc-scan text-primary"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="text" class="form-control form-control-sm" id="barcode-input" placeholder="Shtrix-kod raqamini kiriting (masalan: 4603941095962)">
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-primary btn-sm" id="barcode-search-btn">
+                                                            <i class="bi bi-search"></i> Qidirish
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Mass Calculator -->
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <div class="card adminuiux-card shadow-sm">
+                                            <div class="card-body py-2">
+                                                <div class="row gx-2 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-calculator text-success"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <input type="number" class="form-control form-control-sm" id="mass-input" placeholder="Mahsulot massasi (gramm)" value="100">
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn btn-success btn-sm" id="calculate-btn">
+                                                            <i class="bi bi-arrow-repeat"></i> Qayta hisoblash
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="row gx-3 mb-3">
+                                    <div class="col-12">
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <button class="btn btn-outline-primary" id="save-to-list-btn" disabled>
+                                                <i class="bi bi-plus-circle"></i> Ro'yxatga qo'shish
+                                            </button>
+                                            <button class="btn btn-outline-danger" id="delete-food-btn" style="display: none;">
+                                                <i class="bi bi-trash"></i> O'chirish
+                                            </button>
+                                            <a href="{% url 'food_scanner' %}" class="btn btn-outline-secondary">
+                                                <i class="bi bi-camera"></i> Yangi skanerlash
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <!-- content -->
+                            <div class="container mt-3" id="main-content">
+                                <!-- statistics summary -->
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-fire h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-orange rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Kaloriya</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">100g</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="calories-value">0</span> <small class="fs-14 text-secondary fw-normal">kcal</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchartpink"></canvas>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Oqsil</p>
+                                                        <h6><span id="protein-mini">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Yog'</p>
+                                                        <h6><span id="fat-mini">0</span>g</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Uglevod</p>
+                                                        <h6><span id="carbs-mini">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Tola</p>
+                                                        <h6><span id="fiber-mini">0</span>g</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-egg-fried h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Oqsillar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green" id="protein-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="protein-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchart"></canvas>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Hayvon oqsili</p>
+                                                        <h6 id="animal-protein">0g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">O'simlik oqsili</p>
+                                                        <h6 id="plant-protein">0g</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Aminokislotalar</p>
+                                                        <h6 id="amino-acids">-</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Sifati</p>
+                                                        <h6 id="protein-quality">-</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-droplet h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-yellow rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Yog'lar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-yellow" id="fat-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="fat-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartpink2"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">To'yingan</p>
+                                                        <h6><span id="saturated-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">To'yinmagan</p>
+                                                        <h6><span id="unsaturated-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Trans yog'</p>
+                                                        <h6><span id="trans-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Xolesterin</p>
+                                                        <h6><span id="cholesterol">0</span>mg</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-cup-hot h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-red rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Uglevodlar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green" id="carbs-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="carbs-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartred"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Shakar</p>
+                                                        <h6><span id="sugar-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Kraxmal</p>
+                                                        <h6><span id="starch-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Tola</p>
+                                                        <h6><span id="fiber-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">GI indeks</p>
+                                                        <h6><span id="gi-value">0</span></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                <!-- Big chart traffic flow-->
+                                
+                                
+                                    <!--charts category summary-->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-3">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-capsule h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-green rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-3 mb-1">
+                                                            <div class="col">
+                                                                <p class="text-secondary small">Vitaminlar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">yaxshi</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>6 <small>xil vitamin</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-5">
+                                                        <div class="height-80 mb-3">
+                                                            <canvas id="areachartblue1"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <div class="row gx-2">
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Vitamin A</p>
+                                                                <h6>15%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Vitamin C</p>
+                                                                <h6>25%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Vitamin D</p>
+                                                                <h6>10%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Vitamin E</p>
+                                                                <h6>8%</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-gem h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-teal rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row mb-1">
+                                                            <div class="col">
+                                                                <p class="text-secondary small">Minerallar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">yaxshi</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>5 <small>xil mineral</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-5">
+                                                        <div class="height-100 mb-2">
+                                                            <canvas id="areachartgreen1"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <div class="row gx-2">
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Temir</p>
+                                                                <h6>12%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Kaltsiy</p>
+                                                                <h6>8%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Kaliy</p>
+                                                                <h6>15%</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Magniy</p>
+                                                                <h6>10%</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- offers and events -->
+                    
+                                    
+                                
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 position-relative column-set">
+                                        <!-- Foydali/Zararli nisbati -->
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-pie-chart h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-green rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto align-self-center">
+                                                        <h6 class="mb-0">Foydali/Zararli nisbati</h6>
+                                                        <p class="text-secondary small">Umumiy baholash</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="width-200 position-relative text-center mb-3 mb-lg-4 mx-auto">
+                                                    <canvas id="doughnutchart" class="avatar avatar-200 mx-auto"></canvas>
+                                                    <div class="avatar avatar-140 position-absolute top-50 start-50 translate-middle shadow bg-white rounded-circle ">
+                                                        <div class="w-100 lh-20">
+                                                            <h5 class="mb-1">75%</h5>
+                                                            <p class="text-success small">Foydali</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col-6 text-end">
+                                                        <div class="row gx-3">
+                                                            <div class="col">
+                                                                <h6 class="text-dark mb-0">75%</h6>
+                                                                <p class="text-secondary small">Foydali moddalar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-40 bg-success rounded text-white">
+                                                                    <i class="bi bi-check-circle h5"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-12 mt-3">
+                                                                <div class="row gx-3">
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Vitaminlar</p>
+                                                                    </div>
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">40%</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row gx-3">
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Minerallar</p>
+                                                                    </div>
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">35%</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-40 bg-theme-1 theme-red rounded text-white">
+                                                                    <i class="bi bi-exclamation-triangle h5"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col">
+                                                                <h6 class="text-dark mb-0">25%</h6>
+                                                                <p class="text-secondary small">Zararli moddalar</p>
+                                                            </div>
+                                                            <div class="col-12 mt-3">
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <p class="text-danger small">15%</p>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Qo'shimchalar</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <p class="text-danger small">10%</p>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Trans yog'</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tavsiyalar -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm overflow-hidden mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-lightbulb h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-green rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Tavsiyalar</h6>
+                                                        <p class="text-secondary small">Sog'lom ovqatlanish uchun</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <ul class="list-group list-group-flush border-0 bg-none">
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-check-circle text-success"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Kunlik iste'mol me'yorida foydalaning
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-check-circle text-success"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Sabzavotlar bilan birga iste'mol qiling
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-exclamation-circle text-warning"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Ko'p iste'mol qilmang (shakar miqdori)
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row gx-3">
+                                                    <div class="col-6">
+                                                        <div class="text-center p-2 bg-success-subtle rounded">
+                                                            <i class="bi bi-hand-thumbs-up h3 text-success"></i>
+                                                            <p class="small mb-0">Foydali mahsulot</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="text-center p-2 bg-warning-subtle rounded">
+                                                            <i class="bi bi-exclamation-diamond h3 text-warning"></i>
+                                                            <p class="small mb-0">Me'yorda iste'mol qiling</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                <div class="row gx-3">
+                                                    <div class="col">
+                                                        <p class="small text-secondary mb-0"><i class="bi bi-info-circle me-1"></i>Mutaxassis bilan maslahatlashing</p>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a class="btn btn-theme" href="{% url 'all_books' %}">Batafsil</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <!-- mobile footer -->
+                            <footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
+    <div class="container">
+        <ul class="nav nav-pills nav-justified">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'boshlash' %}">
+                    <span>
+                        <i class="nav-icon bi bi-house"></i>
+                        <span class="nav-text">Bosh sahifa</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'food_scanner' %}">
+                    <span>
+                        <i class="nav-icon bi bi-qr-code-scan"></i>
+                        <span class="nav-text">Skaner</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'all_books' %}" class="nav-link ">
+                    <span>
+                        <i class="nav-icon bi bi-book"></i>
+                        <span class="nav-text">Kitoblar</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'ai_chat' %}">
+                    <span>
+                        <i class="nav-icon bi bi-chat-dots"></i>
+                        <span class="nav-text">Chat</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'edit_profile' %}">
+                    <span>
+                        <i class="nav-icon bi bi-person-circle"></i>
+                        <span class="nav-text">Profil</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+                        </main>
+                </div>
+
+                <!-- global filter -->
+                <!-- theming offcanvas-->
+<div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="filter" data-bs-scroll="true" data-bs-backdrop="false" aria-labelledby="filterlabel">
+    <div class="offcanvas-header border-bottom">
+        <div>
+            <h5 class="offcanvas-title" id="filterlabel">Filtr</h5>
+            <p class="text-secondary small">Kerakli ma'lumotlarni tanlang</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h6 class="offcanvas-title">Muddat</h6>
+        <p class="text-secondary small mb-3">Kerakli vaqt oralig'ini tanlang</p>
+        <div class="row gx-2 align-items-center mb-3 mb-lg-4">
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent" value="" id="datepicker">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+            <div class="col-auto text-secondary small">-</div>
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+        </div>
+        <h6 class="offcanvas-title">Kategoriya tanlash</h6>
+        <p class="text-secondary small mb-3">Mahsulot turini tanlang</p>
+        <div class="mb-3 mb-lg-4">
+            <div class="input-group input-group-md rounded" style="--mw-dynamic:calc(100% - 42px)">
+                <span class="input-group-text text-theme-1"><i class="bi bi-box"></i></span>
+                <select class="form-control choices" id="titltfilterlist" multiple>
+                    <option value="Sut mahsulotlari">Sut mahsulotlari</option>
+                    <option value="Go'sht">Go'sht</option>
+                    <option value="Sabzavotlar">Sabzavotlar</option>
+                    <option value="Mevalar" selected="">Mevalar</option>
+                    <option value="Non mahsulotlari">Non mahsulotlari</option>
+                    <option value="Ichimliklar">Ichimliklar</option>
+                    <option value="Shirinliklar">Shirinliklar</option>
+                    <option value="Konservalar">Konservalar</option>
+                </select>
+            </div>
+            <div class="invalid-feedback">Siz maksimal ruxsat etilgan variantni tanladingiz.</div>
+        </div>
+
+        <h6 class="offcanvas-title">Skanerlangan mahsulotlar</h6>
+        <p class="text-secondary small mb-2">O'tgan haftada 1256 mahsulot skanerlandi</p>
+        <div class="row mb-3 mb-lg-4">
+            <div class="col-12 px-0">
+                <ul class="list-group list-group-flush bg-transparent border-0">
+                    <li class="list-group-item">
+                        <div class="row gx-3 gx-lg-4">
+                            <div class="col">Foydali mahsulotlar</div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="titleswitch1">
+                                    <label class="form-check-label" for="titleswitch1"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row gx-3 gx-lg-4">
+                            <div class="col">Zararli mahsulotlar</div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="titleswitch2" checked="">
+                                    <label class="form-check-label" for="titleswitch2"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr class="mb-4">
+        <a href="{% url 'all_books' %}" class="row gx-3 align-items-center style-none text-theme-1 mb-3 mb-lg-4" data-bs-toggle="tooltip" data-bs-placement="top">
+            <div class="col-auto">
+                <i class="bi bi-life-preserver avatar avatar-30 bg-theme-1-subtle text-theme-1 rounded"></i>
+            </div>
+            <div class="col">
+                <p class="">Yordam kerakmi?</p>
+            </div>
+        </a>
+        <a href="{% url 'boshlash' %}" class="row gx-3 align-items-center style-none text-theme-1 mb-3 mb-lg-4" data-bs-toggle="tooltip" data-bs-placement="top">
+            <div class="col-auto">
+                <span class="bi bi-basket avatar avatar-30 bg-theme-1-subtle text-theme-1 rounded position-relative">
+                    <span class="position-absolute top-0 end-0 p-1 bg-green border border-light rounded-circle">
+                        <span class="visually-hidden">Yangi bildirishnomalar</span>
+                    </span>
+                </span>
+            </div>
+            <div class="col">
+                <p class="">Bosh sahifaga qaytish</p>
+            </div>
+        </a>
+
+    </div>
+    <div class="offcanvas-header border-top">
+        <div class="col">
+            <button class="btn btn-theme" data-bs-dismiss="offcanvas">Qo'llash</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-link theme-red" data-bs-dismiss="offcanvas">Bekor qilish</button>
+        </div>
+    </div>
+</div>
+
+                    <!-- notification -->
+                    <div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="view-notification" data-bs-scroll="true" data-bs-backdrop="false">
+    <div class="offcanvas-header border-bottom">
+        <div class="flex-grow-1">
+            <h6 class="mb-0">Bildirishnomalar</h6>
+            <p class="text-secondary">6 ta yangi xabar</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="small text-center px-3 py-2 bg-theme-1-subtle text-theme-1 border-bottom">
+        <div class="row gx-2 align-items-center">
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+            <div class="col-auto text-secondary small">-</div>
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="adminux-profile-professional.html" class="text-theme-1 style-none">Alex Smith</a>, <a href="adminux-profile-professional.html" class="text-theme-1 style-none">John McMillan</a> and <span class="fw-medium">36 others</span> are also ordered from same website</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">2:14 pm</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 rounded-circle bg-theme-1 border border-theme-1">
+                            <p class="h6 fw-medium">JM</p>
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="adminux-profile-professional.html" class="text-theme-1 style-none">Jack Mario</a> commented: "This one is most usable design with great user experience. w..."</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">2 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-warning mb-2">
+            <div class="row gx-3">
+                <div class="col-auto">
+                    <figure class="avatar avatar-30 rounded-circle bg-warning text-white">
+                        <i class="bi bi-bell"></i>
+                    </figure>
+                </div>
+                <div class="col">
+                    <p class="small mb-2">Obunangiz tugash arafasida. Xizmatdan uzluksiz foydalanish uchun <a href="{% url 'subscription_plans' %}">yangilang</a>.</p>
+
+                    <div class="row gx-3 align-items-center">
+                        <div class="col">
+                            <p class="text-secondary small">4 kun oldin</p>
+                        </div>
+                        <div class="col-auto">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/adminux-invoice.html" class="text-theme-1 style-none">Roberto Carlos</a> has requested to send $120.00 money.</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">6 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 rounded-circle bg-theme-1-subtle text-theme-1 theme-orange">
+                            <i class="bi bi-calendar-event"></i>
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <h6 class="mb-1">Adminuiux: #1 HTML Templates</h6>
+                        <p class="small mb-2">Learning for better user experience on Universal app. development</p>
+                        <div class="avatar-group mb-2">
+                            <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Mickey">
+                                <img src="assets/img/modern-ai-image/user-3.jpg" alt="" style="display: none;">
+                            </figure>
+                            <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Jacky">
+                                <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                            </figure>
+                            <div class="avatar avatar-20 bg-theme-1 rounded-circle">
+                                <small class="fs-10 vm">9+</small>
+                            </div>
+                            <span class="text-secondary small"> are attending</span>
+                        </div>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">7 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-3.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/adminuiux-profile-professional.html" class="text-theme-1 style-none">The AdminUIUX</a> commented: "Thank you so much for this deep view at Adminuiux..."</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">1 year ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                        <!-- themes -->
+                        <!-- theming offcanvas-->
+<div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="theming" data-bs-scroll="true" data-bs-backdrop="false" aria-labelledby="theminglabel">
+    <div class="offcanvas-header border-bottom">
+        <div>
+            <h5 class="offcanvas-title" id="theminglabel">Sozlash</h5>
+            <p class="text-secondary small">O'zingizga moslang</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h6 class="offcanvas-title">Ranglar</h6>
+        <p class="text-secondary small mb-4">Shablon ranglarini o'zgartiring</p>
+
+        <div class="row mb-4 theme-select">
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-blue">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-theme-1 theme-blue"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-indigo">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-indigo"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-purple">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-purple"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-pink">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-pink"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-red">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-red"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-orange">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-orange"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-yellow">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-yellow"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-green">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-green"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-teal">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-teal"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-cyan">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-cyan"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-grey">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-grey"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-brown">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-brown"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-chocolate">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-chocolate"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-black">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-dark"></span>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="offcanvas-title">Fon</h6>
+        <p class="text-secondary small mb-4">Fon rangini o'zgartiring</p>
+        <div class="row mb-4 theme-background">
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-default">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default"><i class="bi bi-arrow-clockwise"></i></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-white">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-white"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-r-gradient">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-r-gradient"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-1">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-1"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-2">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-2"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-3">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-3"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-4">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-4"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-5">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-5"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-6">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-6"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-7">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-7"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-8">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-8"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-9">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-9"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-10">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-10"></span>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mb-4">
+            <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-theme">Ko'proq sozlamalar <i class="bi bi-arrow-right-short"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global o'zgaruvchilar - 100g uchun asosiy qiymatlar saqlash
+let baseNutritionPer100g = null;
+let currentFoodId = null;
+let currentProductName = '';
+
+// Sahifa yuklanganda sessionStorage dan ma'lumotlarni o'qish
+document.addEventListener('DOMContentLoaded', function() {
+    const analysisData = sessionStorage.getItem('food_analysis_result');
+    
+    if (analysisData) {
+        try {
+            const data = JSON.parse(analysisData);
+            baseNutritionPer100g = data.nutrition_per_100g || {};
+            currentProductName = data.name || 'Noma\'lum mahsulot';
+            
+            // Agar food_id bo'lsa, o'chirish tugmasini ko'rsatish
+            if (data.food_id) {
+                currentFoodId = data.food_id;
+                document.getElementById('delete-food-btn').style.display = 'inline-block';
+            }
+            
+            // UI yangilash
+            displayNutritionData(data.name, data.description, baseNutritionPer100g, 100);
+            
+            // Ro'yxatga qo'shish tugmasini faollashtirish
+            document.getElementById('save-to-list-btn').disabled = false;
+            
+            console.log('Tahlil natijalari yuklandi:', data.name);
+            
+        } catch (e) {
+            console.error('Ma\'lumotlarni o\'qishda xato:', e);
+        }
+    }
+    
+    // Barcode qidirish tugmasi
+    document.getElementById('barcode-search-btn').addEventListener('click', lookupBarcode);
+    document.getElementById('barcode-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') lookupBarcode();
+    });
+    
+    // Massa kalkulyatori
+    document.getElementById('calculate-btn').addEventListener('click', recalculateMass);
+    document.getElementById('mass-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') recalculateMass();
+    });
+    
+    // Ro'yxatga qo'shish tugmasi
+    document.getElementById('save-to-list-btn').addEventListener('click', saveToList);
+    
+    // O'chirish tugmasi
+    document.getElementById('delete-food-btn').addEventListener('click', deleteFood);
+});
+
+// Ma'lumotlarni ekranga chiqarish
+function displayNutritionData(name, description, nutrition, mass) {
+    const ratio = mass / 100;
+    
+    // Mahsulot nomi va tavsifi
+    if (name) {
+        document.getElementById('product-name').textContent = name;
+        currentProductName = name;
+    }
+    if (description) {
+        document.getElementById('product-description').textContent = description;
+    }
+    
+    // Kaloriya
+    const calories = (nutrition.calories || 0) * ratio;
+    document.getElementById('calories-value').textContent = Math.round(calories);
+    
+    // Oqsil
+    const proteins = (nutrition.proteins || 0) * ratio;
+    document.getElementById('protein-value').textContent = proteins.toFixed(1);
+    document.getElementById('protein-mini').textContent = Math.round(proteins);
+    
+    // Yog'
+    const fat = (nutrition.fat || 0) * ratio;
+    document.getElementById('fat-value').textContent = fat.toFixed(1);
+    document.getElementById('fat-mini').textContent = Math.round(fat);
+    
+    // Uglevod
+    const carbs = (nutrition.carbohydrates || 0) * ratio;
+    document.getElementById('carbs-value').textContent = carbs.toFixed(1);
+    document.getElementById('carbs-mini').textContent = Math.round(carbs);
+    
+    // Tola
+    const fiber = (nutrition.fiber || 0) * ratio;
+    document.getElementById('fiber-value').textContent = fiber.toFixed(1);
+    document.getElementById('fiber-mini').textContent = Math.round(fiber);
+    
+    // Shakar
+    const sugars = (nutrition.sugars || 0) * ratio;
+    document.getElementById('sugar-value').textContent = sugars.toFixed(1);
+    
+    // Kraxmal
+    const starch = Math.max(0, carbs - sugars - fiber);
+    document.getElementById('starch-value').textContent = starch.toFixed(1);
+    
+    // To'yingan yog'
+    const saturatedFat = (nutrition.saturated_fat || 0) * ratio;
+    document.getElementById('saturated-fat').textContent = saturatedFat.toFixed(1);
+    
+    // To'yinmagan yog'
+    const unsaturatedFat = Math.max(0, fat - saturatedFat);
+    document.getElementById('unsaturated-fat').textContent = unsaturatedFat.toFixed(1);
+    
+    // Status ranglarini yangilash
+    updateStatus('protein-status', proteins, 10, 20);
+    updateStatus('fat-status', fat, 15, 30);
+    updateStatus('carbs-status', carbs, 20, 40);
+}
+
+// Shtrix-kod qidirish
+async function lookupBarcode() {
+    const barcode = document.getElementById('barcode-input').value.trim();
+    if (!barcode) {
+        alert('Iltimos, shtrix-kod raqamini kiriting');
+        return;
+    }
+    
+    const btn = document.getElementById('barcode-search-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Qidirilmoqda...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/lookup-barcode/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ barcode: barcode })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            baseNutritionPer100g = data.nutrition_per_100g;
+            currentProductName = data.name;
+            
+            // UI yangilash
+            displayNutritionData(data.name, data.description || '', baseNutritionPer100g, 100);
+            
+            // Massa qiymatini 100g ga qaytarish
+            document.getElementById('mass-input').value = 100;
+            
+            // Ro'yxatga qo'shish tugmasini faollashtirish
+            document.getElementById('save-to-list-btn').disabled = false;
+            
+            alert('Mahsulot topildi: ' + data.name);
+        } else {
+            alert(data.error || 'Mahsulot topilmadi');
+        }
+    } catch (e) {
+        console.error('Qidirishda xato:', e);
+        alert('Tarmoq xatosi yuz berdi');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Massa bo'yicha qayta hisoblash
+function recalculateMass() {
+    const mass = parseFloat(document.getElementById('mass-input').value) || 100;
+    
+    if (mass <= 0) {
+        alert('Iltimos, musbat son kiriting');
+        return;
+    }
+    
+    if (!baseNutritionPer100g) {
+        alert('Avval mahsulotni skanerlang yoki shtrix-kod kiriting');
+        return;
+    }
+    
+    displayNutritionData(currentProductName, '', baseNutritionPer100g, mass);
+}
+
+// Ro'yxatga qo'shish
+async function saveToList() {
+    if (!baseNutritionPer100g) {
+        alert('Saqlash uchun ma\'lumot yo\'q');
+        return;
+    }
+    
+    const mass = parseFloat(document.getElementById('mass-input').value) || 100;
+    const ratio = mass / 100;
+    
+    const btn = document.getElementById('save-to-list-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saqlanmoqda...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/save-food/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                name: currentProductName,
+                mass: mass,
+                calories: (baseNutritionPer100g.calories || 0) * ratio,
+                proteins: (baseNutritionPer100g.proteins || 0) * ratio,
+                carbs: (baseNutritionPer100g.carbohydrates || 0) * ratio,
+                fat: (baseNutritionPer100g.fat || 0) * ratio,
+                fiber: (baseNutritionPer100g.fiber || 0) * ratio,
+                sugars: (baseNutritionPer100g.sugars || 0) * ratio,
+                saturated_fat: (baseNutritionPer100g.saturated_fat || 0) * ratio,
+                // 100g uchun qiymatlar
+                calories_per_100g: baseNutritionPer100g.calories || 0,
+                proteins_per_100g: baseNutritionPer100g.proteins || 0,
+                carbs_per_100g: baseNutritionPer100g.carbohydrates || 0,
+                fat_per_100g: baseNutritionPer100g.fat || 0
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            currentFoodId = data.food_id;
+            document.getElementById('delete-food-btn').style.display = 'inline-block';
+            alert('Mahsulot ro\'yxatga qo\'shildi!');
+        } else {
+            alert(data.error || 'Saqlashda xato');
+        }
+    } catch (e) {
+        console.error('Saqlashda xato:', e);
+        alert('Tarmoq xatosi yuz berdi');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// O'chirish
+async function deleteFood() {
+    if (!currentFoodId) {
+        alert('O\'chirish uchun mahsulot yo\'q');
+        return;
+    }
+    
+    if (!confirm('Bu mahsulotni o\'chirishni tasdiqlaysizmi?')) {
+        return;
+    }
+    
+    const btn = document.getElementById('delete-food-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> O\'chirilmoqda...';
+    btn.disabled = true;
+    
+    try {
+        const response = await fetch(`/api/delete-food/${currentFoodId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            currentFoodId = null;
+            document.getElementById('delete-food-btn').style.display = 'none';
+            alert('Mahsulot o\'chirildi!');
+        } else {
+            alert(data.error || 'O\'chirishda xato');
+        }
+    } catch (e) {
+        console.error('O\'chirishda xato:', e);
+        alert('Tarmoq xatosi yuz berdi');
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// Status rangini yangilash funksiyasi
+function updateStatus(elementId, value, lowThreshold, highThreshold) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const numValue = parseFloat(value) || 0;
+    if (numValue === 0) {
+        element.textContent = '-';
+        element.classList.remove('theme-green', 'theme-yellow', 'theme-red', 'theme-orange');
+    } else if (numValue < lowThreshold) {
+        element.textContent = 'kam';
+        element.classList.remove('theme-green', 'theme-yellow', 'theme-orange');
+        element.classList.add('theme-red');
+    } else if (numValue > highThreshold) {
+        element.textContent = 'ko\'p';
+        element.classList.remove('theme-green', 'theme-yellow', 'theme-red');
+        element.classList.add('theme-orange');
+    } else {
+        element.textContent = 'yaxshi';
+        element.classList.remove('theme-red', 'theme-orange', 'theme-yellow');
+        element.classList.add('theme-green');
+    }
+}
+
+// CSRF token olish
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+    {% endblock %}                        <!-- footer -->
+ 

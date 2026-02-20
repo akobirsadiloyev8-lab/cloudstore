@@ -1,0 +1,594 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Kunlik ovqatlanish - Cloudstore{% endblock %}
+
+{% block content %}
+                            <!-- page title -->
+                            <div class="container-fluid py-1 py-lg-3">
+                                <div class="row gx-3 gx-lg-4 align-items-center page-title">
+                                    <div class="col col-sm">
+                                        <h6 class="mb-0">Kunlik ovqatlanish ro'yxati</h6>
+                                        <p class="text-secondary small">{{ selected_date|date:"d F, Y" }} - {% if is_today %}Bugun{% else %}{{ selected_date|date:"l" }}{% endif %}</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <!-- Sana navigatsiyasi -->
+                                        <div class="btn-group" role="group">
+                                            <a href="?date={{ prev_date|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                            <a href="?date={{ today|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm {% if is_today %}active{% endif %}">
+                                                Bugun
+                                            </a>
+                                            <a href="?date={{ next_date|date:'Y-m-d' }}" class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- content -->
+                            <div class="container mt-3" id="main-content">
+                                
+                                <!-- Kunlik statistika -->
+                                <div class="row gx-3 gx-lg-4 mb-4">
+                                    <!-- Kaloriya doirasi -->
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3 mb-lg-0">
+                                        <div class="card adminuiux-card shadow-sm h-100">
+                                            <div class="card-body text-center">
+                                                <div class="position-relative d-inline-block mb-3">
+                                                    <svg width="160" height="160" viewBox="0 0 160 160">
+                                                        <circle cx="80" cy="80" r="75" fill="none" stroke="#e9ecef" stroke-width="10"></circle>
+                                                        <circle cx="80" cy="80" r="75" fill="none" stroke="#198754" stroke-width="10" 
+                                                                stroke-dasharray="471.24" stroke-dashoffset="{{ offset }}" 
+                                                                transform="rotate(-90 80 80)" stroke-linecap="round"></circle>
+                                                    </svg>
+                                                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                                        <h3 class="mb-0">{{ daily_totals.total_calories|default:0 }}</h3>
+                                                        <small class="text-secondary">/ {{ daily_goals.calories }} kcal</small>
+                                                    </div>
+                                                </div>
+                                                <h6>Kunlik kaloriya</h6>
+                                                <p class="text-secondary small mb-0">{{ progress.calories }}% bajarildi</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Makronutrientlar -->
+                                    <div class="col-12 col-md-8 col-lg-9">
+                                        <div class="card adminuiux-card shadow-sm h-100">
+                                            <div class="card-body">
+                                                <h6 class="mb-4">Makronutrientlar</h6>
+                                                
+                                                <!-- Oqsillar -->
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span><i class="bi bi-egg-fill text-danger me-2"></i>Oqsillar</span>
+                                                        <span>{{ daily_totals.total_proteins|default:0 }}g / {{ daily_goals.proteins }}g</span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ progress.proteins }}%"></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Uglevodlar -->
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span><i class="bi bi-bread-slice-fill text-warning me-2"></i>Uglevodlar</span>
+                                                        <span>{{ daily_totals.total_carbs|default:0 }}g / {{ daily_goals.carbs }}g</span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ progress.carbs }}%"></div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Yog'lar -->
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span><i class="bi bi-droplet-fill text-info me-2"></i>Yog'lar</span>
+                                                        <span>{{ daily_totals.total_fat|default:0 }}g / {{ daily_goals.fat }}g</span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ progress.fat }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ovqat qo'shish tugmasi -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <button class="btn btn-theme w-100" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+                                            <i class="bi bi-plus-circle me-2"></i>Ovqat qo'shish
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ovqat turlari -->
+                                <!-- Nonushta -->
+                                <div class="card adminuiux-card shadow-sm mb-3">
+                                    <div class="card-header bg-warning bg-opacity-10">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <i class="bi bi-sunrise-fill text-warning fs-4"></i>
+                                            </div>
+                                            <div class="col">
+                                                <h6 class="mb-0">Nonushta</h6>
+                                                <small class="text-secondary">{{ meals.breakfast.count }} ta taom</small>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-outline-warning" onclick="openAddFood('breakfast')">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if meals.breakfast %}
+                                            {% for food in meals.breakfast %}
+                                            <div class="row align-items-center py-2 border-bottom">
+                                                <div class="col">
+                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
+                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <span class="badge bg-warning">{{ food.calories }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="text-secondary text-center mb-0 py-3">
+                                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                Hali ovqat qo'shilmagan
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Tushlik -->
+                                <div class="card adminuiux-card shadow-sm mb-3">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <i class="bi bi-sun-fill text-success fs-4"></i>
+                                            </div>
+                                            <div class="col">
+                                                <h6 class="mb-0">Tushlik</h6>
+                                                <small class="text-secondary">{{ meals.lunch.count }} ta taom</small>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-outline-success" onclick="openAddFood('lunch')">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if meals.lunch %}
+                                            {% for food in meals.lunch %}
+                                            <div class="row align-items-center py-2 border-bottom">
+                                                <div class="col">
+                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
+                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <span class="badge bg-success">{{ food.calories }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="text-secondary text-center mb-0 py-3">
+                                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                Hali ovqat qo'shilmagan
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Kechki ovqat -->
+                                <div class="card adminuiux-card shadow-sm mb-3">
+                                    <div class="card-header bg-primary bg-opacity-10">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <i class="bi bi-moon-fill text-primary fs-4"></i>
+                                            </div>
+                                            <div class="col">
+                                                <h6 class="mb-0">Kechki ovqat</h6>
+                                                <small class="text-secondary">{{ meals.dinner.count }} ta taom</small>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="openAddFood('dinner')">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if meals.dinner %}
+                                            {% for food in meals.dinner %}
+                                            <div class="row align-items-center py-2 border-bottom">
+                                                <div class="col">
+                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
+                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <span class="badge bg-primary">{{ food.calories }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="text-secondary text-center mb-0 py-3">
+                                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                Hali ovqat qo'shilmagan
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Yengil taom -->
+                                <div class="card adminuiux-card shadow-sm mb-3">
+                                    <div class="card-header bg-danger bg-opacity-10">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <i class="bi bi-cup-hot-fill text-danger fs-4"></i>
+                                            </div>
+                                            <div class="col">
+                                                <h6 class="mb-0">Yengil taom</h6>
+                                                <small class="text-secondary">{{ meals.snack.count }} ta taom</small>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-outline-danger" onclick="openAddFood('snack')">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if meals.snack %}
+                                            {% for food in meals.snack %}
+                                            <div class="row align-items-center py-2 border-bottom">
+                                                <div class="col">
+                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
+                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <span class="badge bg-danger">{{ food.calories }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p class="text-secondary text-center mb-0 py-3">
+                                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                                Hali ovqat qo'shilmagan
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Kalendar -->
+                                <div class="card adminuiux-card shadow-sm mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Kalendar</h6>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="?date={{ selected_date|date:'Y' }}-{{ selected_date|date:'m'|add:'-1'|stringformat:'02d' }}-01" class="btn btn-outline-secondary" id="prevMonth">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                            <span class="btn btn-outline-secondary disabled" id="currentMonth">{{ selected_date|date:"F Y" }}</span>
+                                            <a href="?date={{ selected_date|date:'Y' }}-{{ selected_date|date:'m'|add:'1'|stringformat:'02d' }}-01" class="btn btn-outline-secondary" id="nextMonth">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="calendar-container">
+                                            <!-- Hafta kunlari -->
+                                            <div class="row text-center mb-2">
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Du</small></div>
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Se</small></div>
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Ch</small></div>
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Pa</small></div>
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Ju</small></div>
+                                                <div class="col py-2"><small class="text-secondary fw-bold">Sh</small></div>
+                                                <div class="col py-2"><small class="text-danger fw-bold">Ya</small></div>
+                                            </div>
+                                            <!-- Kalendar kunlari JavaScript orqali yuklanadi -->
+                                            <div id="calendarDays"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <style>
+                                .calendar-day {
+                                    aspect-ratio: 1;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    border-radius: 50%;
+                                    cursor: pointer;
+                                    transition: all 0.2s;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    font-size: 0.9rem;
+                                    max-width: 40px;
+                                    max-height: 40px;
+                                    margin: 2px auto;
+                                }
+                                .calendar-day:hover {
+                                    background-color: rgba(var(--bs-theme-rgb), 0.2);
+                                }
+                                .calendar-day.selected {
+                                    background: linear-gradient(135deg, var(--bs-theme) 0%, var(--bs-theme-dark, var(--bs-theme)) 100%);
+                                    color: white !important;
+                                    font-weight: bold;
+                                }
+                                .calendar-day.today {
+                                    border: 2px solid var(--bs-theme);
+                                    font-weight: bold;
+                                }
+                                .calendar-day.other-month {
+                                    opacity: 0.3;
+                                }
+                                .calendar-day.has-data::after {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: 2px;
+                                    width: 4px;
+                                    height: 4px;
+                                    background-color: var(--bs-success);
+                                    border-radius: 50%;
+                                }
+                                .calendar-day-wrapper {
+                                    position: relative;
+                                }
+                                </style>
+
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const selectedDate = new Date('{{ selected_date|date:"Y-m-d" }}');
+                                    const today = new Date('{{ today|date:"Y-m-d" }}');
+                                    
+                                    // Ma'lumotli kunlar (weekly_stats dan)
+                                    const daysWithData = [
+                                        {% for stat in weekly_stats %}
+                                        '{{ stat.date|date:"Y-m-d" }}'{% if not forloop.last %},{% endif %}
+                                        {% endfor %}
+                                    ];
+                                    
+                                    renderCalendar(selectedDate, today, daysWithData);
+                                });
+                                
+                                function renderCalendar(selectedDate, today, daysWithData) {
+                                    const year = selectedDate.getFullYear();
+                                    const month = selectedDate.getMonth();
+                                    
+                                    // Oy boshlanishi va tugashi
+                                    const firstDay = new Date(year, month, 1);
+                                    const lastDay = new Date(year, month + 1, 0);
+                                    
+                                    // Haftaning qaysi kunidan boshlanadi (0=Yakshanba, 1=Dushanba, ...)
+                                    let startDay = firstDay.getDay();
+                                    startDay = startDay === 0 ? 6 : startDay - 1; // Dushanbadan boshlaymiz
+                                    
+                                    const daysInMonth = lastDay.getDate();
+                                    const prevMonthLastDay = new Date(year, month, 0).getDate();
+                                    
+                                    let html = '';
+                                    let dayCount = 1;
+                                    let nextMonthDay = 1;
+                                    
+                                    // 6 hafta (maksimum)
+                                    for (let week = 0; week < 6; week++) {
+                                        html += '<div class="row text-center">';
+                                        
+                                        for (let day = 0; day < 7; day++) {
+                                            const cellIndex = week * 7 + day;
+                                            let displayDay, isOtherMonth = false, dateStr;
+                                            
+                                            if (cellIndex < startDay) {
+                                                // Oldingi oy kunlari
+                                                displayDay = prevMonthLastDay - startDay + cellIndex + 1;
+                                                const prevMonth = month === 0 ? 12 : month;
+                                                const prevYear = month === 0 ? year - 1 : year;
+                                                dateStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}-${String(displayDay).padStart(2, '0')}`;
+                                                isOtherMonth = true;
+                                            } else if (dayCount <= daysInMonth) {
+                                                // Joriy oy kunlari
+                                                displayDay = dayCount;
+                                                dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(displayDay).padStart(2, '0')}`;
+                                                dayCount++;
+                                            } else {
+                                                // Keyingi oy kunlari
+                                                displayDay = nextMonthDay;
+                                                const nextMonth = month === 11 ? 1 : month + 2;
+                                                const nextYear = month === 11 ? year + 1 : year;
+                                                dateStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(displayDay).padStart(2, '0')}`;
+                                                nextMonthDay++;
+                                                isOtherMonth = true;
+                                            }
+                                            
+                                            const isSelected = dateStr === formatDate(selectedDate);
+                                            const isToday = dateStr === formatDate(today);
+                                            const hasData = daysWithData.includes(dateStr);
+                                            
+                                            let classes = 'calendar-day';
+                                            if (isOtherMonth) classes += ' other-month';
+                                            if (isSelected) classes += ' selected';
+                                            if (isToday && !isSelected) classes += ' today';
+                                            if (hasData) classes += ' has-data';
+                                            
+                                            html += `
+                                                <div class="col p-1">
+                                                    <div class="calendar-day-wrapper">
+                                                        <a href="?date=${dateStr}" class="${classes}">${displayDay}</a>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                        
+                                        html += '</div>';
+                                        
+                                        // Agar barcha kunlar ko'rsatilgan bo'lsa, to'xtatamiz
+                                        if (dayCount > daysInMonth && week >= 3) break;
+                                    }
+                                    
+                                    document.getElementById('calendarDays').innerHTML = html;
+                                    
+                                    // Oy navigatsiyasini yangilash
+                                    updateMonthNavigation(year, month);
+                                }
+                                
+                                function formatDate(date) {
+                                    const y = date.getFullYear();
+                                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                                    const d = String(date.getDate()).padStart(2, '0');
+                                    return `${y}-${m}-${d}`;
+                                }
+                                
+                                function updateMonthNavigation(year, month) {
+                                    const prevMonth = month === 0 ? 12 : month;
+                                    const prevYear = month === 0 ? year - 1 : year;
+                                    const nextMonth = month === 11 ? 1 : month + 2;
+                                    const nextYear = month === 11 ? year + 1 : year;
+                                    
+                                    const prevLink = document.getElementById('prevMonth');
+                                    const nextLink = document.getElementById('nextMonth');
+                                    
+                                    if (prevLink) {
+                                        prevLink.href = `?date=${prevYear}-${String(prevMonth).padStart(2, '0')}-01`;
+                                    }
+                                    if (nextLink) {
+                                        nextLink.href = `?date=${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+                                    }
+                                }
+                                </script>
+                                
+                            </div>
+
+<!-- Ovqat qo'shish modali -->
+<div class="modal fade" id="addFoodModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Ovqat qo'shish</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFoodForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Ovqat turi</label>
+                        <select class="form-select" name="meal_type" id="mealType" required>
+                            <option value="breakfast">Nonushta</option>
+                            <option value="lunch">Tushlik</option>
+                            <option value="dinner">Kechki ovqat</option>
+                            <option value="snack">Yengil taom</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Taom nomi</label>
+                        <input type="text" class="form-control" name="food_name" placeholder="Masalan: Palov" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Miqdori (gramm)</label>
+                        <input type="number" class="form-control" name="quantity" value="100" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Kaloriya (kcal)</label>
+                            <input type="number" class="form-control" name="calories" placeholder="200" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Oqsil (g)</label>
+                            <input type="number" step="0.1" class="form-control" name="proteins" placeholder="10">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Uglevod (g)</label>
+                            <input type="number" step="0.1" class="form-control" name="carbs" placeholder="30">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Yog' (g)</label>
+                            <input type="number" step="0.1" class="form-control" name="fat" placeholder="5">
+                        </div>
+                    </div>
+                    <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-theme" onclick="submitFood()">Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openAddFood(mealType) {
+    document.getElementById('mealType').value = mealType;
+    var modal = new bootstrap.Modal(document.getElementById('addFoodModal'));
+    modal.show();
+}
+
+function submitFood() {
+    const form = document.getElementById('addFoodForm');
+    const formData = new FormData(form);
+    
+    fetch('{% url "add_food_intake" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Xatolik yuz berdi');
+        }
+    })
+    .catch(error => {
+        console.error('Xatolik:', error);
+        alert('Xatolik yuz berdi');
+    });
+}
+
+function deleteFood(id) {
+    if (confirm('Bu ovqatni o\'chirmoqchimisiz?')) {
+        fetch('/api/food-intake/' + id + '/delete/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Xatolik yuz berdi');
+            }
+        });
+    }
+}
+</script>
+
+{% endblock %}

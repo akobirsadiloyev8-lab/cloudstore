@@ -19,41 +19,6 @@
             overflow-x: hidden;
         }
         
-        /* Header */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.6), transparent), url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80');
-            background-size: cover;
-            background-position: center top;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            min-height: 80px;
-        }
-        
-        .back-btn {
-            color: #4ade80;
-            text-decoration: none;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .header-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .header-right {
-            width: 60px;
-        }
-        
         /* Camera Container */
         .camera-container {
             position: relative;
@@ -87,7 +52,7 @@
         /* Instruction Text */
         .instruction-box {
             position: absolute;
-            top: 80px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -209,7 +174,6 @@
         
         /* Retake button */
         .retake-btn {
-            display: none;
             padding: 12px 30px;
             background: rgba(255,255,255,0.1);
             border: 1px solid rgba(255,255,255,0.2);
@@ -221,7 +185,6 @@
         }
         
         .analyze-btn {
-            display: none;
             padding: 12px 30px;
             background: linear-gradient(135deg, #4ade80, #22c55e);
             border: none;
@@ -712,15 +675,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <a href="/" class="back-btn">
-            <span>‹</span> Orqaga
-        </a>
-        <div class="header-title">Ovqat Skaneri</div>
-        <div class="header-right"></div>
-    </div>
-    
     <!-- Camera Container -->
     <div class="camera-container">
         <video id="video" autoplay playsinline muted></video>
@@ -873,38 +827,39 @@
         async function analyzeImage() {
             if (!capturedImageData) return;
             
-            loadingOverlay.classList.add('show');
+            // Loading ko'rsatish
+            loadingOverlay.style.display = 'flex';
             
             try {
+                // API ga so'rov yuborish
                 const formData = new FormData();
+                formData.append('image_base64', capturedImageData);
                 
-                // Base64 ni blob ga aylantirish
-                const response = await fetch(capturedImageData);
-                const blob = await response.blob();
-                formData.append('image', blob, 'food.jpg');
-                
-                const result = await fetch(`${API_URL}/api/analyze-food/`, {
+                const response = await fetch('/api/analyze-food/', {
                     method: 'POST',
                     body: formData
                 });
                 
-                const data = await result.json();
+                const result = await response.json();
                 
-                loadingOverlay.classList.remove('show');
-                
-                if (data.success) {
-                    showResult(data.data);
+                if (result.success) {
+                    // Natijalarni sessionStorage ga saqlash
+                    sessionStorage.setItem('food_analysis_result', JSON.stringify(result.data));
+                    sessionStorage.setItem('food_analysis_image', capturedImageData);
+                    
+                    // /food-scanner1/ sahifasiga o'tish
+                    window.location.href = '/food-scanner1/';
                 } else {
-                    showError(data.error || 'Tahlil qilishda xatolik');
+                    loadingOverlay.style.display = 'none';
+                    showError(result.error || 'Tahlil qilib bo\'lmadi');
                 }
-            } catch (err) {
-                console.error('Xatolik:', err);
-                loadingOverlay.classList.remove('show');
-                showError('Server bilan bog\'lanib bo\'lmadi');
+            } catch (error) {
+                loadingOverlay.style.display = 'none';
+                showError('Serverga ulanishda xatolik: ' + error.message);
             }
         }
         
-        // Show result
+        // Show result (eski)
         function showResult(data) {
             const n = data.nutrition_per_100g || {};
             const calories = Math.round(n.calories || 0);

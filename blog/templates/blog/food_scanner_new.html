@@ -1,0 +1,299 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Skanerlangan mahsulot - Cloudstore{% endblock %}
+
+{% block content %}
+                            <!-- page title -->
+                            <div class="container-fluid py-1 py-lg-3">
+                                <div class="row gx-3 gx-lg-4 align-items-center page-title">
+                                    <div class="col col-sm">
+                                        <h6 class="mb-0">Skanerlangan mahsulot</h6>
+                                        <p class="text-secondary small">AI yordamida ovqat va mahsulotlarni aniqlang</p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="{% url 'boshlash' %}" class="btn btn-outline-secondary btn-sm">
+                                            <i class="bi bi-arrow-left me-1"></i>Orqaga
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- content -->
+                            <div class="container mt-3" id="main-content">
+                                
+                                <!-- Scanner Card -->
+                                <div class="row gx-3 gx-lg-4 mb-4">
+                                    <div class="col-12 col-lg-8 mx-auto">
+                                        <div class="card adminuiux-card shadow-sm">
+                                            <div class="card-header bg-theme-l-gradient text-white">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-camera-fill fs-3"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Ovqat rasmini yuklang</h6>
+                                                        <small>AI tahlil qiladi va kaloriyani hisoblaydi</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- Upload Area -->
+                                                <div class="upload-area border-2 border-dashed border-secondary rounded-3 p-5 text-center mb-4" 
+                                                     id="uploadArea" 
+                                                     onclick="document.getElementById('imageInput').click()"
+                                                     style="cursor: pointer; transition: all 0.3s;">
+                                                    <input type="file" id="imageInput" accept="image/*" class="d-none" onchange="previewImage(this)">
+                                                    <div id="uploadPlaceholder">
+                                                        <i class="bi bi-cloud-arrow-up-fill text-theme fs-1 mb-3 d-block"></i>
+                                                        <h6 class="mb-2">Rasm yuklash</h6>
+                                                        <p class="text-secondary small mb-0">PNG, JPG yoki JPEG formatida</p>
+                                                        <p class="text-secondary small">Maksimum 10MB</p>
+                                                    </div>
+                                                    <div id="imagePreview" class="d-none">
+                                                        <img id="previewImg" class="img-fluid rounded-3 mb-3" style="max-height: 300px;">
+                                                        <p class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Rasm yuklandi</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Analyze Button -->
+                                                <button class="btn btn-theme w-100 py-3" id="analyzeBtn" onclick="analyzeFood()" disabled>
+                                                    <i class="bi bi-cpu me-2"></i>AI bilan tahlil qilish
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Results Section (Hidden initially) -->
+                                <div class="row gx-3 gx-lg-4 mb-4 d-none" id="resultsSection">
+                                    <div class="col-12 col-lg-8 mx-auto">
+                                        <div class="card adminuiux-card shadow-sm">
+                                            <div class="card-header">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-clipboard-data-fill text-theme fs-4"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Tahlil natijalari</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- Food Name -->
+                                                <div class="text-center mb-4">
+                                                    <h4 id="foodName" class="mb-1">-</h4>
+                                                    <p class="text-secondary" id="foodDescription">-</p>
+                                                </div>
+                                                
+                                                <!-- Nutrition Info -->
+                                                <div class="row text-center mb-4">
+                                                    <div class="col-6 col-md-3 mb-3">
+                                                        <div class="p-3 bg-warning bg-opacity-10 rounded-3">
+                                                            <h4 class="text-warning mb-0" id="caloriesValue">-</h4>
+                                                            <small class="text-secondary">Kaloriya (kcal)</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6 col-md-3 mb-3">
+                                                        <div class="p-3 bg-danger bg-opacity-10 rounded-3">
+                                                            <h4 class="text-danger mb-0" id="proteinValue">-</h4>
+                                                            <small class="text-secondary">Oqsil (g)</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6 col-md-3 mb-3">
+                                                        <div class="p-3 bg-primary bg-opacity-10 rounded-3">
+                                                            <h4 class="text-primary mb-0" id="carbsValue">-</h4>
+                                                            <small class="text-secondary">Uglevod (g)</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6 col-md-3 mb-3">
+                                                        <div class="p-3 bg-info bg-opacity-10 rounded-3">
+                                                            <h4 class="text-info mb-0" id="fatValue">-</h4>
+                                                            <small class="text-secondary">Yog' (g)</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Add to Diary Button -->
+                                                <button class="btn btn-success w-100" id="addToDiaryBtn" onclick="addToDiary()">
+                                                    <i class="bi bi-plus-circle me-2"></i>Kunlik ovqatlanishga qo'shish
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Loading Overlay -->
+                                <div class="position-fixed top-0 start-0 w-100 h-100 d-none" id="loadingOverlay" 
+                                     style="background: rgba(0,0,0,0.7); z-index: 9999;">
+                                    <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+                                        <div class="spinner-border text-theme mb-3" style="width: 3rem; height: 3rem;"></div>
+                                        <h5>AI tahlil qilmoqda...</h5>
+                                        <p class="text-secondary">Iltimos, kuting</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recent Scans -->
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col-12 col-lg-8 mx-auto">
+                                        <div class="card adminuiux-card shadow-sm mb-4">
+                                            <div class="card-header">
+                                                <div class="row align-items-center">
+                                                    <div class="col">
+                                                        <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>So'nggi skanerlar</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body" id="recentScans">
+                                                <p class="text-secondary text-center py-4">
+                                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                                    Hali hech narsa skanerlanmagan
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+<script>
+let selectedFile = null;
+let analysisResult = null;
+
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        selectedFile = input.files[0];
+        
+        // Check file size (10MB limit)
+        if (selectedFile.size > 10 * 1024 * 1024) {
+            alert('Fayl hajmi 10MB dan oshmasligi kerak');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('uploadPlaceholder').classList.add('d-none');
+            document.getElementById('imagePreview').classList.remove('d-none');
+            document.getElementById('analyzeBtn').disabled = false;
+        };
+        reader.readAsDataURL(selectedFile);
+    }
+}
+
+function analyzeFood() {
+    if (!selectedFile) {
+        alert('Iltimos, avval rasm yuklang');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('loadingOverlay').classList.remove('d-none');
+    
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    fetch('{% url "analyze_food_image" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loadingOverlay').classList.add('d-none');
+        
+        if (data.success) {
+            analysisResult = data;
+            showResults(data);
+        } else {
+            alert(data.error || 'Tahlil qilishda xatolik yuz berdi');
+        }
+    })
+    .catch(error => {
+        document.getElementById('loadingOverlay').classList.add('d-none');
+        console.error('Xatolik:', error);
+        alert('Server bilan bog\'lanishda xatolik');
+    });
+}
+
+function showResults(data) {
+    document.getElementById('resultsSection').classList.remove('d-none');
+    
+    document.getElementById('foodName').textContent = data.food_name || 'Noma\'lum taom';
+    document.getElementById('foodDescription').textContent = data.description || '';
+    document.getElementById('caloriesValue').textContent = data.calories || '-';
+    document.getElementById('proteinValue').textContent = data.proteins || '-';
+    document.getElementById('carbsValue').textContent = data.carbs || '-';
+    document.getElementById('fatValue').textContent = data.fat || '-';
+    
+    // Scroll to results
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function addToDiary() {
+    if (!analysisResult) return;
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    formData.append('meal_type', 'snack');
+    formData.append('food_name', analysisResult.food_name || 'Skanerlangan taom');
+    formData.append('quantity', 100);
+    formData.append('calories', analysisResult.calories || 0);
+    formData.append('proteins', analysisResult.proteins || 0);
+    formData.append('carbs', analysisResult.carbs || 0);
+    formData.append('fat', analysisResult.fat || 0);
+    
+    fetch('{% url "add_food_intake" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Ovqatlanish ro\'yxatiga qo\'shildi!');
+            // Reset form
+            resetForm();
+        } else {
+            alert(data.error || 'Xatolik yuz berdi');
+        }
+    });
+}
+
+function resetForm() {
+    selectedFile = null;
+    analysisResult = null;
+    document.getElementById('imageInput').value = '';
+    document.getElementById('uploadPlaceholder').classList.remove('d-none');
+    document.getElementById('imagePreview').classList.add('d-none');
+    document.getElementById('resultsSection').classList.add('d-none');
+    document.getElementById('analyzeBtn').disabled = true;
+}
+
+// Drag and drop support
+const uploadArea = document.getElementById('uploadArea');
+
+uploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.style.borderColor = 'var(--bs-theme)';
+    this.style.background = 'rgba(var(--bs-theme-rgb), 0.1)';
+});
+
+uploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '';
+    this.style.background = '';
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.style.borderColor = '';
+    this.style.background = '';
+    
+    if (e.dataTransfer.files.length) {
+        document.getElementById('imageInput').files = e.dataTransfer.files;
+        previewImage(document.getElementById('imageInput'));
+    }
+});
+</script>
+
+{% endblock %}

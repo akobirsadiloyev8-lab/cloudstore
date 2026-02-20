@@ -112,6 +112,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'blog.views_subscription.subscription_context_processor',  # Premium obuna
+                'blog.context_processors.food_stats',  # Ovqatlanish statistikasi
             ],
         },
     },

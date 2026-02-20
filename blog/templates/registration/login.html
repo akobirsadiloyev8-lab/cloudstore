@@ -2,178 +2,196 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kirish - Cloudstore</title>
-    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Kirish | Cloudstore</title>
+    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&amp;family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 1.8rem;
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-            }
-            .login-container {
-                padding: 25px 20px;
-                border-radius: 12px;
-            }
-            h2 {
-                font-size: 1.5rem;
-                margin-bottom: 20px;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            input[type="text"], input[type="password"] {
-                padding: 12px;
-                font-size: 16px;
-            }
-            button {
-                padding: 14px;
-                font-size: 1rem;
-            }
-            label {
-                font-size: 0.9rem;
-            }
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .checkbox-container {
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-container input[type="checkbox"] {
-            margin-right: 5px;
-        }
-        .checkbox-container label {
-            font-size: 14px;
-            color: #666;
-            cursor: pointer;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background: #5a67d8;
-        }
-        .error {
-            color: #dc3545;
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 12px 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
-        .register-prompt {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .register-prompt a {
-            color: #155724;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .links {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .links a {
-            color: #667eea;
-            text-decoration: none;
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
         }
     </style>
+
+    <link href="{% static 'assets/css/app8051.css' %}" rel="stylesheet">
 </head>
-<body>
-    <div class="login-container">
-        <h2>Kirish</h2>
-        {% if error %}
-            <div class="error">⚠️ {{ error }}</div>
-        {% endif %}
-        {% if show_register %}
-            <div class="register-prompt">
-                📝 Hali akkountingiz yo'qmi? <a href="{% url 'register' %}">Ro'yxatdan o'ting!</a>
-            </div>
-        {% endif %}
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Foydalanuvchi nomi:</label>
-                <input type="text" id="username" name="username" value="{{ username|default:'' }}" required autofocus>
-            </div>
-            <div class="form-group">
-                <label for="password">Parol:</label>
-                <input type="password" id="password" name="password" required>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="toggle-password" onchange="togglePassword()">
-                    <label for="toggle-password">Parolni ko'rsatish</label>
+
+<body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-bggradient="bg-r-gradient" data-headerfill="adminuiux-header-transparent">
+    
+    <!-- Pageloader -->
+    <div class="pageloader">
+        <div class="container h-100">
+            <div class="row justify-content-center align-items-center text-center h-100">
+                <div class="col-12 mb-auto pt-4"></div>
+                <div class="col-auto">
+                    <p class="h3 mb-0"><span class="text-gradient">Cloudstore</span></p>
+                    <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+                </div>
+                <div class="col-12 mt-auto pb-4">
+                    <p class="text-secondary">Yuklanmoqda...</p>
                 </div>
             </div>
-            <button type="submit">Kirish</button>
-        </form>
-        <div class="links">
-            <a href="{% url 'register' %}">Ro'yxatdan o'tish</a>
         </div>
     </div>
+
+    <!-- Header -->
+    <header class="adminuiux-header z-index-5">
+        <nav class="navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" href="{% url 'boshlash' %}">
+                    <div class="d-inline-block">
+                        <span class="h4 text-white">Cloud<span class="fw-bold text-white">store</span></span>
+                    </div>
+                </a>
+                <div class="ms-auto"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-shrink-0 pt-0 z-index-1">
+        <div class="container">
+            <div class="auth-wrapper">
+                <!-- Background -->
+                <div class="coverimg h-100 w-100 top-0 start-0 position-absolute z-index-0">
+                    <img src="{% static 'assets/img/background-image/backgorund-image-14.png' %}" alt="" />
+                </div>
+
+                <!-- Login Form -->
+                <div class="row justify-content-center minheight-dynamic position-relative z-index-1" style="--mih-dynamic: calc(100vh - 135px)">
+                    <div class="col-12 col-md-8 col-xl-6">
+                        <div class="h-100 py-4 px-md-3">
+                            <div class="row h-100 align-items-center justify-content-center mt-md-3">
+                                <div class="col-12 col-sm-8 col-md-11 col-xl-11 col-xxl-10 login-box">
+                                    <div class="text-center text-white mb-3 mb-lg-4">
+                                        <h1 class="mb-3">Xush kelibsiz!</h1>
+                                        <p class="opacity-75">Hisobingizga kiring</p>
+                                    </div>
+
+                                    <!-- Error Messages -->
+                                    {% if form.errors %}
+                                    <div class="alert alert-danger mb-3">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-3">
+                                        {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                    {% endif %}
+
+                                    <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                        <div class="card-body">
+                                            <form method="POST" action="{% url 'login' %}">
+                                                {% csrf_token %}
+                                                
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" 
+                                                           class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                                                           id="username" 
+                                                           name="username" 
+                                                           placeholder="Foydalanuvchi nomi" 
+                                                           value="{{ form.username.value|default:'' }}"
+                                                           autofocus
+                                                           required>
+                                                    <label for="username">Foydalanuvchi nomi</label>
+                                                </div>
+
+                                                <div class="position-relative">
+                                                    <div class="form-floating mb-3">
+                                                        <button type="button" class="btn btn-square btn-link text-theme-1 position-absolute end-0 top-0 mt-2 me-2 z-3" onclick="togglePassword(this)">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
+                                                        <input type="password" 
+                                                               class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                                                               id="password" 
+                                                               name="password" 
+                                                               placeholder="Parol"
+                                                               required>
+                                                        <label for="password">Parol</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row gx-2 align-items-center mb-3">
+                                                    <div class="col">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                                            <label class="form-check-label" for="remember">Eslab qolish</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a href="{% url 'password_reset' %}" class="btn btn-link">Parolni unutdingizmi?</a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row gx-2 align-items-center">
+                                                    <div class="col">
+                                                        <button type="submit" class="btn btn-theme w-100">Kirish</button>
+                                                    </div>
+                                                    <div class="col">
+                                                        <a href="{% url 'register' %}" class="btn btn-link w-100">Ro'yxatdan o'tish <i class="bi bi-chevron-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="adminuiux-footer mt-auto bg-theme-1 z-index-1">
+        <div class="container-fluid text-center pb-ios">
+            <span class="small">© {% now "Y" %} 
+                <a href="{% url 'boshlash' %}" class="text-white">Cloudstore</a>
+            </span>
+        </div>
+    </footer>
+
+    <!-- Page Level js -->
+    <script src="{% static 'assets/js/app8051.js' %}"></script>
+    
     <script>
-        function togglePassword() {
-            const input = document.getElementById('password');
-            const checkbox = document.getElementById('toggle-password');
-            if (checkbox.checked) {
+        function togglePassword(btn) {
+            const input = btn.parentElement.querySelector('input[type="password"], input[type="text"]');
+            const icon = btn.querySelector('i');
+            
+            if (input.type === 'password') {
                 input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
             } else {
                 input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
             }
         }
     </script>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- dir="rtl"-->
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/adminux-chat-message.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:10:03 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>AdminUX - AdminUIUX - Bootstrap HTML Admin template - adminuiux.com</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&amp;family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
+        }
+    </style>
+
+<script defer src="assets/js/app8051.js?bd1e16b080f637e63a80"></script><link href="assets/css/app8051.css?bd1e16b080f637e63a80" rel="stylesheet"></head>
+
+    <body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-bggradient="bg-r-gradient" data-headerfill="adminuiux-header-transparent">
+        <!-- Pageloader -->
+<div class="pageloader">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center text-center h-100">
+            <div class="col-12 mb-auto pt-4"></div>
+            <div class="col-auto">
+                <img src="assets/img/logo.svg" alt="" class="height-100 mb-3">
+                <p class="h3 mb-0"><span class="text-gradient">AdminUX</span></p>
+                <p class="small text-secondary mb-3"><span class="">Admin Dashboard HTML Template</span></p>
+                <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+            </div>
+            <div class="col-12 mt-auto pb-4">
+                <p class="text-secondary">Petal of flower being ready to <span class="text-gradient">blossom</span>...</p>
+            </div>
+        </div>
+    </div>
+</div>
+            <div class="adminuiux-wrap">
+                <!-- Standard sidebar -->
+
+                <main class="adminuiux-content" onclick="contentClick()">
+                    <!-- standard header -->
+                    <header class="adminuiux-header">
+                        <!-- Fixed navbar -->
+                        <nav class="navbar navbar-expand-lg fixed-top">
+                            <div class="container-fluid">
+                                <!-- main sidebar toggle -->
+                                <!-- back -->
+                                <button class="btn btn-square btn-link" onclick="goBack()">
+                                    <i class="bi bi-arrow-left"></i>
+                                </button>
+                                <div class="px-3">
+                                    <div class="row gx-2 align-items-center">
+                                        <div class="col-auto">
+                                            <figure class="avatar avatar-30 coverimg rounded-circle">
+                                                <img src="assets/img/modern-ai-image/user-7.jpg" alt="" />
+                                            </figure>
+                                        </div>
+                                        <div class="col">
+                                            <p class="small text-truncated mb-0 maxwidth-120">AdmPro DiCaprio</p>
+                                            <p class="fs-12 text-secondary mb-0">Typing...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ms-auto">
+
+                                </div>
+                                <!-- right icons button -->
+                                <div class="ms-auto">
+                                    <!-- call -->
+                                    <button class="btn btn-link btn-square btn-link theme-green" data-bs-toggle="modal" data-bs-target="#callmodal">
+                                        <i class="bi bi-telephone"></i>
+                                    </button>
+                                    <!-- contacts -->
+                                    <button class="btn btn-link btn-square btn-link" onclick="innersidebar()">
+                                        <i class="bi bi-people"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </nav>
+                    </header>
+                    <!-- content -->
+                    <div class="inner-sidebar-wrap minheight-dynamic pt-2" style="--mih-dynamic:400px">
+                        <div class="inner-sidebar bg-none height-dynamic" style="--h-dynamic: calc(100vh - 120px)">
+                            <div class="card adminuiux-card  h-100">
+                                <div class="card-header">
+                                    <div class="row gx-3 align-items-center">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <input class="form-control" placeholder="Search contact... " value="">
+                                                <div class="dropdown input-group-text border-start-0 p-0"><button class="btn btn-square btn-link caret-none" type="button" id="statuschat" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></button>
+                                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="statuschat" style="">
+                                                        <li><a class="dropdown-item" href="javascript:void(0)"><span class="align-middle me-1 bg-success rounded-circle d-inline-block p-1"></span> Online</a></li>
+                                                        <li><a class="dropdown-item" href="javascript:void(0)"><span class="align-middle me-1 bg-warning rounded-circle d-inline-block p-1"></span> Away</a></li>
+                                                        <li><a class="dropdown-item" href="javascript:void(0)"><span class="align-middle me-1 bg-danger rounded-circle d-inline-block p-1"></span> Offline</a></li>
+                                                        <li><a class="dropdown-item" href="javascript:void(0)"><span class="align-middle me-1 bg-secondary rounded-circle d-inline-block p-1"></span> Disabled</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <!-- toggle innner sidebar -->
+                                            <button class="btn btn-link btn-square btn-link" onclick="innersidebar()">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body overflow-y-auto p-2">
+                                    <ul class="list-group adminuiux-list-group list-group-flush chat-list-contacts bg-none rounded-0">
+                                        <li class="list-group-item active">
+                                            <div class="row flex-nowrap">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle">
+                                                        <img src="assets/img/modern-ai-image/user-7.jpg" alt="" style="display: none;">
+                                                    </figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Alice Johanson</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item new">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 rounded-circle bg-theme-1"><span class="h6 align-middle">JM</span></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Mr. Jack Mario</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item new">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle"><img src="assets/img/modern-ai-image/user-4.jpg" alt=""></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Roberto Carlos</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all text-info"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle"><img src="assets/img/modern-ai-image/user-1.jpg" alt=""></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">The Adminuiux</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all text-success"></i> 2 days</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 rounded-circle bg-warning text-white"><span class="h6 align-middle">JC</span></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Ms. Jully CTO</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all"></i> 4 days</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#chatmodalwindow">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 rounded-circle bg-success text-white"><span class="h6 align-middle">JC</span></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Aswatthma D-Plan</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check"></i> 1 mo</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle bg-theme-1"><img src="assets/img/modern-ai-image/user-1.jpg" alt=""></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Adminuiux Support</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Thank you for connecting</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 rounded-circle bg-theme-1"><span class="h6 align-middle">JM</span></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Mr. Jack Mario</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle"><img src="assets/img/modern-ai-image/user-4.jpg" alt=""></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Roberto Carlos</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all text-info"></i> 2:00 am</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 coverimg rounded-circle"><img src="assets/img/modern-ai-image/user-1.jpg" alt="" style="display: none;"></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">The Adminuiux</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all text-success"></i> 2 days</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3">
+                                                <div class="col-auto">
+                                                    <figure class="avatar avatar-40 rounded-circle bg-warning text-white"><span class="h6 align-middle">JC</span></figure>
+                                                </div>
+                                                <div class="col-9 align-self-center ps-0">
+                                                    <div class="row g-0">
+                                                        <div class="col-8">
+                                                            <p class="text-truncate mb-0">Ms. Jully CTO</p>
+                                                        </div>
+                                                        <div class="col-4 text-end"><small class="opacity-50 fs-10 mb-1"><i class="bi bi-check-all"></i> 4 days</small></div>
+                                                    </div>
+                                                    <p class="opacity-75 small text-truncate">Spread love and spread this template</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inner-sidebar-content">
+                            <div class="chat-list px-3 height-dynamic">
+                                <div class="collapse" id="searchchat">
+                                    <div class="mb-3">
+                                        <div class="input-group"><input type="search" class="form-control" placeholder="Search in chat... " value=""> <button class="btn btn-square btn-theme theme-red" data-bs-toggle="collapse" data-bs-target="#searchchat"><i class="bi bi-x"></i></button></div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin left-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">
+                                                    <p class="small mb-2"><a href="#" class="style-none">Alex Smith</a></p>
+                                                    <p>Hi!</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-secondary small time"><i class="bi bi-check"></i> 9:00 pm</p>
+                                    </div>
+                                </div>
+                                <div class="row no-margin right-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">Hi!<br>Yes please tell us your query.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <p class="text-secondary small time"><i class="bi bi-check"></i> 9:10 pm</p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center text-center">
+                                    <div class="col-auto text-center">
+                                        <div class="alert alert-light mx-auto py-1 mb-3">26 November 2024</div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin left-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">
+                                                    <p class="small mb-2"><a href="#" class="style-none">Mr. Jack Mario</a></p>Adminuiux is amazing and we thank you. How can we buy?
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-secondary small time"><i class="bi bi-check-all text-primary"></i> 8:00 pm</p>
+                                    </div>
+                                </div>
+                                <div class="row no-margin right-chat first">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">
+                                                    <div class="position-relative mb-2 figure">
+                                                        <div class="position-absolute end-0 top-0">
+                                                            <button class="btn btn-square btn-theme m-2"><i class="bi bi-download"></i></button>
+                                                        </div>
+                                                        <img src="assets/img/modern-ai-image/bus-3.jpg" alt="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin right-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">Thank you too. You can buy it from preview page and click on buy now.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <p class="text-secondary small time"><i class="bi bi-check-all text-primary"></i> 8:00 pm</p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-center text-center">
+                                    <div class="col-auto text-center">
+                                        <div class="alert alert-light mx-auto py-1 mb-3">27 November 2024</div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin left-chat first">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">
+                                                    <p class="small mb-2"><a href="#" class="style-none">Ms. Jully CTO</a></p>
+                                                    <div class="position-relative figure"><video src="https://adminuiux.com/adminuiux/adminuiux.mp4" controls="" preload="none"></video></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin left-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">We also love this small presentation.</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <p class="text-secondary small time"><i class="bi bi-check-all text-primary"></i> 8:00 pm</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row no-margin right-chat">
+                                    <div class="col-12">
+                                        <div class="chat-block">
+                                            <div class="row gx-3">
+                                                <div class="col">
+                                                    <p>Ohh... Thats great. Adminuiux is HTML template can be used in various business domains like SAAS, CRM, Content Management, Manufacturing, inventory, IT, administration etc.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <p class="text-secondary small time"><i class="bi bi-check-all text-primary"></i> 8:00 pm</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div class="adminuiux-mobile-footer px-2 pt-2 pb-ios">
+                <div class="input-group mb-3">
+                    <button class="btn btn-square btn-link rounded-circle"><i class="bi bi-paperclip"></i></button>
+                    <input class="form-control border-0" placeholder="Type your message... " value="">
+                    <button class="btn btn-square btn-link rounded-circle" type="button"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+
+            <!-- chat modal -->
+            <div class="modal adminuiux-modal fade" id="callmodal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down">
+                    <div class="modal-content">
+                        <div class="modal-body p-0 position-relative"><video src="assets/img/adminux/adminux-video.mp4" autoplay="" loop="" class="top-0 start-0 w-100 h-100 z-index-0 d-block rounded"></video>
+                            <div class="position-absolute bottom-0 start-0 end-0 m-3 m-lg-4 rounded z-index-1">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto mb-3 position-relative">
+                                        <button class="btn btn-light btn-square rounded-circle position-absolute top-0 end-0 mt-1 mx-3"><i class="bi bi-mic h-auto w-auto"></i></button>
+                                        <video src="assets/img/adminux/adminux-video.mp4" autoplay="" loop="" class="top-0 start-0 width-100 h-auto z-index-0 d-block rounded border border-2 shadow"></video>
+                                    </div>
+                                    <div class="col-auto mb-3 position-relative">
+                                        <button class="btn btn-light btn-square rounded-circle position-absolute top-0 end-0 mt-1 mx-3"><i class="bi bi-mic h-auto w-auto"></i></button>
+                                        <video src="assets/img/adminux/adminux-video.mp4" autoplay="" loop="" class="top-0 start-0 width-100 h-auto z-index-0 d-block rounded border border-2 shadow"></video>
+                                    </div>
+                                </div>
+                                <div class="row gx-3 align-items-end justify-content-center mx-0 overlay-option p-3 rounded">
+                                    <div class="col-auto"><button type="button" class="btn btn-light avatar avatar-40 rounded-circle"><i class="bi bi-mic-mute h-auto w-auto fs-5"></i></button></div>
+                                    <div class="col-auto"><button type="button" class="btn btn-accent avatar avatar-40 rounded-circle"><i class="bi bi-camera-video h-auto w-auto fs-5"></i></button></div>
+                                    <div class="col-auto"><button type="button" class="btn btn-light avatar avatar-40 rounded-circle"><i class="bi bi-volume-up h-auto w-auto fs-5"></i></button></div>
+                                    <div class="col-auto"><button type="button" class="btn btn-danger avatar avatar-40 rounded-circle" data-bs-dismiss="modal"><i class="bi bi-telephone-x h-auto w-auto fs-5"></i></button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </body>
+
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/adminux-chat-message.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:10:03 GMT -->
+</html>

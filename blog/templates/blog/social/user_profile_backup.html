@@ -1,0 +1,1181 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} profili | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --amz-orange: #ff9900;
+        --amz-orange-hover: #ffad33;
+        --amz-dark: #131921;
+        --amz-light-dark: #232f3e;
+        --amz-text: #0f1111;
+        --amz-link: #007185;
+        --amz-link-hover: #c7511f;
+        --amz-border: #ddd;
+        --amz-bg: #eaeded;
+        --amz-card: #fff;
+        --amz-star: #de7921;
+        --amz-green: #067d62;
+    }
+
+    body.dark-mode {
+        --amz-text: #e0e0e0;
+        --amz-bg: #0f1111;
+        --amz-card: #1a1a1a;
+        --amz-border: #333;
+        --amz-link: #4fc3f7;
+        --amz-link-hover: #ff9900;
+    }
+
+    .amz-profile-wrapper {
+        min-height: 100vh;
+        background: var(--amz-bg);
+        padding-top: 0;
+    }
+
+    /* Profile Header Banner */
+    .amz-profile-banner {
+        background: linear-gradient(135deg, var(--amz-dark) 0%, var(--amz-light-dark) 100%);
+        padding: 30px 20px 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .amz-profile-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23ff9900" stroke-width="0.5" opacity="0.1"/></svg>') repeat;
+        background-size: 150px;
+    }
+
+    .amz-banner-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .amz-avatar-wrapper {
+        position: relative;
+    }
+
+    .amz-avatar-large {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 4px solid var(--amz-orange);
+        object-fit: cover;
+        background: var(--amz-light-dark);
+    }
+
+    .amz-avatar-large.default {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, var(--amz-orange), #c77600);
+    }
+
+    .amz-verified-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--amz-orange);
+        color: #000;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        border: 3px solid var(--amz-dark);
+    }
+
+    .amz-banner-info {
+        flex: 1;
+        color: #fff;
+    }
+
+    .amz-banner-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-prime-badge {
+        background: var(--amz-orange);
+        color: #000;
+        padding: 3px 10px;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .amz-banner-username {
+        opacity: 0.8;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .amz-banner-bio {
+        max-width: 500px;
+        line-height: 1.5;
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+
+    .amz-banner-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        opacity: 0.85;
+    }
+
+    .amz-banner-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .amz-banner-meta a {
+        color: var(--amz-orange);
+        text-decoration: none;
+    }
+
+    .amz-banner-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .amz-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        min-width: 160px;
+    }
+
+    .amz-btn-primary {
+        background: linear-gradient(180deg, #f7ca00 0%, #f0b800 50%, #e8a900 100%);
+        color: #0f1111;
+        border: 1px solid #c7a100;
+    }
+
+    .amz-btn-primary:hover {
+        background: linear-gradient(180deg, #f3d050 0%, #eec830 50%, #e0b620 100%);
+    }
+
+    .amz-btn-secondary {
+        background: linear-gradient(180deg, #fff 0%, #f7f8fa 100%);
+        color: #0f1111;
+        border: 1px solid #d5d9d9;
+    }
+
+    .amz-btn-secondary:hover {
+        background: linear-gradient(180deg, #f5f6f7 0%, #e8e9eb 100%);
+    }
+
+    .amz-btn-follow {
+        background: var(--amz-orange);
+        color: #000;
+    }
+
+    .amz-btn-follow:hover {
+        background: var(--amz-orange-hover);
+    }
+
+    .amz-btn-following {
+        background: var(--amz-green);
+        color: #fff;
+    }
+
+    /* Stats Bar */
+    .amz-stats-bar {
+        background: var(--amz-card);
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-stats-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .amz-stat-item {
+        flex: 1;
+        max-width: 180px;
+        text-align: center;
+        padding: 18px 20px;
+        border-right: 1px solid var(--amz-border);
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .amz-stat-item:last-child {
+        border-right: none;
+    }
+
+    .amz-stat-item:hover {
+        background: #f7f8fa;
+    }
+
+    body.dark-mode .amz-stat-item:hover {
+        background: #252525;
+    }
+
+    .amz-stat-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--amz-orange);
+    }
+
+    .amz-stat-label {
+        font-size: 0.85rem;
+        color: var(--amz-text);
+        opacity: 0.8;
+        margin-top: 3px;
+    }
+
+    /* Main Container */
+    .amz-profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 20px;
+    }
+
+    /* Sidebar */
+    .amz-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .amz-sidebar-card {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .amz-sidebar-header {
+        background: var(--amz-light-dark);
+        padding: 12px 15px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-sidebar-header i {
+        color: var(--amz-orange);
+    }
+
+    .amz-sidebar-body {
+        padding: 15px;
+    }
+
+    .amz-nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .amz-nav-list li {
+        margin: 0;
+    }
+
+    .amz-nav-list a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        color: var(--amz-text);
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .amz-nav-list a:hover {
+        background: #f7f8fa;
+        color: var(--amz-link-hover);
+    }
+
+    body.dark-mode .amz-nav-list a:hover {
+        background: #252525;
+    }
+
+    .amz-nav-list a i {
+        width: 20px;
+        color: var(--amz-link);
+    }
+
+    .amz-nav-list a.active {
+        background: #fef8e8;
+        color: var(--amz-link-hover);
+        border-left: 3px solid var(--amz-orange);
+    }
+
+    body.dark-mode .amz-nav-list a.active {
+        background: #2a2510;
+    }
+
+    /* Interest Tags */
+    .amz-interest-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .amz-tag {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #f0f2f2;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        color: var(--amz-text);
+        border: 1px solid var(--amz-border);
+    }
+
+    body.dark-mode .amz-tag {
+        background: #252525;
+    }
+
+    /* Main Content */
+    .amz-main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .amz-content-card {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .amz-card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--amz-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .amz-card-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--amz-text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-card-title i {
+        color: var(--amz-orange);
+    }
+
+    .amz-card-link {
+        color: var(--amz-link);
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .amz-card-link:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-card-body {
+        padding: 20px;
+    }
+
+    /* Quick Actions Grid */
+    .amz-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .amz-action-tile {
+        background: #f7f8fa;
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        color: var(--amz-text);
+        transition: all 0.2s;
+    }
+
+    .amz-action-tile:hover {
+        background: #fff;
+        border-color: var(--amz-orange);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    body.dark-mode .amz-action-tile {
+        background: #1a1a1a;
+    }
+
+    body.dark-mode .amz-action-tile:hover {
+        background: #252525;
+    }
+
+    .amz-action-tile i {
+        font-size: 2rem;
+        color: var(--amz-orange);
+        margin-bottom: 10px;
+    }
+
+    .amz-action-tile span {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Activity Timeline */
+    .amz-activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .amz-activity-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .amz-activity-cover {
+        width: 60px;
+        height: 80px;
+        border-radius: 4px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: var(--amz-light-dark);
+    }
+
+    .amz-activity-cover.no-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.5rem;
+    }
+
+    .amz-activity-info {
+        flex: 1;
+    }
+
+    .amz-activity-title {
+        font-weight: 600;
+        color: var(--amz-link);
+        text-decoration: none;
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .amz-activity-title:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-activity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .amz-activity-badge.reading {
+        background: #e6f3ff;
+        color: #0066c0;
+    }
+
+    .amz-activity-badge.completed {
+        background: #e6f7ee;
+        color: var(--amz-green);
+    }
+
+    .amz-activity-badge.want {
+        background: #fef3cd;
+        color: #8a6d3b;
+    }
+
+    body.dark-mode .amz-activity-badge.reading {
+        background: #0d2137;
+    }
+
+    body.dark-mode .amz-activity-badge.completed {
+        background: #0d2117;
+    }
+
+    body.dark-mode .amz-activity-badge.want {
+        background: #2d2510;
+    }
+
+    .amz-progress-bar {
+        height: 5px;
+        background: var(--amz-border);
+        border-radius: 3px;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+
+    .amz-progress-fill {
+        height: 100%;
+        background: var(--amz-orange);
+        border-radius: 3px;
+    }
+
+    /* Reviews */
+    .amz-review-item {
+        padding: 15px 0;
+        border-bottom: 1px solid var(--amz-border);
+    }
+
+    .amz-review-item:last-child {
+        border-bottom: none;
+    }
+
+    .amz-review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .amz-review-book {
+        font-weight: 600;
+        color: var(--amz-link);
+        margin-bottom: 5px;
+    }
+
+    .amz-stars {
+        color: var(--amz-star);
+        font-size: 0.9rem;
+    }
+
+    .amz-review-content {
+        color: var(--amz-text);
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    /* Followers Grid */
+    .amz-users-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+    }
+
+    .amz-user-card {
+        text-align: center;
+        text-decoration: none;
+        padding: 15px 10px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .amz-user-card:hover {
+        background: #f7f8fa;
+    }
+
+    body.dark-mode .amz-user-card:hover {
+        background: #252525;
+    }
+
+    .amz-user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        object-fit: cover;
+        border: 2px solid var(--amz-border);
+    }
+
+    .amz-user-avatar.default {
+        background: linear-gradient(135deg, var(--amz-orange), #c77600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .amz-user-name {
+        font-size: 0.85rem;
+        color: var(--amz-link);
+        font-weight: 500;
+    }
+
+    /* Mutual Books */
+    .amz-mutual-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .amz-mutual-book {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f7f8fa;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--amz-text);
+        transition: all 0.2s;
+    }
+
+    .amz-mutual-book:hover {
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    body.dark-mode .amz-mutual-book {
+        background: #1a1a1a;
+    }
+
+    body.dark-mode .amz-mutual-book:hover {
+        background: #252525;
+    }
+
+    .amz-mutual-book img {
+        width: 40px;
+        height: 55px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .amz-mutual-book span {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--amz-link);
+    }
+
+    /* Private Profile */
+    .amz-private {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .amz-private-icon {
+        width: 100px;
+        height: 100px;
+        background: #f0f2f2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .amz-private-icon i {
+        font-size: 3rem;
+        color: var(--amz-border);
+    }
+
+    .amz-private h3 {
+        color: var(--amz-text);
+        margin-bottom: 10px;
+    }
+
+    .amz-private p {
+        color: var(--amz-text);
+        opacity: 0.7;
+        margin-bottom: 20px;
+    }
+
+    /* Empty State */
+    .amz-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--amz-text);
+        opacity: 0.6;
+    }
+
+    .amz-empty i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: var(--amz-border);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .amz-profile-container {
+            grid-template-columns: 1fr;
+        }
+
+        .amz-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .amz-actions-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .amz-users-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .amz-profile-wrapper {
+            padding-top: 0;
+        }
+
+        .amz-banner-inner {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .amz-banner-meta {
+            justify-content: center;
+        }
+
+        .amz-banner-actions {
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .amz-sidebar {
+            grid-template-columns: 1fr;
+        }
+
+        .amz-stats-inner {
+            flex-wrap: wrap;
+        }
+
+        .amz-stat-item {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 10px;
+        }
+
+        .amz-actions-grid {
+            grid-template-columns: 1fr 1fr;
+            padding: 15px;
+        }
+
+        .amz-users-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+
+<div class="amz-profile-wrapper">
+    <!-- Profile Banner -->
+    <div class="amz-profile-banner">
+        <div class="amz-banner-inner">
+            <div class="amz-avatar-wrapper">
+                {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="{{ profile_user.username }}" class="amz-avatar-large">
+                {% else %}
+                <div class="amz-avatar-large default">
+                    {{ profile_user.username|first|upper }}
+                </div>
+                {% endif %}
+                {% if profile.is_verified %}
+                <span class="amz-verified-badge"><i class="fas fa-check"></i></span>
+                {% endif %}
+            </div>
+
+            <div class="amz-banner-info">
+                <h1 class="amz-banner-name">
+                    {{ profile_user.first_name|default:profile_user.username }} {{ profile_user.last_name }}
+                    {% if profile.books_read >= 50 %}
+                    <span class="amz-prime-badge"><i class="fas fa-crown"></i> Premium</span>
+                    {% endif %}
+                </h1>
+                <div class="amz-banner-username">@{{ profile_user.username }}</div>
+                
+                {% if profile.bio %}
+                <p class="amz-banner-bio">{{ profile.bio }}</p>
+                {% endif %}
+
+                <div class="amz-banner-meta">
+                    {% if profile.location %}
+                    <span><i class="fas fa-map-marker-alt"></i> {{ profile.location }}</span>
+                    {% endif %}
+                    {% if profile.website %}
+                    <span><i class="fas fa-link"></i> <a href="{{ profile.website }}" target="_blank">{{ profile.website|truncatechars:30 }}</a></span>
+                    {% endif %}
+                    <span><i class="fas fa-calendar-alt"></i> {{ profile_user.date_joined|date:"M Y" }} dan beri</span>
+                </div>
+            </div>
+
+            <div class="amz-banner-actions">
+                {% if is_owner %}
+                <a href="{% url 'edit_profile' %}" class="amz-btn amz-btn-primary">
+                    <i class="fas fa-edit"></i> Profilni tahrirlash
+                </a>
+                <a href="{% url 'boshlash' %}" class="amz-btn amz-btn-secondary">
+                    <i class="fas fa-home"></i> Bosh sahifa
+                </a>
+                {% else %}
+                    {% if user.is_authenticated %}
+                    <button class="amz-btn {% if is_following %}amz-btn-following{% else %}amz-btn-follow{% endif %}" id="followBtn" onclick="toggleFollow()">
+                        {% if is_following %}
+                        <i class="fas fa-user-check"></i> Kuzatyapsiz
+                        {% else %}
+                        <i class="fas fa-user-plus"></i> Kuzatish
+                        {% endif %}
+                    </button>
+                    {% if profile.allow_messages %}
+                    <a href="{% url 'telegram_chat_with_user' profile_user.username %}" class="amz-btn amz-btn-secondary">
+                        <i class="fas fa-comment-dots"></i> Xabar yuborish
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="amz-btn amz-btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Tizimga kirish
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="amz-stats-bar">
+        <div class="amz-stats-inner">
+            <div class="amz-stat-item">
+                <div class="amz-stat-value">{{ followers_count }}</div>
+                <div class="amz-stat-label">Kuzatuvchilar</div>
+            </div>
+            <div class="amz-stat-item">
+                <div class="amz-stat-value">{{ following_count }}</div>
+                <div class="amz-stat-label">Kuzatyapti</div>
+            </div>
+            
+            <div class="amz-stat-item">
+                <div class="amz-stat-value">{{ reviews|length|default:0 }}</div>
+                <div class="amz-stat-label">Sharhlar</div>
+            </div>
+        </div>
+    </div>
+
+    {% if can_view %}
+    <!-- Main Container -->
+    <div class="amz-profile-container">
+        <!-- Sidebar -->
+        <aside class="amz-sidebar">
+            <!-- Navigation -->
+            <div class="amz-sidebar-card">
+                <div class="amz-sidebar-header">
+                    <i class="fas fa-user-circle"></i> Profil menyu
+                </div>
+                <div class="amz-sidebar-body" style="padding: 10px;">
+                    <ul class="amz-nav-list">
+                        <li><a href="#overview" class="active"><i class="fas fa-home"></i> Umumiy ko'rinish</a></li>
+                        <li><a href="#reviews"><i class="fas fa-star"></i> Sharhlar</a></li>
+                        {% if is_owner %}
+                        <li><a href="{% url 'edit_profile' %}"><i class="fas fa-cog"></i> Sozlamalar</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interests -->
+            {% if profile.favorite_genres or profile.favorite_author %}
+            <div class="amz-sidebar-card">
+                <div class="amz-sidebar-header">
+                    <i class="fas fa-heart"></i> Qiziqishlar
+                </div>
+                <div class="amz-sidebar-body">
+                    {% if profile.favorite_genres %}
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 0.8rem; color: var(--amz-text); opacity: 0.7; margin-bottom: 8px;">Sevimli janrlar</div>
+                        <div class="amz-interest-tags">
+                            {% for genre in profile.favorite_genres|slice:":50" %}
+                            <span class="amz-tag">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if profile.favorite_author %}
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--amz-text); opacity: 0.7; margin-bottom: 8px;">Sevimli muallif</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-feather-alt" style="color: var(--amz-orange);"></i>
+                            <span style="font-weight: 500; color: var(--amz-text);">{{ profile.favorite_author }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Member Since -->
+            <div class="amz-sidebar-card">
+                <div class="amz-sidebar-header">
+                    <i class="fas fa-info-circle"></i> Ma'lumot
+                </div>
+                <div class="amz-sidebar-body">
+                    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--amz-text); opacity: 0.7;">A'zo bo'lgan sana</div>
+                            <div style="color: var(--amz-text); font-weight: 500;">{{ profile_user.date_joined|date:"d M, Y" }}</div>
+                        </div>
+                        {% if profile_user.last_login %}
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--amz-text); opacity: 0.7;">Oxirgi faollik</div>
+                            <div style="color: var(--amz-text); font-weight: 500;">{{ profile_user.last_login|timesince }} oldin</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="amz-main-content">
+            <!-- Quick Actions (Owner Only) -->
+            {% if is_owner %}
+            <div class="amz-content-card" id="overview">
+                <div class="amz-actions-grid">
+                    <a href="{% url 'all_books' %}" class="amz-action-tile">
+                        <i class="fas fa-book"></i>
+                        <span>Barcha kitoblar</span>
+                    </a>
+                    <a href="{% url 'all_books' %}?tab=favorites" class="amz-action-tile">
+                        <i class="fas fa-heart"></i>
+                        <span>Sevimlilar</span>
+                    </a>
+                    <a href="{% url 'telegram_chat' %}" class="amz-action-tile">
+                        <i class="fas fa-comments"></i>
+                        <span>Xabarlar</span>
+                    </a>
+                    <a href="{% url 'edit_profile' %}" class="amz-action-tile">
+                        <i class="fas fa-cog"></i>
+                        <span>Sozlamalar</span>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Reading Activity -->
+            <div class="amz-content-card" id="activity">
+                
+            </div>
+
+            <!-- Reviews -->
+            <div class="amz-content-card" id="reviews">
+                <div class="amz-card-header">
+                    <h2 class="amz-card-title"><i class="fas fa-star"></i> Sharhlar</h2>
+                </div>
+                <div class="amz-card-body">
+                    {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="amz-review-item">
+                        <div class="amz-review-header">
+                            <div>
+                                <div class="amz-review-book">{{ review.book.title }}</div>
+                                <div class="amz-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                        <i class="fas fa-star"></i>
+                                        {% else %}
+                                        <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span style="color: var(--amz-text); margin-left: 10px; font-size: 0.85rem;">{{ review.rating }}/5</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="amz-review-content">{{ review.content|truncatechars:200 }}</p>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="amz-empty">
+                        <i class="fas fa-comment-alt"></i>
+                        <p>Hali sharhlar yo'q</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Mutual Books -->
+            {% if mutual_books %}
+            <div class="amz-content-card">
+                <div class="amz-card-header">
+                    <h2 class="amz-card-title"><i class="fas fa-handshake"></i> O'xshash kitoblar</h2>
+                </div>
+                <div class="amz-card-body">
+                    <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--amz-text); opacity: 0.7;">
+                        Siz ham, {{ profile_user.first_name|default:profile_user.username }} ham o'qigan
+                    </p>
+                    <div class="amz-mutual-grid">
+                        {% for book in mutual_books %}
+                        <a href="{% url 'book_detail' book.id %}" class="amz-mutual-book">
+                            {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                            {% endif %}
+                            <span>{{ book.title|truncatechars:25 }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Followers -->
+            {% if followers %}
+            <div class="amz-content-card" id="followers">
+                <div class="amz-card-header">
+                    <h2 class="amz-card-title"><i class="fas fa-users"></i> Kuzatuvchilar</h2>
+                    <span style="color: var(--amz-text); opacity: 0.7; font-size: 0.9rem;">{{ followers_count }} ta</span>
+                </div>
+                <div class="amz-card-body">
+                    <div class="amz-users-grid">
+                        {% for follow in followers %}
+                        <a href="{% url 'user_profile' follow.follower.username %}" class="amz-user-card">
+                            {% if follow.follower.profile.avatar %}
+                            <img src="{{ follow.follower.profile.avatar.url }}" alt="{{ follow.follower.username }}" class="amz-user-avatar">
+                            {% else %}
+                            <div class="amz-user-avatar default">{{ follow.follower.username|first|upper }}</div>
+                            {% endif %}
+                            <div class="amz-user-name">{{ follow.follower.username|truncatechars:12 }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Following -->
+            {% if following_list %}
+            <div class="amz-content-card">
+                <div class="amz-card-header">
+                    <h2 class="amz-card-title"><i class="fas fa-user-friends"></i> Kuzatyapti</h2>
+                    <span style="color: var(--amz-text); opacity: 0.7; font-size: 0.9rem;">{{ following_count }} ta</span>
+                </div>
+                <div class="amz-card-body">
+                    <div class="amz-users-grid">
+                        {% for follow in following_list %}
+                        <a href="{% url 'user_profile' follow.following.username %}" class="amz-user-card">
+                            {% if follow.following.profile.avatar %}
+                            <img src="{{ follow.following.profile.avatar.url }}" alt="{{ follow.following.username }}" class="amz-user-avatar">
+                            {% else %}
+                            <div class="amz-user-avatar default">{{ follow.following.username|first|upper }}</div>
+                            {% endif %}
+                            <div class="amz-user-name">{{ follow.following.username|truncatechars:12 }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    {% else %}
+    <!-- Private Profile -->
+    <div class="amz-profile-container">
+        <div class="amz-content-card" style="grid-column: 1 / -1;">
+            <div class="amz-private">
+                <div class="amz-private-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Bu profil shaxsiy</h3>
+                <p>Foydalanuvchi profilini ko'rish uchun kuzatishingiz kerak</p>
+                {% if user.is_authenticated and not is_following %}
+                <button class="amz-btn amz-btn-follow" onclick="toggleFollow()">
+                    <i class="fas fa-user-plus"></i> Kuzatish
+                </button>
+                {% elif not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="amz-btn amz-btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Tizimga kirish
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleFollow() {
+    fetch(`/users/{{ profile_user.username }}/follow/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.getElementById('followBtn');
+            if (data.is_following) {
+                btn.innerHTML = '<i class="fas fa-user-check"></i> Kuzatyapsiz';
+                btn.className = 'amz-btn amz-btn-following';
+            } else {
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Kuzatish';
+                btn.className = 'amz-btn amz-btn-follow';
+            }
+            setTimeout(() => location.reload(), 500);
+        }
+    });
+}
+
+// Smooth scroll for sidebar navigation
+document.querySelectorAll('.amz-nav-list a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+</script>
+{% endblock %}

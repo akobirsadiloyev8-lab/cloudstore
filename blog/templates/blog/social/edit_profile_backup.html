@@ -1,0 +1,797 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Profilni tahrirlash | Cloudstore{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --amz-orange: #ff9900;
+        --amz-orange-hover: #ffad33;
+        --amz-dark: #131921;
+        --amz-light-dark: #232f3e;
+        --amz-text: #0f1111;
+        --amz-link: #007185;
+        --amz-link-hover: #c7511f;
+        --amz-border: #ddd;
+        --amz-bg: #eaeded;
+        --amz-card: #fff;
+        --amz-star: #de7921;
+        --amz-green: #067d62;
+        --amz-red: #cc0c39;
+    }
+
+    body.dark-mode {
+        --amz-text: #e0e0e0;
+        --amz-bg: #0f1111;
+        --amz-card: #1a1a1a;
+        --amz-border: #333;
+        --amz-link: #4fc3f7;
+        --amz-link-hover: #ff9900;
+    }
+
+    .amz-edit-wrapper {
+        min-height: 100vh;
+        background: var(--amz-bg);
+        padding-top: 20px;
+    }
+
+    /* Sidebar Breadcrumb */
+    .amz-sidebar-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+    }
+
+    .amz-sidebar-breadcrumb a {
+        color: var(--amz-link);
+        text-decoration: none;
+    }
+
+    .amz-sidebar-breadcrumb a:hover {
+        color: var(--amz-link-hover);
+        text-decoration: underline;
+    }
+
+    .amz-sidebar-breadcrumb span {
+        color: var(--amz-text);
+    }
+
+    /* Page Title Card */
+    .amz-page-title-card {
+        background: var(--amz-light-dark);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .amz-page-title {
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .amz-page-title i {
+        color: var(--amz-orange);
+    }
+
+    .amz-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .amz-btn-primary {
+        background: linear-gradient(180deg, #f7ca00 0%, #f0b800 50%, #e8a900 100%);
+        color: #0f1111;
+        border: 1px solid #c7a100;
+    }
+
+    .amz-btn-primary:hover {
+        background: linear-gradient(180deg, #f3d050 0%, #eec830 50%, #e0b620 100%);
+    }
+
+    .amz-btn-secondary {
+        background: linear-gradient(180deg, #fff 0%, #f7f8fa 100%);
+        color: #0f1111;
+        border: 1px solid #d5d9d9;
+    }
+
+    .amz-btn-secondary:hover {
+        background: linear-gradient(180deg, #f5f6f7 0%, #e8e9eb 100%);
+    }
+
+    body.dark-mode .amz-btn-secondary {
+        background: #333;
+        color: #fff;
+        border-color: #555;
+    }
+
+    /* Main Container */
+    .amz-edit-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 20px;
+    }
+
+    /* Sidebar Navigation */
+    .amz-edit-sidebar {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    .amz-sidebar-card {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .amz-sidebar-header {
+        background: var(--amz-light-dark);
+        padding: 12px 15px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-sidebar-header i {
+        color: var(--amz-orange);
+    }
+
+    .amz-nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .amz-nav-list li {
+        margin: 0;
+    }
+
+    .amz-nav-list a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        color: var(--amz-text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border-left: 3px solid transparent;
+    }
+
+    .amz-nav-list a:hover {
+        background: #f7f8fa;
+        color: var(--amz-link-hover);
+    }
+
+    body.dark-mode .amz-nav-list a:hover {
+        background: #252525;
+    }
+
+    .amz-nav-list a i {
+        width: 18px;
+        color: var(--amz-link);
+    }
+
+    .amz-nav-list a.active {
+        background: #fef8e8;
+        color: var(--amz-link-hover);
+        border-left-color: var(--amz-orange);
+        font-weight: 600;
+    }
+
+    body.dark-mode .amz-nav-list a.active {
+        background: #2a2510;
+    }
+
+    /* Main Form */
+    .amz-edit-main {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .amz-form-card {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .amz-card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--amz-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--amz-text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amz-card-title i {
+        color: var(--amz-orange);
+    }
+
+    .amz-card-body {
+        padding: 20px;
+    }
+
+    /* Avatar Section */
+    .amz-avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        padding: 20px;
+        background: #f7f8fa;
+        border-radius: 8px;
+    }
+
+    body.dark-mode .amz-avatar-section {
+        background: #1a1a1a;
+    }
+
+    .amz-current-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--amz-orange);
+        flex-shrink: 0;
+    }
+
+    .amz-current-avatar.default {
+        background: linear-gradient(135deg, var(--amz-orange), #c77600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .amz-avatar-info h4 {
+        margin: 0 0 8px;
+        color: var(--amz-text);
+    }
+
+    .amz-avatar-info p {
+        color: var(--amz-text);
+        opacity: 0.7;
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+
+    .amz-file-input {
+        display: none;
+    }
+
+    .amz-file-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--amz-text);
+        transition: all 0.2s;
+    }
+
+    .amz-file-label:hover {
+        border-color: var(--amz-orange);
+        background: #fff;
+    }
+
+    .amz-file-label i {
+        color: var(--amz-orange);
+    }
+
+    /* Form Groups */
+    .amz-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .amz-form-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .amz-form-group {
+        margin-bottom: 20px;
+    }
+
+    .amz-form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .amz-form-group label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--amz-text);
+        margin-bottom: 8px;
+    }
+
+    .amz-form-group label .required {
+        color: var(--amz-red);
+    }
+
+    .amz-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--amz-border);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        background: var(--amz-card);
+        color: var(--amz-text);
+        transition: all 0.2s;
+    }
+
+    .amz-input:focus {
+        outline: none;
+        border-color: var(--amz-orange);
+        box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.15);
+    }
+
+    .amz-input::placeholder {
+        color: #888;
+    }
+
+    textarea.amz-input {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .amz-helper {
+        font-size: 0.8rem;
+        color: var(--amz-text);
+        opacity: 0.6;
+        margin-top: 6px;
+    }
+
+    /* Checkbox Items */
+    .amz-checkbox-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .amz-checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px;
+        background: #f7f8fa;
+        border-radius: 8px;
+        border: 1px solid var(--amz-border);
+        transition: all 0.2s;
+    }
+
+    body.dark-mode .amz-checkbox-item {
+        background: #1a1a1a;
+    }
+
+    .amz-checkbox-item:hover {
+        border-color: var(--amz-orange);
+    }
+
+    .amz-checkbox-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--amz-orange);
+        cursor: pointer;
+        margin-top: 2px;
+    }
+
+    .amz-checkbox-content {
+        flex: 1;
+    }
+
+    .amz-checkbox-content .title {
+        font-weight: 600;
+        color: var(--amz-text);
+        margin-bottom: 3px;
+    }
+
+    .amz-checkbox-content .desc {
+        font-size: 0.85rem;
+        color: var(--amz-text);
+        opacity: 0.7;
+    }
+
+    .amz-checkbox-icon {
+        width: 35px;
+        height: 35px;
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--amz-orange);
+    }
+
+    /* Submit Section */
+    .amz-submit-section {
+        background: var(--amz-card);
+        border: 1px solid var(--amz-border);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .amz-submit-info {
+        font-size: 0.85rem;
+        color: var(--amz-text);
+        opacity: 0.7;
+    }
+
+    .amz-submit-btns {
+        display: flex;
+        gap: 10px;
+    }
+
+    .amz-btn-save {
+        background: var(--amz-orange);
+        color: #000;
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+
+    .amz-btn-save:hover {
+        background: var(--amz-orange-hover);
+    }
+
+    /* Success/Error Messages */
+    .amz-alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .amz-alert-success {
+        background: #e6f7ee;
+        border: 1px solid var(--amz-green);
+        color: var(--amz-green);
+    }
+
+    .amz-alert-error {
+        background: #fce8ec;
+        border: 1px solid var(--amz-red);
+        color: var(--amz-red);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .amz-edit-wrapper {
+            padding-top: 15px;
+        }
+
+        .amz-edit-container {
+            grid-template-columns: 1fr;
+            padding: 15px;
+        }
+
+        .amz-edit-sidebar {
+            position: static;
+        }
+
+        .amz-sidebar-card {
+            display: none;
+        }
+
+        .amz-form-row {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .amz-avatar-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .amz-sidebar-breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .amz-submit-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<div class="amz-edit-wrapper">
+    <!-- Main Container -->
+    <div class="amz-edit-container">
+        <!-- Sidebar Navigation -->
+        <aside class="amz-edit-sidebar">
+            <!-- Breadcrumb in sidebar -->
+            <div class="amz-sidebar-breadcrumb">
+                <a href="{% url 'boshlash' %}"><i class="fas fa-home"></i></a>
+                <span>›</span>
+                <a href="{% url 'user_profile' user.username %}">Profilim</a>
+                <span>›</span>
+                <span>Tahrirlash</span>
+            </div>
+            
+            <div class="amz-sidebar-card">
+                <div class="amz-sidebar-header">
+                    <i class="fas fa-sliders-h"></i> Sozlamalar
+                </div>
+                <ul class="amz-nav-list">
+                    <li><a href="#avatar-section" class="active"><i class="fas fa-image"></i> Profil rasmi</a></li>
+                    <li><a href="#basic-section"><i class="fas fa-user"></i> Asosiy ma'lumotlar</a></li>
+                
+                    <li><a href="#privacy-section"><i class="fas fa-lock"></i> Maxfiylik</a></li>
+                </ul>
+            </div>
+            
+            <!-- Profile View Button -->
+            <a href="{% url 'user_profile' user.username %}" class="amz-btn amz-btn-secondary" style="width: 100%; margin-top: 15px;">
+                <i class="fas fa-eye"></i> Profilni ko'rish
+            </a>
+        </aside>
+
+        <!-- Main Form -->
+        <main class="amz-edit-main">
+            <!-- Page Title -->
+            <div class="amz-page-title-card">
+                <h1 class="amz-page-title">
+                    <i class="fas fa-user-cog"></i> Profil sozlamalari
+                </h1>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if messages %}
+                {% for message in messages %}
+                <div class="amz-alert {% if message.tags == 'success' %}amz-alert-success{% else %}amz-alert-error{% endif %}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Avatar Section -->
+                <div class="amz-form-card" id="avatar-section">
+                    <div class="amz-card-header">
+                        <h2 class="amz-card-title"><i class="fas fa-camera"></i> Profil rasmi</h2>
+                    </div>
+                    <div class="amz-card-body">
+                        <div class="amz-avatar-section">
+                            {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Avatar" class="amz-current-avatar" id="avatar-preview">
+                            {% else %}
+                            <div class="amz-current-avatar default" id="avatar-preview">{{ user.username|first|upper }}</div>
+                            {% endif %}
+                            <div class="amz-avatar-info">
+                                <h4>Profil rasmingizni yangilang</h4>
+                                <p>Tavsiya etilgan o'lcham: 400x400 px<br>Maksimum fayl hajmi: 2MB<br>Ruxsat etilgan formatlar: JPG, PNG, GIF</p>
+                                <input type="file" name="avatar" accept="image/*" id="avatar-input" class="amz-file-input" onchange="previewAvatar(this)">
+                                <label for="avatar-input" class="amz-file-label">
+                                    <i class="fas fa-upload"></i> Rasm tanlash
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info Section -->
+                <div class="amz-form-card" id="basic-section">
+                    <div class="amz-card-header">
+                        <h2 class="amz-card-title"><i class="fas fa-id-card"></i> Asosiy ma'lumotlar</h2>
+                    </div>
+                    <div class="amz-card-body">
+                        <div class="amz-form-row">
+                            <div class="amz-form-group">
+                                <label for="first_name">Ism</label>
+                                <input type="text" id="first_name" name="first_name" class="amz-input" value="{{ user.first_name }}" placeholder="Ismingiz" maxlength="30">
+                            </div>
+                            <div class="amz-form-group">
+                                <label for="last_name">Familiya</label>
+                                <input type="text" id="last_name" name="last_name" class="amz-input" value="{{ user.last_name }}" placeholder="Familiyangiz" maxlength="30">
+                            </div>
+                        </div>
+
+                        <div class="amz-form-group">
+                            <label for="bio">Bio (o'zingiz haqingizda)</label>
+                            <textarea id="bio" name="bio" class="amz-input" placeholder="O'zingiz haqingizda qisqacha yozing..." maxlength="500">{{ profile.bio }}</textarea>
+                            <p class="amz-helper">Maksimum 500 ta belgi. Hozir: <span id="bio-count">{{ profile.bio|length|default:0 }}</span>/500</p>
+                        </div>
+
+                        <div class="amz-form-row">
+                            <div class="amz-form-group">
+                                <label for="location"><i class="fas fa-map-marker-alt" style="color: var(--amz-orange);"></i> Joylashuv</label>
+                                <input type="text" id="location" name="location" class="amz-input" value="{{ profile.location }}" placeholder="Masalan: Toshkent, O'zbekiston">
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reading Preferences -->
+                
+
+                <!-- Privacy Settings -->
+                <div class="amz-form-card" id="privacy-section">
+                    <div class="amz-card-header">
+                        <h2 class="amz-card-title"><i class="fas fa-shield-alt"></i> Maxfiylik sozlamalari</h2>
+                    </div>
+                    <div class="amz-card-body">
+                        <div class="amz-checkbox-list">
+                            <div class="amz-checkbox-item">
+                                <input type="checkbox" id="is_public" name="is_public" {% if profile.is_public %}checked{% endif %}>
+                                <div class="amz-checkbox-content">
+                                    <div class="title">Ochiq profil</div>
+                                    <div class="desc">Profilingiz barcha foydalanuvchilarga ko'rinadi. O'chirilsa, faqat kuzatuvchilar ko'ra oladi.</div>
+                                </div>
+                                <div class="amz-checkbox-icon"><i class="fas fa-globe"></i></div>
+                            </div>
+
+                            <div class="amz-checkbox-item">
+                                <input type="checkbox" id="show_reading_activity" name="show_reading_activity" {% if profile.show_reading_activity %}checked{% endif %}>
+                                <div class="amz-checkbox-content">
+                                    <div class="title">O'qish faoliyatini ko'rsatish</div>
+                                    <div class="desc">Qaysi kitoblarni o'qiyotganingiz va progress boshqalarga ko'rinadi.</div>
+                                </div>
+                                <div class="amz-checkbox-icon"><i class="fas fa-book-open"></i></div>
+                            </div>
+
+                            <div class="amz-checkbox-item">
+                                <input type="checkbox" id="allow_messages" name="allow_messages" {% if profile.allow_messages %}checked{% endif %}>
+                                <div class="amz-checkbox-content">
+                                    <div class="title">Xabarlarga ruxsat</div>
+                                    <div class="desc">Boshqa foydalanuvchilar sizga shaxsiy xabar yuborishi mumkin.</div>
+                                </div>
+                                <div class="amz-checkbox-icon"><i class="fas fa-envelope"></i></div>
+                            </div>
+
+                            <div class="amz-checkbox-item">
+                                <input type="checkbox" id="show_online_status" name="show_online_status" {% if profile.show_online_status %}checked{% endif %}>
+                                <div class="amz-checkbox-content">
+                                    <div class="title">Online statusni ko'rsatish</div>
+                                    <div class="desc">Boshqalarga saytda online ekaningiz ko'rinadi.</div>
+                                </div>
+                                <div class="amz-checkbox-icon"><i class="fas fa-circle" style="color: var(--amz-green);"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="amz-submit-section">
+                    <div class="amz-submit-info">
+                        <i class="fas fa-info-circle" style="color: var(--amz-orange);"></i>
+                        O'zgarishlar saqlanganidan so'ng darhol kuchga kiradi
+                    </div>
+                    <div class="amz-submit-btns">
+                        <a href="{% url 'user_profile' user.username %}" class="amz-btn amz-btn-secondary">
+                            <i class="fas fa-times"></i> Bekor qilish
+                        </a>
+                        <button type="submit" class="amz-btn amz-btn-save">
+                            <i class="fas fa-check"></i> O'zgarishlarni saqlash
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+<script>
+// Preview avatar before upload
+function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatar-preview');
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'amz-current-avatar';
+                img.id = 'avatar-preview';
+                preview.parentNode.replaceChild(img, preview);
+            }
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Bio character counter
+const bioInput = document.getElementById('bio');
+const bioCount = document.getElementById('bio-count');
+if (bioInput && bioCount) {
+    bioInput.addEventListener('input', function() {
+        bioCount.textContent = this.value.length;
+    });
+}
+
+// Smooth scroll for sidebar navigation
+document.querySelectorAll('.amz-nav-list a').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Update active state
+            document.querySelectorAll('.amz-nav-list a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+        }
+    });
+});
+
+// Update active nav on scroll
+window.addEventListener('scroll', function() {
+    const sections = ['avatar-section', 'basic-section', 'reading-section', 'privacy-section'];
+    const navLinks = document.querySelectorAll('.amz-nav-list a');
+    
+    let current = '';
+    sections.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 150) {
+                current = id;
+            }
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

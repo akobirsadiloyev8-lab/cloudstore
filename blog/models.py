@@ -140,7 +140,7 @@ class Feedback(models.Model):
 
 class Author(models.Model):
     """Adib modeli"""
-    name = models.CharField(max_length=200, verbose_name="Adib ismi")
+    name = models.CharField(max_length=200, verbose_name="Adib ismi", db_index=True)
     bio = models.TextField(blank=True, verbose_name="Tarjimai hol")
     birth_year = models.IntegerField(null=True, blank=True, verbose_name="Tug'ilgan yili")
     death_year = models.IntegerField(null=True, blank=True, verbose_name="Vafot etgan yili")
@@ -151,6 +151,9 @@ class Author(models.Model):
         verbose_name = "Adib"
         verbose_name_plural = "Adiblar"
         ordering = ['name']
+        indexes = [
+            models.Index(fields=['name']),
+        ]
 
     def __str__(self):
         return self.name
@@ -159,16 +162,16 @@ class Author(models.Model):
 
 class Book(models.Model):
     """Kitob modeli"""
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books', verbose_name="Adib")
-    title = models.CharField(max_length=300, verbose_name="Kitob nomi")
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books', verbose_name="Adib", db_index=True)
+    title = models.CharField(max_length=300, verbose_name="Kitob nomi", db_index=True)
     description = models.TextField(blank=True, verbose_name="Tavsif")
     year_written = models.IntegerField(null=True, blank=True, verbose_name="Yozilgan yili")
     file = models.FileField(upload_to='books/', blank=True, null=True, verbose_name="Fayl (PDF/DOCX)")
     content = models.TextField(blank=True, verbose_name="Kitob matni", help_text="Fayldan avtomatik o'qilgan to'liq matn")
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True, verbose_name="Muqova rasmi")
     categories = models.ManyToManyField(Category, blank=True, related_name='books', verbose_name="Kategoriyalar")
-    views_count = models.PositiveIntegerField(default=0, verbose_name="Ko'rishlar soni")
-    created_at = models.DateTimeField(auto_now_add=True)
+    views_count = models.PositiveIntegerField(default=0, verbose_name="Ko'rishlar soni", db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     
     @property
     def average_rating(self):
@@ -337,7 +340,15 @@ class Book(models.Model):
     class Meta:
         verbose_name = "Kitob"
         verbose_name_plural = "Kitoblar"
-        ordering = ['title']
+        ordering = ['-created_at']  # Default: yangi kitoblar birinchi
+        indexes = [
+            # Tez-tez qidirilayotgan fieldlar uchun indexlar
+            models.Index(fields=['title']),
+            models.Index(fields=['author', '-created_at']),
+            models.Index(fields=['-views_count']),
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['author', '-views_count']),
+        ]
 
     def __str__(self):
         return f"{self.title} - {self.author.name}"
@@ -646,3 +657,102 @@ class AIAnalysisImage(models.Model):
                     print(f"Fayl o'chirishda xato: {e}")
             item.delete()
         return count
+
+class FoodIntake(models.Model):
+    """Kunlik ovqatlanish ro'yxati"""
+    MEAL_TYPES = [
+        ('breakfast', 'Nonushta'),
+        ('lunch', 'Tushlik'),
+        ('dinner', 'Kechki ovqat'),
+        ('snack', 'Gazak'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Foydalanuvchi", related_name="food_intakes")
+    name = models.CharField(max_length=255, verbose_name="Mahsulot nomi")
+    brand = models.CharField(max_length=255, blank=True, null=True, verbose_name="Brend")
+    barcode = models.CharField(max_length=50, blank=True, null=True, verbose_name="Shtrix kod")
+    image_url = models.URLField(blank=True, null=True, verbose_name="Rasm URL")
+    
+    # Ozuqaviy qiymatlar (iste'mol qilingan miqdor uchun)
+    mass = models.FloatField(default=100, verbose_name="Massa (gramm)")
+    calories = models.FloatField(default=0, verbose_name="Kaloriya")
+    proteins = models.FloatField(default=0, verbose_name="Oqsil (g)")
+    carbohydrates = models.FloatField(default=0, verbose_name="Uglevod (g)")
+    fat = models.FloatField(default=0, verbose_name="Yog' (g)")
+    sugars = models.FloatField(default=0, verbose_name="Shakar (g)")
+    salt = models.FloatField(default=0, verbose_name="Tuz (g)")
+    fiber = models.FloatField(default=0, verbose_name="Kletchatka (g)")
+    
+    # 100g uchun (qayta hisoblash uchun saqlab qo'yamiz)
+    calories_per_100g = models.FloatField(default=0, verbose_name="Kaloriya/100g")
+    proteins_per_100g = models.FloatField(default=0, verbose_name="Oqsil/100g")
+    carbs_per_100g = models.FloatField(default=0, verbose_name="Uglevod/100g")
+    fat_per_100g = models.FloatField(default=0, verbose_name="Yog'/100g")
+    
+    meal_type = models.CharField(max_length=20, choices=MEAL_TYPES, default='snack', verbose_name="Ovqat turi")
+    date = models.DateField(verbose_name="Sana")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Qo'shilgan vaqt")
+    notes = models.TextField(blank=True, null=True, verbose_name="Izoh")
+    
+    # Qo'shimcha ma'lumot (AI tahlili, manba va h.k.)
+    source = models.CharField(max_length=50, blank=True, null=True, verbose_name="Manba")  # barcode, ai_analysis, manual
+    extra_data = models.JSONField(blank=True, null=True, verbose_name="Qo'shimcha ma'lumot")
+    
+    class Meta:
+        verbose_name = "Ovqatlanish yozuvi"
+        verbose_name_plural = "Ovqatlanish yozuvlari"
+        ordering = ['-date', '-created_at']
+        indexes = [
+            models.Index(fields=['user', 'date']),
+            models.Index(fields=['date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.name} ({self.date})"
+    
+    def save(self, *args, **kwargs):
+        # Agar sana berilmagan bo'lsa, bugungi kun
+        if not self.date:
+            self.date = timezone.now().date()
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def get_daily_totals(cls, user, date=None):
+        """Kunlik jami ozuqaviy qiymatlarni hisoblash"""
+        if date is None:
+            date = timezone.now().date()
+        
+        from django.db.models import Sum
+        
+        totals = cls.objects.filter(user=user, date=date).aggregate(
+            total_calories=Sum('calories'),
+            total_proteins=Sum('proteins'),
+            total_carbs=Sum('carbohydrates'),
+            total_fat=Sum('fat'),
+            total_sugars=Sum('sugars'),
+            total_salt=Sum('salt'),
+            total_fiber=Sum('fiber'),
+        )
+        
+        # None larni 0 ga almashtirish
+        return {k: v or 0 for k, v in totals.items()}
+    
+    @classmethod
+    def get_weekly_stats(cls, user):
+        """Haftalik statistika"""
+        from django.db.models import Sum
+        from datetime import timedelta
+        
+        today = timezone.now().date()
+        week_ago = today - timedelta(days=7)
+        
+        return cls.objects.filter(
+            user=user,
+            date__gte=week_ago,
+            date__lte=today
+        ).values('date').annotate(
+            calories=Sum('calories'),
+            proteins=Sum('proteins'),
+            carbs=Sum('carbohydrates'),
+            fat=Sum('fat')
+        ).order_by('date')

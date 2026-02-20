@@ -653,16 +653,35 @@ def convert_to_format(request):
 
 def adabiyotlar(request):
     from .models import Author
-    authors = Author.objects.all()
+    from django.core.cache import cache
+    
+    # Cache'dan olish - 15 daqiqa
+    cache_key = 'authors_list'
+    authors = cache.get(cache_key)
+    
+    if authors is None:
+        authors = Author.objects.prefetch_related('books').all()
+        cache.set(cache_key, authors, 60 * 15)  # 15 daqiqa cache
+    
     return render(request, 'blog/adabiyotlar.html', {'authors': authors})
 
 def all_books(request):
     """Barcha kitoblarni ko'rsatish - tab tizimi bilan birlashtirilgan"""
     from .models import Book, Category, Author, Favorite, SearchQuery
     from django.db.models import Avg
+    from django.core.paginator import Paginator
+    from django.core.cache import cache
     
-    categories = Category.objects.all()
-    authors = Author.objects.all()
+    # Categories va authors cache'dan olish
+    categories = cache.get('categories_list')
+    if categories is None:
+        categories = Category.objects.all()
+        cache.set('categories_list', categories, 60 * 30)  # 30 daqiqa
+    
+    authors = cache.get('authors_list_simple')
+    if authors is None:
+        authors = Author.objects.only('id', 'name').all()
+        cache.set('authors_list_simple', authors, 60 * 30)
     
     # Tab tizimi
     current_tab = request.GET.get('tab', 'all')
@@ -686,6 +705,7 @@ def all_books(request):
         # Barcha kitoblar
         books = Book.objects.all().order_by('-created_at')
     
+    # OPTIMIZATION: select_related va prefetch_related
     books = books.select_related('author').prefetch_related('categories')
     
     # Filter by category
@@ -706,13 +726,19 @@ def all_books(request):
             models.Q(author__name__icontains=search)
         )
     
+    # PAGINATION - Har sahifada 24 ta kitob
+    paginator = Paginator(books, 24)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
     # Top searches for top tab
     top_searches = []
     if current_tab == 'top':
         top_searches = SearchQuery.objects.all()[:10]
     
     return render(request, 'blog/all_books.html', {
-        'books': books,
+        'page_obj': page_obj,  # Pagination object
+        'books': page_obj,  # Backward compatibility
         'categories': categories,
         'authors': authors,
         'current_category': category_slug,
@@ -3362,13 +3388,26 @@ def book_detail(request, book_id):
     """Kitob haqida batafsil sahifa"""
     from .models import Book, BookRating, Favorite, ReadingProgress, SearchQuery
     from django.shortcuts import get_object_or_404
+    from django.core.cache import cache
     import os
     
-    book = get_object_or_404(Book, id=book_id)
-    book.views_count += 1
-    book.save(update_fields=['views_count'])
+    # OPTIMIZATION: select_related bilan author'ni olish
+    book = get_object_or_404(
+        Book.objects.select_related('author').prefetch_related('categories'),
+        id=book_id
+    )
     
-    ratings = book.ratings.all()[:10]
+    # Views count'ni update qilish (bulk update uchun optimallashtirilgan)
+    Book.objects.filter(id=book_id).update(views_count=models.F('views_count') + 1)
+    book.refresh_from_db(fields=['views_count'])
+    
+    # OPTIMIZATION: ratings'ni cache qilish
+    cache_key = f'book_ratings_{book_id}'
+    ratings = cache.get(cache_key)
+    if ratings is None:
+        ratings = book.ratings.select_related('user')[:10]
+        cache.set(cache_key, ratings, 60 * 5)  # 5 daqiqa
+    
     is_favorite = False
     reading_progress = None
     
@@ -3393,19 +3432,37 @@ def book_detail(request, book_id):
         is_favorite = Favorite.objects.filter(user=request.user, book=book).exists()
         reading_progress = ReadingProgress.objects.filter(user=request.user, book=book).first()
     
-    # O'xshash kitoblar
-    similar_books = Book.objects.filter(
-        author=book.author
-    ).exclude(id=book.id)[:4]
+    # OPTIMIZATION: O'xshash kitoblarni cache qilish va select_related
+    cache_key_similar = f'similar_books_{book_id}'
+    similar_books = cache.get(cache_key_similar)
     
-    # Kategoriyalar bo'yicha o'xshash kitoblar (ManyToMany)
-    book_categories = book.categories.all()
-    if book_categories.exists():
-        category_books = Book.objects.filter(
-            categories__in=book_categories
-        ).exclude(id=book.id).distinct()[:4]
-        similar_books = list(similar_books) + list(category_books)
-        similar_books = similar_books[:6]
+    if similar_books is None:
+        # O'xshash kitoblar - faqat kerakli fieldlar
+        similar_books = Book.objects.filter(
+            author=book.author
+        ).exclude(id=book.id).select_related('author').only(
+            'id', 'title', 'cover_image', 'author__name'
+        )[:4]
+        
+        # Kategoriyalar bo'yicha o'xshash kitoblar
+        book_categories = book.categories.all()
+        if book_categories.exists():
+            category_books = Book.objects.filter(
+                categories__in=book_categories
+            ).exclude(id=book.id).select_related('author').only(
+                'id', 'title', 'cover_image', 'author__name'
+            ).distinct()[:4]
+            similar_books = list(similar_books) + list(category_books)
+            similar_books = similar_books[:6]
+        
+        cache.set(cache_key_similar, similar_books, 60 * 30)  # 30 daqiqa
+    
+    # Total pages count - cache
+    cache_key_pages = f'book_pages_count_{book_id}'
+    total_pages = cache.get(cache_key_pages)
+    if total_pages is None:
+        total_pages = book.pages.count()
+        cache.set(cache_key_pages, total_pages, 60 * 60)  # 1 soat
     
     context = {
         'book': book,
@@ -3413,7 +3470,7 @@ def book_detail(request, book_id):
         'is_favorite': is_favorite,
         'reading_progress': reading_progress,
         'similar_books': similar_books,
-        'total_pages': book.pages.count(),
+        'total_pages': total_pages,
         'file_format': file_format,
         'file_size': file_size,
     }
@@ -4533,8 +4590,134 @@ def barcode_history(request):
 
 
 def food_scanner(request):
-    """FatSecret stilidagi AI ovqat skaneri sahifasi"""
+    """FatSecret stilidagi AI ovqat skaneri sahifasi - Kamera"""
     return render(request, 'blog/food_scanner.html')
+
+
+def food_scanner1(request):
+    """Food Scanner 1 sahifasi - Tahlil natijalari"""
+    # Sessiyadan ma'lumotlarni olish
+    analysis_id = request.GET.get('id')
+    context = {
+        'analysis_id': analysis_id,
+    }
+    return render(request, 'blog/Food_scanner1.html', context)
+
+
+@csrf_exempt
+@login_required
+def save_food_to_list(request):
+    """Tahlil qilingan ovqatni ro'yxatga saqlash"""
+    from .models import FoodIntake
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST kerak'})
+    
+    try:
+        data = json.loads(request.body)
+        
+        # FoodIntake yaratish
+        food = FoodIntake.objects.create(
+            user=request.user,
+            name=data.get('name', 'Noma\'lum mahsulot'),
+            barcode=data.get('barcode', ''),
+            mass=float(data.get('mass', 100)),
+            calories=float(data.get('calories', 0)),
+            proteins=float(data.get('proteins', 0)),
+            carbohydrates=float(data.get('carbohydrates', 0)),
+            fat=float(data.get('fat', 0)),
+            sugars=float(data.get('sugars', 0)),
+            fiber=float(data.get('fiber', 0)),
+            salt=float(data.get('salt', 0)),
+            calories_per_100g=float(data.get('calories_per_100g', 0)),
+            proteins_per_100g=float(data.get('proteins_per_100g', 0)),
+            carbs_per_100g=float(data.get('carbs_per_100g', 0)),
+            fat_per_100g=float(data.get('fat_per_100g', 0)),
+            meal_type=data.get('meal_type', 'snack'),
+            source='ai_analysis',
+            extra_data=data.get('extra_data'),
+            date=timezone.now().date()
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Mahsulot ro\'yxatga qo\'shildi!',
+            'food_id': food.id
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+@login_required
+def delete_food_from_list(request, food_id):
+    """Ovqatni ro'yxatdan o'chirish"""
+    from .models import FoodIntake
+    
+    if request.method != 'DELETE':
+        return JsonResponse({'success': False, 'error': 'DELETE kerak'})
+    
+    try:
+        food = FoodIntake.objects.get(id=food_id, user=request.user)
+        food.delete()
+        return JsonResponse({'success': True, 'message': 'Mahsulot o\'chirildi!'})
+    except FoodIntake.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Mahsulot topilmadi'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def lookup_barcode(request):
+    """Shtrix kod bo'yicha mahsulot qidirish - OpenFoodFacts API"""
+    import requests
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST kerak'})
+    
+    try:
+        data = json.loads(request.body)
+        barcode = data.get('barcode', '').strip()
+        
+        if not barcode:
+            return JsonResponse({'success': False, 'error': 'Shtrix kod kiritilmagan'})
+        
+        # OpenFoodFacts API
+        url = f'https://world.openfoodfacts.org/api/v0/product/{barcode}.json'
+        response = requests.get(url, timeout=10)
+        result = response.json()
+        
+        if result.get('status') == 1 and result.get('product'):
+            product = result['product']
+            nutrients = product.get('nutriments', {})
+            
+            return JsonResponse({
+                'success': True,
+                'data': {
+                    'name': product.get('product_name', product.get('product_name_en', 'Noma\'lum')),
+                    'brand': product.get('brands', ''),
+                    'barcode': barcode,
+                    'image_url': product.get('image_url', ''),
+                    'category': product.get('categories', ''),
+                    'description': product.get('generic_name', ''),
+                    'nutrition_per_100g': {
+                        'calories': nutrients.get('energy-kcal_100g', nutrients.get('energy_100g', 0)),
+                        'proteins': nutrients.get('proteins_100g', 0),
+                        'carbohydrates': nutrients.get('carbohydrates_100g', 0),
+                        'fat': nutrients.get('fat_100g', 0),
+                        'sugars': nutrients.get('sugars_100g', 0),
+                        'fiber': nutrients.get('fiber_100g', 0),
+                        'salt': nutrients.get('salt_100g', 0),
+                        'saturated_fat': nutrients.get('saturated-fat_100g', 0),
+                    },
+                    'nutriscore': product.get('nutriscore_grade', 'C'),
+                }
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Mahsulot topilmadi'})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
 @csrf_exempt
@@ -4834,3 +5017,373 @@ Barcha qiymatlarni taxminiy bo'lsa ham to'ldir. Faqat JSON qaytar."""
             'traceback': traceback.format_exc()
         })
 
+
+# ==========================================
+# KUNLIK OVQATLANISH RO'YXATI (FOOD DIARY)
+# ==========================================
+
+@login_required
+def food_diary(request):
+    """Kunlik ovqatlanish ro'yxati sahifasi"""
+    from .models import FoodIntake
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+    
+    # Tanlangan sana (default: bugun)
+    date_str = request.GET.get('date')
+    if date_str:
+        try:
+            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = timezone.now().date()
+    else:
+        selected_date = timezone.now().date()
+    
+    # Shu kunga tegishli yozuvlar
+    intakes = FoodIntake.objects.filter(user=request.user, date=selected_date).order_by('created_at')
+    
+    # Kunlik jami
+    daily_totals = FoodIntake.get_daily_totals(request.user, selected_date)
+    
+    # Ovqat turlariga bo'lib guruhlash
+    meals = {
+        'breakfast': intakes.filter(meal_type='breakfast'),
+        'lunch': intakes.filter(meal_type='lunch'),
+        'dinner': intakes.filter(meal_type='dinner'),
+        'snack': intakes.filter(meal_type='snack'),
+    }
+    
+    # Haftalik statistika
+    weekly_stats = list(FoodIntake.get_weekly_stats(request.user))
+    
+    # Kunlik maqsadlar (default)
+    daily_goals = {
+        'calories': 2000,
+        'proteins': 50,
+        'carbs': 300,
+        'fat': 65,
+    }
+    
+    # Foizlar
+    progress = {
+        'calories': min(100, round((daily_totals['total_calories'] / daily_goals['calories']) * 100)) if daily_goals['calories'] else 0,
+        'proteins': min(100, round((daily_totals['total_proteins'] / daily_goals['proteins']) * 100)) if daily_goals['proteins'] else 0,
+        'carbs': min(100, round((daily_totals['total_carbs'] / daily_goals['carbs']) * 100)) if daily_goals['carbs'] else 0,
+        'fat': min(100, round((daily_totals['total_fat'] / daily_goals['fat']) * 100)) if daily_goals['fat'] else 0,
+    }
+    
+    # Calories ring offset
+    cal_progress = progress['calories']
+    circumference = 2 * 3.14159 * 75  # 471.24
+    offset = circumference - (cal_progress / 100) * circumference
+    
+    context = {
+        'selected_date': selected_date,
+        'is_today': selected_date == timezone.now().date(),
+        'today': timezone.now().date(),
+        'intakes': intakes,
+        'meals': meals,
+        'daily_totals': daily_totals,
+        'daily_goals': daily_goals,
+        'progress': progress,
+        'offset': offset,
+        'weekly_stats': weekly_stats,
+        'prev_date': selected_date - timedelta(days=1),
+        'next_date': selected_date + timedelta(days=1),
+    }
+    
+    return render(request, 'blog/food_diary.html', context)
+
+
+@csrf_exempt
+@login_required
+def add_food_intake(request):
+    """Ro'yxatga ovqat qo'shish API"""
+    from .models import FoodIntake
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Faqat POST'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        
+        # Majburiy maydonlar
+        name = data.get('name', '').strip()
+        if not name:
+            return JsonResponse({'error': 'Mahsulot nomi kiritilmagan'}, status=400)
+        
+        # Sana (default: bugun)
+        date_str = data.get('date')
+        if date_str:
+            from datetime import datetime
+            intake_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        else:
+            from django.utils import timezone
+            intake_date = timezone.now().date()
+        
+        # Massa va ozuqaviy qiymatlar
+        mass = float(data.get('mass', 100))
+        
+        # 100g uchun qiymatlar
+        cal_per_100 = float(data.get('calories_per_100g', data.get('calories', 0)))
+        prot_per_100 = float(data.get('proteins_per_100g', data.get('proteins', 0)))
+        carb_per_100 = float(data.get('carbs_per_100g', data.get('carbohydrates', 0)))
+        fat_per_100 = float(data.get('fat_per_100g', data.get('fat', 0)))
+        
+        # Iste'mol qilingan miqdor uchun hisoblash
+        ratio = mass / 100
+        
+        intake = FoodIntake.objects.create(
+            user=request.user,
+            name=name,
+            brand=data.get('brand'),
+            barcode=data.get('barcode'),
+            image_url=data.get('image_url'),
+            mass=mass,
+            calories=round(cal_per_100 * ratio, 1),
+            proteins=round(prot_per_100 * ratio, 2),
+            carbohydrates=round(carb_per_100 * ratio, 2),
+            fat=round(fat_per_100 * ratio, 2),
+            sugars=round(float(data.get('sugars', 0)) * ratio, 2),
+            salt=round(float(data.get('salt', 0)) * ratio, 3),
+            fiber=round(float(data.get('fiber', 0)) * ratio, 2),
+            calories_per_100g=cal_per_100,
+            proteins_per_100g=prot_per_100,
+            carbs_per_100g=carb_per_100,
+            fat_per_100g=fat_per_100,
+            meal_type=data.get('meal_type', 'snack'),
+            date=intake_date,
+            notes=data.get('notes'),
+            source=data.get('source', 'barcode'),
+            extra_data=data.get('extra_data'),
+        )
+        
+        # Kunlik jami qaytarish
+        daily_totals = FoodIntake.get_daily_totals(request.user, intake_date)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f"'{name}' ro'yxatga qo'shildi!",
+            'intake': {
+                'id': intake.id,
+                'name': intake.name,
+                'mass': intake.mass,
+                'calories': intake.calories,
+                'proteins': intake.proteins,
+                'carbohydrates': intake.carbohydrates,
+                'fat': intake.fat,
+                'meal_type': intake.meal_type,
+                'date': str(intake.date),
+            },
+            'daily_totals': daily_totals,
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Noto\'g\'ri JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@login_required
+def delete_food_intake(request, intake_id):
+    """Ovqatlanish yozuvini o'chirish"""
+    from .models import FoodIntake
+    
+    if request.method != 'DELETE' and request.method != 'POST':
+        return JsonResponse({'error': 'Faqat DELETE yoki POST'}, status=400)
+    
+    try:
+        intake = FoodIntake.objects.get(id=intake_id, user=request.user)
+        intake_date = intake.date
+        intake.delete()
+        
+        # Yangilangan kunlik jami
+        daily_totals = FoodIntake.get_daily_totals(request.user, intake_date)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Muvaffaqiyatli o\'chirildi',
+            'daily_totals': daily_totals,
+        })
+    except FoodIntake.DoesNotExist:
+        return JsonResponse({'error': 'Yozuv topilmadi'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@login_required
+def update_food_intake(request, intake_id):
+    """Ovqatlanish yozuvini tahrirlash"""
+    from .models import FoodIntake
+    import json
+    
+    if request.method != 'PUT' and request.method != 'POST':
+        return JsonResponse({'error': 'Faqat PUT yoki POST'}, status=400)
+    
+    try:
+        intake = FoodIntake.objects.get(id=intake_id, user=request.user)
+        data = json.loads(request.body)
+        
+        # Massani o'zgartirish - ozuqaviy qiymatlarni qayta hisoblash
+        if 'mass' in data:
+            new_mass = float(data['mass'])
+            ratio = new_mass / 100
+            
+            intake.mass = new_mass
+            intake.calories = round(intake.calories_per_100g * ratio, 1)
+            intake.proteins = round(intake.proteins_per_100g * ratio, 2)
+            intake.carbohydrates = round(intake.carbs_per_100g * ratio, 2)
+            intake.fat = round(intake.fat_per_100g * ratio, 2)
+        
+        # Boshqa maydonlarni yangilash
+        if 'meal_type' in data:
+            intake.meal_type = data['meal_type']
+        if 'notes' in data:
+            intake.notes = data['notes']
+        
+        intake.save()
+        
+        # Kunlik jami
+        daily_totals = FoodIntake.get_daily_totals(request.user, intake.date)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Muvaffaqiyatli yangilandi',
+            'intake': {
+                'id': intake.id,
+                'name': intake.name,
+                'mass': intake.mass,
+                'calories': intake.calories,
+                'proteins': intake.proteins,
+                'carbohydrates': intake.carbohydrates,
+                'fat': intake.fat,
+                'meal_type': intake.meal_type,
+            },
+            'daily_totals': daily_totals,
+        })
+    except FoodIntake.DoesNotExist:
+        return JsonResponse({'error': 'Yozuv topilmadi'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def get_daily_stats(request):
+    """Kunlik statistika olish API"""
+    from .models import FoodIntake
+    from datetime import datetime
+    
+    date_str = request.GET.get('date')
+    if date_str:
+        try:
+            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = timezone.now().date()
+    else:
+        selected_date = timezone.now().date()
+    
+    # Kunlik jami
+    daily_totals = FoodIntake.get_daily_totals(request.user, selected_date)
+    
+    # Shu kungi yozuvlar
+    intakes = FoodIntake.objects.filter(user=request.user, date=selected_date)
+    intakes_list = [{
+        'id': i.id,
+        'name': i.name,
+        'brand': i.brand,
+        'mass': i.mass,
+        'calories': i.calories,
+        'proteins': i.proteins,
+        'carbohydrates': i.carbohydrates,
+        'fat': i.fat,
+        'meal_type': i.meal_type,
+        'image_url': i.image_url,
+        'created_at': i.created_at.strftime('%H:%M'),
+    } for i in intakes]
+    
+    return JsonResponse({
+        'success': True,
+        'date': str(selected_date),
+        'daily_totals': daily_totals,
+        'intakes': intakes_list,
+        'count': len(intakes_list),
+    })
+
+
+# ==================== BOSHLASH DASHBOARD STATISTIKA ====================
+
+def get_boshlash_stats(user):
+    """Boshlash sahifasi uchun kunlik statistika olish"""
+    from .models import FoodIntake
+    from django.utils import timezone
+    from django.db.models import Sum
+    
+    if not user.is_authenticated:
+        return {
+            'daily_calories': 0,
+            'daily_product_count': 0,
+            'recommended_kcal': 2500,
+            'health_percent': 0,
+        }
+    
+    today = timezone.now().date()
+    
+    # Kunlik jami
+    daily_totals = FoodIntake.get_daily_totals(user, today)
+    daily_calories = daily_totals.get('total_calories', 0) or 0
+    
+    # Mahsulotlar soni (bugungi)
+    daily_product_count = FoodIntake.objects.filter(
+        user=user, 
+        date=today
+    ).count()
+    
+    # Meyoriy kcal (o'rtacha - erkak va ayol o'rtasi ~2500)
+    recommended_kcal = 2500
+    
+    # Sog'liq foizi - kunlik iste'mol / meyoriy * 100
+    health_percent = min(100, int((daily_calories / recommended_kcal) * 100)) if daily_calories > 0 else 0
+    
+    return {
+        'daily_calories': int(daily_calories),
+        'daily_product_count': daily_product_count,
+        'recommended_kcal': recommended_kcal,
+        'health_percent': health_percent,
+    }
+
+
+@csrf_exempt
+def delete_daily_stats(request):
+    """Kunlik statistikalarni o'chirish (AJAX endpoint)"""
+    from .models import FoodIntake
+    from django.utils import timezone
+    import json
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Faqat POST so\'rov qabul qilinadi'}, status=400)
+    
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Tizimga kirish kerak'}, status=401)
+    
+    try:
+        data = json.loads(request.body) if request.body else {}
+        stat_type = data.get('type', 'all')  # 'health', 'daily_kcal', 'product_count', 'all'
+        today = timezone.now().date()
+        
+        # Bugungi barcha yozuvlarni o'chirish
+        deleted_count = FoodIntake.objects.filter(
+            user=request.user,
+            date=today
+        ).delete()[0]
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{deleted_count} ta yozuv o\'chirildi',
+            'stats': get_boshlash_stats(request.user)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

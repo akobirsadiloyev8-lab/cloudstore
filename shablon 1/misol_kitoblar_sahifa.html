@@ -1,0 +1,174 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Kitoblar - Cloudstore{% endblock %}
+
+{% block extra_css %}
+<style>
+    .book-card {
+        transition: transform 0.2s;
+    }
+    .book-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page header -->
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h3 mb-1">Kitoblar</h1>
+        <p class="text-secondary">Barcha mavjud kitoblar ro'yxati</p>
+    </div>
+    <div class="col-auto">
+        {% if user.is_staff %}
+        <a href="{% url 'kitob_qoshish' %}" class="btn btn-theme">
+            <i class="bi bi-plus-circle"></i> Yangi kitob
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12 col-md-4 col-lg-3 mb-3">
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Qidirish...">
+        </div>
+    </div>
+    <div class="col-12 col-md-4 col-lg-3 mb-3">
+        <select class="form-select">
+            <option>Barcha kategoriyalar</option>
+            <option>Tarix</option>
+            <option>Adabiyot</option>
+            <option>Tibbiyot</option>
+        </select>
+    </div>
+    <div class="col-12 col-md-4 col-lg-3 mb-3">
+        <select class="form-select">
+            <option>Eng yangi</option>
+            <option>Eng mashhur</option>
+            <option>Nom bo'yicha</option>
+        </select>
+    </div>
+</div>
+
+<!-- Books grid -->
+<div class="row g-4">
+    {% for book in books %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="card book-card h-100 shadow-sm">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+            {% else %}
+            <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 250px;">
+                <i class="bi bi-book fs-1 text-white"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text text-secondary small">{{ book.author }}</p>
+                
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="badge bg-theme">{{ book.category }}</span>
+                    <div class="text-warning">
+                        <i class="bi bi-star-fill"></i> {{ book.rating|default:"5.0" }}
+                    </div>
+                </div>
+                
+                <p class="card-text small">
+                    {{ book.description|truncatewords:15 }}
+                </p>
+            </div>
+            
+            <div class="card-footer bg-transparent border-top">
+                <div class="btn-group w-100" role="group">
+                    <a href="{% url 'kitob_detail' book.id %}" class="btn btn-sm btn-outline-theme">
+                        <i class="bi bi-eye"></i> Ko'rish
+                    </a>
+                    <a href="{% url 'download_book' book.id %}" class="btn btn-sm btn-theme">
+                        <i class="bi bi-download"></i> Yuklash
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Hozircha kitoblar mavjud emas
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row mt-4">
+    <div class="col-12">
+        <nav aria-label="Sahifalar">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Book search functionality
+    document.querySelector('input[placeholder="Qidirish..."]').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const bookCards = document.querySelectorAll('.book-card');
+        
+        bookCards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const author = card.querySelector('.card-text').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || author.includes(searchTerm)) {
+                card.closest('.col-12').style.display = 'block';
+            } else {
+                card.closest('.col-12').style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

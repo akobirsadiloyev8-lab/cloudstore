@@ -1,0 +1,117 @@
+{% load static %}
+<!-- Left Sidebar Navigation -->
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Asosiy navigatsiya">
+    <div class="sidebar-header">
+        <div class="sidebar-header-top">
+            <div class="sidebar-logo" role="banner">☁️ Cloudstore</div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="closeSidebar()" title="Yopish" aria-label="Menyuni yopish">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'user_profile' user.username %}" class="user-info" style="text-decoration: none; color: white;" aria-label="{{ user.username }} profili">
+            <div class="user-avatar" role="img" aria-label="{{ user.username }} avatari">
+                {% if user.social_profile.avatar %}
+                <img src="{{ user.social_profile.avatar.url }}" alt="{{ user.username }} profil rasmi">
+                {% else %}
+                {{ user.username|first|upper }}
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <h3>{{ user.first_name|default:user.username }}</h3>
+                <span>@{{ user.username }}</span>
+            </div>
+        </a>
+        {% else %}
+        <div class="user-info">
+            <div class="user-avatar" role="img" aria-label="Mehmon avatari">
+                <i class="fas fa-user" aria-hidden="true"></i>
+            </div>
+            <div class="user-details">
+                <h3>Mehmon</h3>
+                <span>Tizimga kiring</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="sidebar-search"></div>
+    
+    <!-- Menu Items -->
+    <nav class="sidebar-menu">
+        <div class="menu-section">
+            <div class="menu-section-title">Asosiy</div>
+            <a href="{% url 'boshlash' %}" class="menu-item {% if request.resolver_match.url_name == 'boshlash' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Bosh sahifa</span>
+            </a>
+            <a href="{% url 'all_books' %}" class="menu-item {% if 'book' in request.path %}active{% endif %}">
+                <i class="fas fa-heartbeat"></i>
+                <span>Sog'liq kitoblari</span>
+            </a>
+            <a href="{% url 'barcode_scanner' %}" class="menu-item {% if 'scanner' in request.path %}active{% endif %}">
+                <i class="fas fa-qrcode"></i>
+                <span>Food AI analysis</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'food_diary' %}" class="menu-item {% if 'ovqatlanish' in request.path %}active{% endif %}">
+                <i class="fas fa-utensils"></i>
+                <span>Iste'mol ro'yxati</span>
+            </a>
+            <a href="{% url 'telegram_chat' %}" class="menu-item messages">
+                <i class="fas fa-comments"></i>
+                <span>Xabarlar</span>
+                <span class="badge" id="sidebarUnreadBadge">0</span>
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="menu-divider"></div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Ko'proq</div>
+            <a href="{% url 'about' %}" class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Biz haqimizda</span>
+            </a>
+            <a href="#" onclick="installApp(); return false;" class="menu-item">
+                <i class="fas fa-download"></i>
+                <span>Ilovani o'rnatish</span>
+            </a>
+        </div>
+        
+        <div class="menu-divider"></div>
+        
+        <div class="menu-section">
+            <div class="menu-section-title">Profil</div>
+            {% if user.is_authenticated %}
+            <a href="{% url 'user_profile' user.username %}" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Profilim</span>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Sozlamalar</span>
+            </a>
+            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="menu-item" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left;">
+                    <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+                    <span style="color: #ef4444;">Chiqish</span>
+                </button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="menu-item">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Kirish</span>
+            </a>
+            <a href="{% url 'register' %}" class="menu-item">
+                <i class="fas fa-user-plus"></i>
+                <span>Ro'yxatdan o'tish</span>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+</aside>

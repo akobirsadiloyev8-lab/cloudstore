@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- dir="rtl"-->
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/adminux-social-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:04:46 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>AdminUX - AdminUIUX - Bootstrap HTML Admin template - adminuiux.com</title>
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&amp;family=SUSE:wght@100..800&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --adminuiux-content-font: "Open Sans", sans-serif;
+            --adminuiux-content-font-weight: 400;
+            --adminuiux-title-font: "SUSE", sans-serif;
+            --adminuiux-title-font-weight: 600;
+        }
+    </style>
+
+<script defer src="assets/js/app8051.js?bd1e16b080f637e63a80"></script><link href="assets/css/app8051.css?bd1e16b080f637e63a80" rel="stylesheet"></head>
+
+    <body class="main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard bg-r-gradient scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-bggradient="bg-r-gradient" data-headerfill="adminuiux-header-transparent">
+        <!-- Pageloader -->
+<div class="pageloader">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center text-center h-100">
+            <div class="col-12 mb-auto pt-4"></div>
+            <div class="col-auto">
+                <img src="assets/img/logo.svg" alt="" class="height-100 mb-3">
+                <p class="h3 mb-0"><span class="text-gradient">AdminUX</span></p>
+                <p class="small text-secondary mb-3"><span class="">Admin Dashboard HTML Template</span></p>
+                <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
+            </div>
+            <div class="col-12 mt-auto pb-4">
+                <p class="text-secondary">Petal of flower being ready to <span class="text-gradient">blossom</span>...</p>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- standard header -->
+<header class="adminuiux-header">
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+
+            <!-- main sidebar toggle -->
+            <button class="btn btn-link btn-square sidebar-toggler" type="button" onclick="initSidebar()">
+                <i class="sidebar-svg" data-feather="menu"></i>
+            </button>
+
+            <!-- logo -->
+            <a class="navbar-brand" href="adminux-dashboard.html">
+                <img data-bs-img="light" src="assets/img/logo-light.svg" alt="">
+                <img data-bs-img="dark" src="assets/img/logo.svg" alt="">
+                <div class="d-block ps-2">
+                    <span class="h4 text-gradient">Admin<span class="fw-bold">UX</span></span>
+                    <p class="company-tagline">Mobile HTML</p>
+                </div>
+            </a>
+
+            <!-- search -->
+            <div class="px-3 justify-content-center d-none d-lg-flex">
+                <div class="input-group input-group-md rounded search-wrap width-300 mx-auto">
+                    <span class="input-group-text border-0 bg-none">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input class="form-control border-0 bg-none" type="search" placeholder="Search here..." id="searchglobal">
+                    <div class="dropdown input-group-text border-0 px-2">
+                        <button class="dropdown-toggle btn btn-sm btn-link btn-square no-caret" type="button" id="searchfilter" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-sliders fs-6"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-dontclose width-300" aria-labelledby="searchfilter" style="">
+                            <ul class="nav nav-underline" id="searchtab" role="tablist">
+                                <li class="nav-item" role="presentation"><button class="nav-link active" id="searchall-tab" data-bs-toggle="tab" data-bs-target="#searchall" type="button" role="tab" aria-controls="searchall" aria-selected="true">All</button></li>
+                                <li class="nav-item" role="presentation"><button class="nav-link" id="searchorders-tab" data-bs-toggle="tab" data-bs-target="#searchorders" type="button" role="tab" aria-controls="searchorders" aria-selected="false" tabindex="-1">Orders</button></li>
+                                <li class="nav-item" role="presentation"><button class="nav-link" id="searchcontacts-tab" data-bs-toggle="tab" data-bs-target="#searchcontacts" type="button" role="tab" aria-controls="searchcontacts" aria-selected="false" tabindex="-1">Contacts</button></li>
+                            </ul>
+                            <div class="tab-content py-3" id="searchtabContent">
+                                <div class="tab-pane fade active show" id="searchall" role="tabpanel" aria-labelledby="searchall-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Search apps</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch1"> <label class="form-check-label" for="isearchswitch1"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Include Pages</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch2" checked=""> <label class="form-check-label" for="isearchswitch2"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Internet resource</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch3" checked=""> <label class="form-check-label" for="isearchswitch3"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">News and Blogs</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch4"> <label class="form-check-label" for="isearchswitch4"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="searchorders" role="tabpanel" aria-labelledby="searchorders-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Show order ID</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch5"> <label class="form-check-label" for="isearchswitch5"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">International Order</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch6" checked=""> <label class="form-check-label" for="isearchswitch6"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Taxable Product</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch7" checked=""> <label class="form-check-label" for="isearchswitch7"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Published Product</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch8"> <label class="form-check-label" for="isearchswitch8"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="searchcontacts" role="tabpanel" aria-labelledby="searchcontacts-tab">
+                                    <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Have email ID</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch9"> <label class="form-check-label" for="isearchswitch9"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Have phone number</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch10" checked=""> <label class="form-check-label" for="isearchswitch10"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Photo available</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch11" checked=""> <label class="form-check-label" for="isearchswitch11"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row gx-3 gx-lg-4">
+                                                <div class="col">Referral</div>
+                                                <div class="col-auto">
+                                                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="isearchswitch12"> <label class="form-check-label" for="isearchswitch12"></label></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col"><button class="btn btn-link">Reset</button></div>
+                                    <div class="col-auto"><button class="btn btn-theme">Apply</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- right icons button -->
+            <div class="ms-auto">
+                <!-- global search toggle -->
+                <button class="btn btn-link btn-square btn-icon btn-link-header d-lg-none" type="button" onclick="openSearch()">
+                    <i data-feather="search"></i>
+                </button>
+
+                <!-- dark mode -->
+                <button class="btn btn-link btn-square btnsunmoon btn-link-header" id="btn-layout-modes-dark-page">
+                    <i class="sun mx-auto" data-feather="sun"></i>
+                    <i class="moon mx-auto" data-feather="moon"></i>
+                </button>
+
+                <!-- notification dropdown -->
+                <button class="btn btn-link btn-square btn-icon btn-link-header dropdown-toggle position-relative no-caret" type="button" data-bs-toggle="offcanvas" data-bs-target="#view-notification" aria-expanded="false">
+                    <i data-feather="bell"></i>
+                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger p-1">
+                        <small>9+</small>
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                </button>
+
+            </div>
+        </div>
+    </nav>
+    <!-- global search-->
+    <div class="adminuiux-search-full">
+        <div class="row gx-2 align-items-center">
+            <div class="col-auto">
+                <!-- close global search toggle -->
+                <button class="btn btn-link btn-square " type="button" onclick="closeSearch()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div class="col">
+                <input class="form-control pe-0 border-0" type="search" placeholder="Type something here...">
+            </div>
+            <div class="col-auto">
+                <!-- filter dropdown -->
+                <div class="dropdown input-group-text border-0 p-0">
+                    <button class="dropdown-toggle btn btn-link btn-square no-caret" type="button" id="searchfilter2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i data-feather="sliders"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-dontclose width-300">
+                        <ul class="nav adminuiux-nav" id="searchtab2" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="searchall-tab2" data-bs-toggle="tab" data-bs-target="#searchall2" type="button" role="tab" aria-controls="searchall2" aria-selected="true">All</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="searchorders-tab2" data-bs-toggle="tab" data-bs-target="#searchorders2" type="button" role="tab" aria-controls="searchorders2" aria-selected="false" tabindex="-1">Orders</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="searchcontacts-tab2" data-bs-toggle="tab" data-bs-target="#searchcontacts2" type="button" role="tab" aria-controls="searchcontacts2" aria-selected="false" tabindex="-1">Contacts</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content py-3" id="searchtabContent">
+                            <div class="tab-pane fade active show" id="searchall2" role="tabpanel" aria-labelledby="searchall-tab2">
+                                <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Search apps</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch1">
+                                                    <label class="form-check-label" for="searchswitch1"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Include Pages</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch2" checked="">
+                                                    <label class="form-check-label" for="searchswitch2"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Internet resource</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch3" checked="">
+                                                    <label class="form-check-label" for="searchswitch3"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">News and Blogs</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch4">
+                                                    <label class="form-check-label" for="searchswitch4"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="searchorders2" role="tabpanel" aria-labelledby="searchorders-tab2">
+                                <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Show order ID</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch5">
+                                                    <label class="form-check-label" for="searchswitch5"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">International Order</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch6" checked="">
+                                                    <label class="form-check-label" for="searchswitch6"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Taxable Product</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch7" checked="">
+                                                    <label class="form-check-label" for="searchswitch7"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Published Product</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch8">
+                                                    <label class="form-check-label" for="searchswitch8"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-pane fade" id="searchcontacts2" role="tabpanel" aria-labelledby="searchcontacts-tab2">
+                                <ul class="list-group adminuiux-list-group list-group-flush bg-none show">
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Have email ID</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch9">
+                                                    <label class="form-check-label" for="searchswitch9"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Have phone number</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch10" checked="">
+                                                    <label class="form-check-label" for="searchswitch10"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Photo available</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch11" checked="">
+                                                    <label class="form-check-label" for="searchswitch11"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="row gx-3">
+                                            <div class="col">Referral</div>
+                                            <div class="col-auto">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="searchswitch12">
+                                                    <label class="form-check-label" for="searchswitch12"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="row gx-3 mb-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-theme">Apply</button>
+                                </div>
+                                <div class="col-auto"><button class="btn btn-sm btn-link theme-red">Cancel</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+                <div class="adminuiux-wrap">
+
+                    <!-- Standard sidebar -->
+                    <!-- Standard sidebar -->
+<div class="adminuiux-sidebar shadow-sm">
+    <div class="adminuiux-sidebar-inner">
+        <div class="px-3 not-iconic mt-2">
+            <div class="row gx-3 gx-lg-4">
+                <div class="col align-self-center menu-name">
+                    <h6>Main navigation</h6>
+                </div>
+                <div class="col-auto">
+                    <a class="collapsed btn btn-link btn-square" data-bs-toggle="collapse" data-bs-target="#usersidebarprofile" aria-expanded="false" role="button" aria-controls="usersidebarprofile">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- user information -->
+        <div class="px-3 text-center not-iconic collapse" id="usersidebarprofile">
+            <div class="avatar avatar-100 rounded-circle shadow-sm my-3 bg-white">
+                <figure class="avatar avatar-90 rounded-circle coverimg">
+                    <img src="assets/img/modern-ai-image/user-4.jpg" alt="" id="userphotoonboarding" style="display: none;">
+                </figure>
+            </div>
+            <h5 class="mb-0" id="usernamedisplay">The AdminUIUX</h5>
+            <p class="text-secondary small mb-3">United States</p>
+        </div>
+
+        <!-- user menu navigation -->
+        <ul class="nav flex-column menu-active-line">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="adminux-dashboard.html">
+                    <i class="menu-icon bi bi-house-door"></i>
+                    <div class="col menu-name">Home</div>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-coin"></i>
+                    <div class="col menu-name">Finance</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-finance-dashboard.html">
+                            <i class="menu-icon bi bi-speedometer2"></i>
+                            <div class="col align-self-center menu-name">Finance Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-finance-bank.html">
+                            <i class="menu-icon bi bi-bank"></i>
+                            <div class="col align-self-center menu-name">Banks</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-finance-crypto.html">
+                            <i class="menu-icon bi bi-currency-bitcoin"></i>
+                            <div class="col align-self-center menu-name">Crypto</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-finance-wallet.html">
+                            <i class="menu-icon bi bi-wallet2"></i>
+                            <div class="col align-self-center menu-name">Wallet</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-finance-rewards.html">
+                            <i class="menu-icon bi bi-award"></i>
+                            <div class="col align-self-center menu-name">Rewards</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-hdd-network"></i>
+                    <div class="col menu-name">Network</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-network-dashboard.html">
+                            <i class="menu-icon bi bi-grid"></i>
+                            <div class="col align-self-center menu-name">Network Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-network-performance.html">
+                            <i class="menu-icon bi bi-speedometer"></i>
+                            <div class="col align-self-center menu-name">Performance</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-network-devices.html">
+                            <i class="menu-icon bi bi-pc-display-horizontal"></i>
+                            <div class="col align-self-center menu-name">Smart Home</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-people"></i>
+                    <div class="col menu-name">Social</div>
+
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-social-dashboard.html">
+                            <i class="menu-icon bi bi-bullseye"></i>
+                            <div class="col align-self-center menu-name">Social Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-social-analytics.html">
+                            <i class="menu-icon bi bi-bar-chart"></i>
+                            <div class="col align-self-center menu-name">Analytics</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-social-schedular.html">
+                            <i class="menu-icon bi bi-calendar-week"></i>
+                            <div class="col align-self-center menu-name">Post Schedular</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-boxes"></i>
+                    <div class="col menu-name">Inventory</div>
+
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-inventory-dashboard.html">
+                            <i class="menu-icon bi bi-box"></i>
+                            <div class="col align-self-center menu-name">Inventory Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-inventory-stock.html">
+                            <i class="menu-icon bi bi-clipboard-check"></i>
+                            <div class="col align-self-center menu-name">Stock</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-inventory-orders.html">
+                            <i class="menu-icon bi bi-bag-check"></i>
+                            <div class="col align-self-center menu-name">Orders</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-folder"></i>
+                    <div class="col menu-name">Project</div>
+
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-project-dashboard.html">
+                            <i class="menu-icon bi bi-file-post"></i>
+                            <div class="col align-self-center menu-name">Project Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-project-projects.html">
+                            <i class="menu-icon bi bi-kanban"></i>
+                            <div class="col align-self-center menu-name">Projects</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-book"></i>
+                    <div class="col menu-name">Learning</div>
+
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-learning-dashboard.html">
+                            <i class="menu-icon bi bi-box"></i>
+                            <div class="col align-self-center menu-name">Learning Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-learning-courses.html">
+                            <i class="menu-icon bi bi-award"></i>
+                            <div class="col align-self-center menu-name">Courses</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-learning-institutions.html">
+                            <i class="menu-icon bi bi-building"></i>
+                            <div class="col align-self-center menu-name">Institutions</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="adminux-personalization.html" class="nav-link">
+                    <i class="menu-icon bi bi-palette h4"></i>
+                    <span class="menu-name">Personalize <small class="fs-12">❤️</small></span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- applications -->
+        <div class="px-3 not-iconic">
+            <div class="row gx-3 gx-lg-4">
+                <div class="col align-self-center menu-name">
+                    <h6>Applications</h6>
+                </div>
+                <div class="col-auto">
+                    <div class="dropdown">
+                        <a class="no-caret dropdown-toggle  btn btn-link btn-square" id="sidebaredits" data-bs-display="display" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                            <i class="bi bi-sliders"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-dontclose mt-2 width-200" aria-labelledby="sidebaredits">
+                            <ul class="list-group list-group-flush bg-none">
+                                <li class="list-group-item">
+                                    <div class="row gx-3 gx-lg-4">
+                                        <div class="col menu-name">Email</div>
+                                        <div class="col-auto pe-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="sidebaredits1" checked="">
+                                                <label class="form-check-label" for="sidebaredits1"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row gx-3 gx-lg-4">
+                                        <div class="col menu-name">Explorer</div>
+                                        <div class="col-auto pe-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="sidebaredits2" checked="">
+                                                <label class="form-check-label" for="sidebaredits2"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row gx-3 gx-lg-4">
+                                        <div class="col menu-name">Calendar</div>
+                                        <div class="col-auto pe-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="sidebaredits3" checked="">
+                                                <label class="form-check-label" for="sidebaredits3"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row gx-3 gx-lg-4">
+                                        <div class="col menu-name">Chat</div>
+                                        <div class="col-auto pe-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="sidebaredits4" checked="">
+                                                <label class="form-check-label" for="sidebaredits4"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row gx-3 gx-lg-4">
+                                        <div class="col menu-name">Support</div>
+                                        <div class="col-auto pe-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="sidebaredits5">
+                                                <label class="form-check-label" for="sidebaredits5"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="nav flex-column menu-active-line">
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-email.html">
+                    <i class="menu-icon bi bi-envelope"></i>
+                    <div class="col menu-name">Email</div>
+                    <div class="col-auto align-self-center not-iconic">
+                        <figure class="avatar avatar-20 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="" style="display: none;">
+                        </figure>
+                        <figure class="avatar avatar-20 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-3.jpg" alt="" style="display: none;">
+                        </figure>
+                        <figure class="avatar avatar-20 bg-theme-1-subtle rounded-circle">
+                            <small class="fs-10 vm">9+</small>
+                        </figure>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-explorer.html">
+                    <i class="menu-icon bi bi-folder position-relative">
+                        <span class="position-absolute top-0 end-100 p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </i>
+                    <div class="col menu-name">Explorer</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-calendar.html">
+                    <i class="menu-icon bi bi-calendar-event"></i>
+                    <div class="col menu-name">Calendar</div>
+                    <div class="col-auto not-iconic">
+                        <i class="bi bi-calendar-event fs-10 vm text-white avatar avatar-20 rounded-circle bg-theme-1 text-center "></i>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <!-- user secondary menu navigation -->
+        <div class="px-3 not-iconic">
+            <h6>Pages</h6>
+        </div>
+        <ul class="nav flex-column menu-active-line">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-person-circle"></i>
+                    <div class="col menu-name">Profile</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-profile-professional.html">
+                            <i class="menu-icon bi bi-briefcase"></i>
+                            <div class="col align-self-center menu-name">Professional</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-profile-social.html">
+                            <i class="menu-icon bi bi-people"></i>
+                            <div class="col align-self-center menu-name">Social</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-profile-analytical.html">
+                            <i class="menu-icon bi bi-bar-chart"></i>
+                            <div class=" col align-self-center">Analytical</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-building"></i>
+                    <div class="col menu-name">Company</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-profile.html">
+                            <i class="menu-icon bi bi-easel2"></i>
+                            <div class="col align-self-center menu-name">Company Profile</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-user-roles.html">
+                            <i class="menu-icon bi bi-people"></i>
+                            <div class="col align-self-center menu-name">User Roles</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-resource.html">
+                            <i class="menu-icon bi bi-journal-bookmark"></i>
+                            <div class="col align-self-center menu-name">Resources</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-management.html">
+                            <i class="menu-icon bi bi-stopwatch"></i>
+                            <div class="col align-self-center menu-name">Management</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-career.html">
+                            <i class="menu-icon bi bi-file-earmark-person"></i>
+                            <div class="col align-self-center menu-name">Career</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-help-center.html">
+                            <i class="menu-icon bi bi-life-preserver"></i>
+                            <div class="col align-self-center menu-name">Help Center</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-company-contact-us.html">
+                            <i class="menu-icon bi bi-envelope"></i>
+                            <div class="col align-self-center menu-name">Contact us</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-question-circle"></i>
+                    <div class="col menu-name">Forum</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-forum.html">
+                            <i class="menu-icon bi bi-question-circle"></i>
+                            <div class="col align-self-center menu-name">Forum</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-forum-details.html">
+                            <i class="menu-icon bi bi-people"></i>
+                            <div class="col align-self-center menu-name">Forum Details</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                    <i class="menu-icon bi bi-window-stack"></i>
+                    <div class="col menu-name">Supportive Pages</div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-login.html" target="_blank">
+                            <i class="menu-icon bi bi-person"></i>
+                            <div class="col align-self-center menu-name">Sign in</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-signup.html" target="_blank">
+                            <i class="menu-icon bi bi-person-plus"></i>
+                            <div class="col align-self-center menu-name">Sign up</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-forgot-password.html" target="_blank">
+                            <i class="menu-icon bi bi-key"></i>
+                            <div class="col align-self-center menu-name">Forgot Password</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-change-password.html" target="_blank">
+                            <i class="menu-icon bi bi-key"></i>
+                            <div class="col align-self-center menu-name">Change Password</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-maintenance.html" target="_blank">
+                            <i class="menu-icon bi bi-gear"></i>
+                            <div class="col align-self-center menu-name">Maintenance</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-comingsoon.html" target="_blank">
+                            <i class="menu-icon bi bi-alarm"></i>
+                            <div class="col align-self-center menu-name">Coming soon</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-page-not-found-2.html">
+                            <i class="menu-icon bi bi-exclamation-circle"></i>
+                            <div class="col align-self-center menu-name">Error</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-onboarding.html" target="_blank">
+                            <i class="menu-icon bi bi-emoji-smile"></i>
+                            <div class="col align-self-center menu-name">Onboarding</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-contact-us.html">
+                            <i class="menu-icon bi bi-envelope"></i>
+                            <div class="col align-self-center menu-name">Contact</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="adminux-timeline.html">
+                            <i class="menu-icon bi bi-calendar-week"></i>
+                            <div class="col align-self-center menu-name">Timeline</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="documentation.html">
+                    <i class="menu-icon bi bi-journal-code"></i>
+                    <div class="col menu-name">Documentation</div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="components.html">
+                    <i class="menu-icon bi bi-cpu"></i>
+                    <span class="menu-name">Components</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class=" mt-auto "></div>
+
+        <!-- chat -->
+        <ul class="nav flex-column menu-active-line mb-2">
+            <li class="nav-item">
+                <a href="adminux-chat.html" class="nav-link">
+                    <div class="col-auto">
+                        <div class="avatar avatar-30 coverimg rounded d-block align-top">
+                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                        </div>
+                    </div>
+                    <div class="col px-2 menu-name text-start not-iconic">
+                        <!-- limit name character-->
+                        <p class="mb-0 fs-14 lh-20">Zoory Sen<br><small class="opacity-75">Relationship Manager</small></p>
+                    </div>
+                    <div class="col-auto not-iconic">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <div class="px-3 not-iconic">
+            <div class="card adminuiux-card bg-theme-l-gradient mb-3">
+                <div class="card-body">
+                    <div class="row gx-3 mb-2">
+                        <div class="col">
+                            <p class="mb-0"><i class="bi bi-basket me-1 "></i> Free Plan</p>
+                        </div>
+                        <div class="col-auto">
+                            <p class="small opacity-75">4 days left</p>
+                        </div>
+                    </div>
+                    <div class="progress height-dynamic bg-white-opacity mb-2" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--h-dynamic:5px">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 45%"></div>
+                    </div>
+                    <a href="adminux-subscription-plans.html" class="btn btn-sm btn-accent">Upgrade <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- quick links -->
+        <div class="px-3 not-iconic">
+            <div class="row gx-2">
+                <div class="col-12 d-flex justify-content-between">
+                    <a href="adminux-inventory-stock.html" class="btn btn-square btn-link">
+                        <span class="position-relative">
+                            <i data-feather="heart"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </span>
+                    </a>
+                    <a href="adminux-social-schedular.html" class="btn btn-square btn-link">
+                        <span class="position-relative">
+                            <i data-feather="calendar"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-warning rounded-circle">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </span>
+                    </a>
+                    <a href="adminux-email.html" class="btn btn-square btn-link">
+                        <i data-feather="inbox"></i>
+                    </a>
+                    <a href="adminux-company-help-center.html" class="btn btn-square btn-link">
+                        <i data-feather="help-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+                        <main class="adminuiux-content has-sidebar" onclick="contentClick()">
+
+                            <!-- page title -->
+                            <div class="container-fluid py-1 py-lg-3">
+                                <div class="row gx-3 align-items-center page-title">
+                                    <div class="col col-sm">
+                                        <h6 class="mb-0">Social Dashboard</h6>
+                                        <p class="text-secondary small">Digital Marketing Analytics Dashboard</p>
+                                    </div>
+
+                                    <div class="col-auto position-relative">
+                                        <button class="btn btn-link btn-square" data-bs-toggle="offcanvas" data-bs-target="#filter" data-bs-placement="end">
+                                            <i class="bi bi-filter"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <nav aria-label="breadcrumb" class="breadcrumb-theme mt-3 rounded d-none d-md-block">
+                                    <ol class="breadcrumb mb-0">
+                                        <li class="breadcrumb-item bi"><a href="adminux-dashboard.html"><i class="bi bi-house-door me-2"></i> AdminUX</a></li>
+                                        <li class="breadcrumb-item bi active" aria-current="page">Social</li>
+                                    </ol>
+                                </nav>
+                            </div>
+
+                            <!-- content -->
+                            <div class="container mt-3" id="main-content">
+                                <!-- statistics summary -->
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-instagram h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-pink rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Instagram</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">+5%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.5M <small class="fs-14 text-secondary fw-normal">Follower</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchartpink"></canvas>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Post Likes</p>
+                                                        <h6>55.15k</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Shares</p>
+                                                        <h6>11.2k</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Reach</p>
+                                                        <h6>1.5M</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Clicks</p>
+                                                        <h6>60.01k</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-facebook h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Facebook</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">+1%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.5M <small class="fs-14 text-secondary fw-normal">Likes</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchart"></canvas>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Post Likes</p>
+                                                        <h6>65.35K</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Shares</p>
+                                                        <h6>12.5K</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Reach</p>
+                                                        <h6>1.75M</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Clicks</p>
+                                                        <h6>85.01K</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-dribbble h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-pink rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Dribbble</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">+1%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.5M <small class="fs-14 text-secondary fw-normal">Follower</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartpink2"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Post Likes</p>
+                                                        <h6>65.35K</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Shares</p>
+                                                        <h6>12.5K</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Reach</p>
+                                                        <h6>1.75M</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Clicks</p>
+                                                        <h6>85.01K</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-youtube h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-red rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Youtube</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">+2%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.75M <small class="fs-14 text-secondary fw-normal">Subscriber</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartred"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Post Likes</p>
+                                                        <h6>65.35K</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Shares</p>
+                                                        <h6>12.5K</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Reach</p>
+                                                        <h6>1.75M</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Clicks</p>
+                                                        <h6>85.01K</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-12 col-xxl-4">
+                                        <!-- Social card -->
+                                        <div class="card adminuiux-card shadow-sm bg-theme-r-gradient text-white mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-people h5 avatar avatar-40 bg-white-opacity text-white rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Popular Post</h6>
+                                                        <p class="opacity-75">21 October 2021</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body ">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-4 col-md-3 col-lg-3 col-xl-3 col-xxl-4 mb-3">
+                                                        <figure class="coverimg rounded w-100 height-120 mb-0">
+                                                            <img src="assets/img/modern-ai-image/pet-4.jpg" alt="" class="mw-100">
+                                                        </figure>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <h6 class="mb-2">Learn about software and Framework. All Design and Usability practices</h6>
+                                                        <p class="opacity-75 small mb-1">We have represented best product and template with great user experience</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <p class="opacity-75 mb-1">Engaged Audience</p>
+                                                        <h6>2,545,05</h6>
+                                                    </div>
+                                                    <div class="col-auto ms-auto">
+                                                        <a href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/blogs.html" class="btn btn-link text-white">Read More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Big chart traffic flow-->
+                                <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                    <div class="card-header pb-0">
+                                        <div class="row gx-3 align-items-center">
+                                            <div class="col-auto mb-3 mb-lg-0">
+                                                <i class="bi bi-people h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 rounded"></i>
+                                            </div>
+                                            <div class="col mb-3 mb-lg-0">
+                                                <h6 class="mb-0">Server</h6>
+                                                <p class="small text-secondary">Uptime 100%</p>
+                                            </div>
+                                            <div class="col-auto mb-3 mb-lg-0">
+                                                <button class="btn btn-square btn-link position-relative" data-bs-toggle="collapse" data-bs-target="#socialaccounts">
+                                                    <span class="position-absolute top-0 end-0 badge rounded-pill bg-danger p-1 m-1">
+                                                        <span class="visually-hidden">unread messages</span>
+                                                    </span>
+                                                    <i class="bi bi-filter"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="collapse collapsed" id="socialaccounts">
+                                            <select class="choices w-100 mt-3" multiple data-placeholder="Select Account">
+                                                <optgroup label="Social">
+                                                    <option>Facebook</option>
+                                                    <option>Instagram</option>
+                                                    <option>Twitter</option>
+                                                </optgroup>
+                                                <optgroup label="Feed">
+                                                    <option>Dribbble</option>
+                                                    <option>Youtube</option>
+                                                    <option>Behance</option>
+                                                    <option>Blogs</option>
+                                                </optgroup>
+                                                <option>Referral</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body pb-0">
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="trafic1" role="tabpanel" aria-labelledby="trafic1-tab">
+                                                <div class="row gx-3">
+                                                    <div class="col-12 col-md-12 col-lg-7 col-xl-9 mb-3 mb-lg-0">
+                                                        <div class="height-180">
+                                                            <canvas id="socialtraffic"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-12 col-lg-5 col-xl-3">
+                                                        <div class="row gx-3">
+                                                            <div class="col-12 col-md-6 col-lg-12 mb-3">
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <i class="avatar avatar-10 rounded bg-red"></i>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <h6 class="mb-1">2021 total Traffic</h6>
+                                                                        <div class="row small">
+                                                                            <div class="col text-secondary">Share</div>
+                                                                            <div class="col-auto text-theme-1 theme-green">10.15%</div>
+                                                                        </div>
+                                                                        <div class="row small">
+                                                                            <div class="col text-secondary">Likes</div>
+                                                                            <div class="col-auto text-theme-1 theme-red">5.63%</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6 col-lg-12">
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <i class="avatar avatar-10 rounded bg-theme-1 theme-blue"></i>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <h6 class="mb-1">2022 total Traffic</h6>
+                                                                        <div class="row small">
+                                                                            <div class="col text-secondary">Share</div>
+                                                                            <div class="col-auto text-theme-1 theme-green">10.15%</div>
+                                                                        </div>
+                                                                        <div class="row small">
+                                                                            <div class="col text-secondary">Likes</div>
+                                                                            <div class="col-auto text-theme-1 theme-red">5.63%</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="trafic2" role="tabpanel" aria-labelledby="trafic2-tab">...</div>
+                                            <div class="tab-pane fade" id="trafic3" role="tabpanel" aria-labelledby="trafic3-tab">...</div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer pb-0">
+                                        <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active px-0 px-lg-3" id="trafic1-tab" data-bs-toggle="tab" data-bs-target="#trafic1" type="button" role="tab" aria-controls="trafic1" aria-selected="true">
+                                                    <small class="text-secondary d-block mb-1">Engagement</small>
+                                                    <span>254.0M</span>
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link px-0 px-lg-3" id="trafic2-tab" data-bs-toggle="tab" data-bs-target="#trafic2" type="button" role="tab" aria-controls="trafic2" aria-selected="false">
+                                                    <small class="text-secondary d-block mb-1">Clicks</small>
+                                                    <span>1.55M</span>
+                                                </button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link px-0 px-lg-3" id="trafic3-tab" data-bs-toggle="tab" data-bs-target="#trafic3" type="button" role="tab" aria-controls="trafic3" aria-selected="false">
+                                                    <small class="text-secondary d-block mb-1">Shares</small>
+                                                    <span>1.845M</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="row gx-3 gx-lg-4">
+                                    <!-- Tweet stats card -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-3">
+                                        <div class="card adminuiux-card shadow-sm bg-theme-r-gradient text-white mb-4">
+                                            <div class="card-header bg-none">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-binoculars h5 avatar avatar-40 bg-white-opacity text-white rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Top Attraction</h6>
+                                                        <p class="opacity-75">This year</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto mb-3">
+                                                        <i class="bi bi-twitter h1 avatar avatar-70 bg-cyan rounded mb-0">
+                                                        </i>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="opacity-75 small mb-1">Engaged Audience</p>
+                                                        <h5 class="mb-0">2,545,05</h5>
+                                                        <p class="small">(1.83%)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-newspaper h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Boosted Post</h6>
+                                                        <p class="text-secondary small">Best reached</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-4 col-md-3 col-lg-4 col-xl-4 col-xxl-5 mb-3">
+                                                        <figure class="coverimg rounded w-100 height-80 mb-0">
+                                                            <img src="assets/img/modern-ai-image/pet-4.jpg" alt="" class="mw-100">
+                                                        </figure>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Boosted Post</p>
+                                                        <h5 class="mb-1">2,545,05</h5>
+                                                        <p class="text-secondary small">People Reached</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row gx-3">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Likes</p>
+                                                        <h6>65.35 k</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Retweet</p>
+                                                        <h6>12.5 k</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Clicks</p>
+                                                        <h6>85.01 k</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--charts category summary-->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-3">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-linkedin h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-3 mb-1">
+                                                            <div class="col">
+                                                                <p class="text-secondary small">Linkedin</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-red">-1.58%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.8M <small>Connections</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-5">
+                                                        <div class="height-80 mb-3">
+                                                            <canvas id="areachartblue1"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <div class="row gx-2">
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Likes</p>
+                                                                <h6>65.35K</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Shares</p>
+                                                                <h6>12.5K</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Reach</p>
+                                                                <h6>1.75M</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Clicks</p>
+                                                                <h6>85.01K</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-twitter h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-cyan rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row mb-1">
+                                                            <div class="col">
+                                                                <p class="text-secondary small">Linkedin</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">2.15%</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6>1.8M <small>Connections</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-5">
+                                                        <div class="height-100 mb-2">
+                                                            <canvas id="areachartgreen1"></canvas>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-7">
+                                                        <div class="row gx-2">
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Likes</p>
+                                                                <h6>65.35K</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Shares</p>
+                                                                <h6>12.5K</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Reach</p>
+                                                                <h6>1.75K</h6>
+                                                            </div>
+                                                            <div class="col-6 mb-3">
+                                                                <p class="text-secondary small mb-0">Clicks</p>
+                                                                <h6>85.01K</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- offers and events -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-3">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Social Media Management</h6>
+                                                <p class="text-secondary small">Go with trend, Protect your future</p>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row gx-3 align-items-center mb-3">
+                                                    <div class="col-2 mb-2">
+                                                        <i class="bi bi-calendar-event h5 text-theme-1 theme-green"></i>
+                                                    </div>
+                                                    <div class="col-8 mb-2">
+                                                        <h6 class="mb-1">25-01-2021, 9:30 AM</h6>
+                                                        <p class="text-secondary text-truncated small">1409 Main St, La Crosse, KS 67548,US</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto avatar-group">
+                                                        <div class="avatar avatar-30 coverimg rounded-circle">
+                                                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                                                        </div>
+                                                        <div class="avatar avatar-30 coverimg rounded-circle">
+                                                            <img src="assets/img/modern-ai-image/user-3.jpg" alt="">
+                                                        </div>
+                                                        <div class="avatar avatar-30 coverimg rounded-circle">
+                                                            <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h5>1525K</h5>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a class="btn btn-sm btn-theme" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/payment.html">Joined</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4 overflow-hidden">
+                                            <div class="row mx-0">
+                                                <div class="col-6 bg-theme-1 text-center py-4 z-index-1">
+                                                    <div class="position-relative">
+                                                        <h4 class="mb-2">15% OFF</h4>
+                                                        <p class="opacity-75 small mb-3">Price including with our launch offer get 5% Extra</p>
+                                                        <button class="copy-text btn btn-sm btn-rounded btn-outline-dashed text-white border-white mb-1">GOREELDRIVE</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 position-relative">
+                                                    <figure class="coverimg position-absolute w-100 h-100 start-0 top-0">
+                                                        <img src="assets/img/modern-ai-image/user-1-kid.jpg" class="mw-100" alt="">
+                                                    </figure>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--mangers updates-->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-3">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4 overflow-hidden">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-people h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Manager</h6>
+                                                        <p class="text-secondary small">3 Admins</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="height-80 mb-3">
+                                                    <canvas id="barchartblue"></canvas>
+                                                </div>
+                                                <p class="text-secondary small mb-0">Campaign Created</p>
+                                                <h5>5281 <small class="fw-normal">This year</small></h5>
+                                            </div>
+                                            <div class="card-footer p-0">
+                                                <ul class="list-group list-group-flush border-0 bg-none">
+                                                    <li class="list-group-item">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto align-self-center">
+                                                                <figure class="avatar avatar-40 rounded-circle coverimg vm">
+                                                                    <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                                                                </figure>
+                                                            </div>
+                                                            <div class="col px-0 align-self-center">
+                                                                <p class="mb-0">David Warner</p>
+                                                                <p class="small text-secondary">$ 410.00</p>
+                                                            </div>
+                                                            <div class="col-auto ps-0 align-self-center">
+                                                                <i class="bi bi-chevron-right text-muted small vm"></i>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto align-self-center">
+                                                                <figure class="avatar avatar-40 rounded-circle coverimg vm">
+                                                                    <img src="assets/img/modern-ai-image/user-3.jpg" alt="">
+                                                                </figure>
+                                                            </div>
+                                                            <div class="col px-0 align-self-center">
+                                                                <p class="mb-0">Shelvey Doe</p>
+                                                                <p class="small text-secondary">$ 180.00</p>
+                                                            </div>
+                                                            <div class="col-auto ps-0 align-self-center">
+                                                                <i class="bi bi-chevron-right text-muted small vm"></i>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto align-self-center">
+                                                                <figure class="avatar avatar-40 rounded-circle coverimg vm">
+                                                                    <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                                                                </figure>
+                                                            </div>
+                                                            <div class="col px-0 align-self-center">
+                                                                <p class="mb-0">Julia D'Souza</p>
+                                                                <p class="small text-secondary">$ 163.00</p>
+                                                            </div>
+                                                            <div class="col-auto ps-0 align-self-center">
+                                                                <i class="bi bi-chevron-right text-muted small vm"></i>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3 mb-lg-4">
+                                    <div class="col text-center py-3">
+                                        <h4>Special <span class="text-gradient">Widgets</span> flexible & elastic</h4>
+                                        <p class="text-secondary">Pick the best which is useful to your customer</p>
+                                    </div>
+                                </div>
+
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col-12 col-md-12 col-lg-12 col-xl-8">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-people h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Traffic Source</h6>
+                                                        <p class="text-secondary small">Visitors/Users around the <b>Earth</b></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="jsvectormap" class="w-100 height-250"></div>
+                                            </div>
+                                            <div class="card-footer">
+                                                <div class="row gx-3">
+                                                    <div class="col-6 col-md mb-3 mb-md-0">
+                                                        <p class="text-secondary small mb-1">Users</p>
+                                                        <h5>5.1K <small class="text-green"><i class=" bi bi-arrow-up vm small"></i> 12%</small></h5>
+                                                    </div>
+                                                    <div class="col-6 col-md mb-3 mb-md-0">
+                                                        <p class="text-secondary small mb-1">Sessions</p>
+                                                        <h5>6.8K <small class="text-green"><i class=" bi bi-arrow-up vm small"></i> 2.1%</small></h5>
+                                                    </div>
+                                                    <div class="col-6 col-md">
+                                                        <p class="text-secondary small mb-1">Bounce Rate</p>
+                                                        <h5>3.18% <small class="text-red"><i class=" bi bi-arrow-up vm small"></i> -4.2%</small></h5>
+                                                    </div>
+                                                    <div class="col-6 col-md">
+                                                        <p class="text-secondary small mb-1">Session Duration</p>
+                                                        <h5>1m 16s <small class="text-green"><i class=" bi bi-arrow-up vm small"></i> 3.7%</small></h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 position-relative column-set">
+                                        <!-- Chart traffic -->
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-gender-ambiguous h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-green rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto align-self-center">
+                                                        <h6 class="mb-0">Traffic by Genders</h6>
+                                                        <p class="text-secondary small">114586 users visited</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="width-200 position-relative text-center mb-3 mb-lg-4 mx-auto">
+                                                    <canvas id="doughnutchart" class="avatar avatar-200 mx-auto"></canvas>
+                                                    <div class="avatar avatar-140 position-absolute top-50 start-50 translate-middle shadow bg-white rounded-circle ">
+                                                        <div class="w-100 lh-20">
+                                                            <h5 class="mb-1">29.98K</h5>
+                                                            <p class="text-success small">18.71 (0.73%)</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col-6 text-end">
+                                                        <div class="row gx-3">
+                                                            <div class="col">
+                                                                <h6 class="text-dark mb-0">14000</h6>
+                                                                <p class="text-secondary small">Male Visitors</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-40 bg-blue rounded text-white">
+                                                                    <i class="bi bi-gender-male h5"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-12 mt-3">
+                                                                <div class="row gx-3">
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Home</p>
+                                                                    </div>
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">55%</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row gx-3">
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Work</p>
+                                                                    </div>
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">45%</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <span class="avatar avatar-40 bg-theme-1 theme-red rounded text-white">
+                                                                    <i class="bi bi-gender-female h5"></i>
+                                                                </span>
+                                                            </div>
+                                                            <div class="col">
+                                                                <h6 class="text-dark mb-0">13568</h6>
+                                                                <p class="text-secondary small">Female Visitors</p>
+                                                            </div>
+                                                            <div class="col-12 mt-3">
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">73%</p>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Home</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row gx-3">
+                                                                    <div class="col-auto">
+                                                                        <p class="text-green small">27%</p>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <p class="text-secondary small">Work</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subscribe upgrade plan -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm overflow-hidden mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-award h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-green rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Subscribe PRO account</h6>
+                                                        <p class="text-secondary small">60 USD per year</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <ul class="list-group list-group-flush border-0 bg-none">
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-check-circle text-muted"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Unlimited Send Money
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-check-circle text-muted"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Multiple Currencies Support
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li class="list-group-item text-secondary">
+                                                        <div class="row gx-3">
+                                                            <div class="col-auto">
+                                                                <i class="bi bi-check-circle text-muted"></i>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                Unlimited Send Money
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row gx-3">
+                                                    <div class="col-6">
+                                                        <div class="form-check form-check-circle">
+                                                            <input class="form-check-input" type="radio" name="priceupgrade" value="" id="priceupgrade1" checked>
+                                                            <label class="form-check-label" for="priceupgrade1">
+                                                                <span class="h5">251.00 <small>USD</small></span><br />
+                                                                <span class="text-secondary small">5 Years <span class="text-theme-1 theme-green">13% Off</span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-check form-check-circle">
+                                                            <input class="form-check-input" type="radio" name="priceupgrade" value="" id="priceupgrade2">
+                                                            <label class="form-check-label" for="priceupgrade2">
+                                                                <span class="h5">108.00 <small>USD</small></span><br />
+                                                                <span class="text-secondary small">2 Years <span class="text-theme-1 theme-green">10% Off</span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                <div class="row gx-3">
+                                                    <div class="col">
+                                                        <div class="input-group ">
+                                                            <span class="input-group-text text-theme-1"><i class="bi bi-tag h5"></i></span>
+                                                            <input type="text" class="form-control" placeholder="Coupon Code" value="13DISCNEW21">
+                                                            <span class="input-group-text text-theme-1 theme-green"><i class="bi bi-patch-check h5"></i></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a class="btn btn-theme" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/payment.html">Pay Now</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Income green chart card -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-gender-male h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Male Traffics</h6>
+                                                        <p class="text-secondary small">Last 6 Months</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="mb-0">2,545 <small class="text-theme-1 theme-green"><i class="bi bi-arrow-up"></i> 108(0.73%)</small></h5>
+                                                <p class="mb-3 mb-lg-4"><span class="text-secondary">Age range:</span> 26-55</p>
+                                                <div class="height-160">
+                                                    <canvas id="mediumchartgreen1"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Expense red chart card -->
+                                    <div class="col-12 col-md-6 col-lg-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-gender-female h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-red rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <h6 class="mb-0">Female Traffic</h6>
+                                                        <p class="text-secondary small">Last 6 Months</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="mb-0">4,101 <small class="text-theme-1 theme-green"><i class="bi bi-arrow-up"></i> 108 (1.83%)</small></h5>
+                                                <p class="mb-3 mb-lg-4"><span class="text-secondary">Age range:</span> 26-55</p>
+                                                <div class="height-160">
+                                                    <canvas id="mediumchartred1"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- mobile footer -->
+                            <footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
+    <div class="container">
+        <ul class="nav nav-pills nav-justified">
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-dashboard.html">
+                    <span>
+                        <i class="nav-icon bi bi-house"></i>
+                        <span class="nav-text">Home</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-finance-wallet.html">
+                    <span>
+                        <i class="nav-icon bi bi-wallet"></i>
+                        <span class="nav-text">Wallet</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="adminux-social-dashboard.html" class="nav-link ">
+                    <span>
+                        <i class="nav-icon bi bi-people"></i>
+                        <span class="nav-text">Social</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-explorer.html">
+                    <span>
+                        <i class="nav-icon bi bi-folder"></i>
+                        <span class="nav-text">Files</span>
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="adminux-profile.html">
+                    <span>
+                        <i class="nav-icon avatar avatar-20 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                        </i>
+                        <span class="nav-text">Profile</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</footer>
+                        </main>
+                </div>
+
+                <!-- global filter -->
+                <!-- theming offcanvas-->
+<div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="filter" data-bs-scroll="true" data-bs-backdrop="false" aria-labelledby="filterlabel">
+    <div class="offcanvas-header border-bottom">
+        <div>
+            <h5 class="offcanvas-title" id="filterlabel">Filter</h5>
+            <p class="text-secondary small">Grab the trimmed details </p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h6 class="offcanvas-title">Duration </h6>
+        <p class="text-secondary small mb-3">Filter details with desired period</p>
+        <div class="row gx-2 align-items-center mb-3 mb-lg-4">
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent" value="" id="datepicker">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+            <div class="col-auto text-secondary small">-</div>
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+        </div>
+        <h6 class="offcanvas-title">Country Selection</h6>
+        <p class="text-secondary small mb-3">Change country for operational details</p>
+        <div class="mb-3 mb-lg-4">
+            <div class="input-group input-group-md rounded" style="--mw-dynamic:calc(100% - 42px)">
+                <span class="input-group-text text-theme-1"><i class="bi bi-box"></i></span>
+                <select class="form-control choices" id="titltfilterlist" multiple>
+                    <option value="San Francisco">San Francisco</option>
+                    <option value="New York">New York</option>
+                    <option value="London">London</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="India" selected="">India</option>
+                    <option value="Sydney">Sydney</option>
+                    <option value="Seattle">Seattle</option>
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="India">India</option>
+                </select>
+            </div>
+            <div class="invalid-feedback">You have already selected maximum option allowed. (This is Configurable)</div>
+        </div>
+
+        <h6 class="offcanvas-title">Orders</h6>
+        <p class="text-secondary small mb-2">1256 orders last week</p>
+        <div class="row mb-3 mb-lg-4">
+            <div class="col-12 px-0">
+                <ul class="list-group list-group-flush bg-transparent border-0">
+                    <li class="list-group-item">
+                        <div class="row gx-3 gx-lg-4">
+                            <div class="col">Online Orders</div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="titleswitch1">
+                                    <label class="form-check-label" for="titleswitch1"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row gx-3 gx-lg-4">
+                            <div class="col">Offline Orders</div>
+                            <div class="col-auto">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="titleswitch2" checked="">
+                                    <label class="form-check-label" for="titleswitch2"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr class="mb-4">
+        <a href="adminux-company-help-center.html" class="row gx-3 align-items-center style-none text-theme-1 mb-3 mb-lg-4" data-bs-toggle="tooltip" data-bs-placement="top">
+            <div class="col-auto">
+                <i class="bi bi-life-preserver avatar avatar-30 bg-theme-1-subtle text-theme-1 rounded"></i>
+            </div>
+            <div class="col">
+                <p class="">Need help?</p>
+            </div>
+        </a>
+        <a href="https://1.envato.market/nQzeo" target="_blank" class="row gx-3 align-items-center style-none text-theme-1 mb-3 mb-lg-4" data-bs-toggle="tooltip" data-bs-placement="top">
+            <div class="col-auto">
+                <span class="bi bi-basket avatar avatar-30 bg-theme-1-subtle text-theme-1 rounded position-relative">
+                    <span class="position-absolute top-0 end-0 p-1 bg-green border border-light rounded-circle">
+                        <span class="visually-hidden">New alerts</span>
+                    </span>
+                </span>
+            </div>
+            <div class="col">
+                <p class="">Buy now and support us!</p>
+            </div>
+        </a>
+
+    </div>
+    <div class="offcanvas-header border-top">
+        <div class="col">
+            <button class="btn btn-theme" data-bs-dismiss="offcanvas">Apply</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-link theme-red" data-bs-dismiss="offcanvas">Cancel</button>
+        </div>
+    </div>
+</div>
+
+                    <!-- notification -->
+                    <div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="view-notification" data-bs-scroll="true" data-bs-backdrop="false">
+    <div class="offcanvas-header border-bottom">
+        <div class="flex-grow-1">
+            <h6 class="mb-0">Notifications</h6>
+            <p class="text-secondary">6 new updates</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="small text-center px-3 py-2 bg-theme-1-subtle text-theme-1 border-bottom">
+        <div class="row gx-2 align-items-center">
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+            <div class="col-auto text-secondary small">-</div>
+            <div class="col">
+                <div class="input-group input-group-md">
+                    <input type="text" class="form-control bg-transparent datepicker-single" value="">
+                    <span class="input-group-text text-theme-1 bg-transparent width-40" id="titlecalendar" onclick="this.previousElementSibling.click()"><i class="bi bi-calendar-event"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="adminux-profile-professional.html" class="text-theme-1 style-none">Alex Smith</a>, <a href="adminux-profile-professional.html" class="text-theme-1 style-none">John McMillan</a> and <span class="fw-medium">36 others</span> are also ordered from same website</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">2:14 pm</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 rounded-circle bg-theme-1 border border-theme-1">
+                            <p class="h6 fw-medium">JM</p>
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="adminux-profile-professional.html" class="text-theme-1 style-none">Jack Mario</a> commented: "This one is most usable design with great user experience. w..."</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">2 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-warning mb-2">
+            <div class="row gx-3">
+                <div class="col-auto">
+                    <figure class="avatar avatar-30 rounded-circle bg-warning text-white">
+                        <i class="bi bi-bell"></i>
+                    </figure>
+                </div>
+                <div class="col">
+                    <p class="small mb-2">Your subscription going to expire soon. Please <a href="adminux-subscription.html">upgrade</a> to get service interrupt free.</p>
+
+                    <div class="row gx-3 align-items-center">
+                        <div class="col">
+                            <p class="text-secondary small">4 days ago</p>
+                        </div>
+                        <div class="col-auto">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/adminux-invoice.html" class="text-theme-1 style-none">Roberto Carlos</a> has requested to send $120.00 money.</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">6 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 rounded-circle bg-theme-1-subtle text-theme-1 theme-orange">
+                            <i class="bi bi-calendar-event"></i>
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <h6 class="mb-1">Adminuiux: #1 HTML Templates</h6>
+                        <p class="small mb-2">Learning for better user experience on Universal app. development</p>
+                        <div class="avatar-group mb-2">
+                            <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Mickey">
+                                <img src="assets/img/modern-ai-image/user-3.jpg" alt="" style="display: none;">
+                            </figure>
+                            <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Jacky">
+                                <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                            </figure>
+                            <div class="avatar avatar-20 bg-theme-1 rounded-circle">
+                                <small class="fs-10 vm">9+</small>
+                            </div>
+                            <span class="text-secondary small"> are attending</span>
+                        </div>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">7 days ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-none mb-2">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col-auto">
+                        <figure class="avatar avatar-30 coverimg rounded-circle">
+                            <img src="assets/img/modern-ai-image/user-3.jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col">
+                        <p class="small mb-2"><a href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/adminuiux-profile-professional.html" class="text-theme-1 style-none">The AdminUIUX</a> commented: "Thank you so much for this deep view at Adminuiux..."</p>
+
+                        <div class="row gx-3 align-items-center">
+                            <div class="col">
+                                <p class="text-secondary small">1 year ago</p>
+                            </div>
+                            <div class="col-auto">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-square btn-link theme-red"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                        <!-- themes -->
+                        <!-- theming offcanvas-->
+<div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="theming" data-bs-scroll="true" data-bs-backdrop="false" aria-labelledby="theminglabel">
+    <div class="offcanvas-header border-bottom">
+        <div>
+            <h5 class="offcanvas-title" id="theminglabel">Personalize</h5>
+            <p class="text-secondary small">Make it more like your own</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <h6 class="offcanvas-title">Colors</h6>
+        <p class="text-secondary small mb-4">Change colors of templates</p>
+
+        <div class="row mb-4 theme-select">
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-blue">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-theme-1 theme-blue"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-indigo">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-indigo"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-purple">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-purple"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-pink">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-pink"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-red">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-red"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-orange">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-orange"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-yellow">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-yellow"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-green">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-green"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-teal">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-teal"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-cyan">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-cyan"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-grey">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-grey"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-brown">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-brown"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-chocolate">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-chocolate"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="theme-black">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-dark"></span>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="offcanvas-title">Backgrounds</h6>
+        <p class="text-secondary small mb-4">Change color for background</p>
+        <div class="row mb-4 theme-background">
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-default">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default"><i class="bi bi-arrow-clockwise"></i></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-white">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-white"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-r-gradient">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-r-gradient"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-1">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-1"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-2">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-2"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-3">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-3"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-4">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-4"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-5">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-5"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-6">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-6"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-7">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-7"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-8">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-8"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-9">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-9"></span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="gradient-box text-center mb-2" data-title="bg-gradient-10">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-gradient-10"></span>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="offcanvas-title">Sidebar Layout</h6>
+        <p class="text-secondary small mb-4">Change sidebar layout style</p>
+
+        <div class="row mb-4 sidebar-layout">
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-standard" data-bs-toggle="tooltip" title="None">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-iconic" data-bs-toggle="tooltip" title="Iconic">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-bezier h4"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-boxed" data-bs-toggle="tooltip" title="Boxed">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-box h5"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="select-box text-center mb-2" data-title="adminuiux-sidebar-boxed adminuiux-sidebar-iconic" data-bs-toggle="tooltip" title="Iconic+Boxed">
+                    <span class="avatar avatar-40 rounded-circle mb-2 bg-default">
+                        <i class="bi bi-bounding-box h5"></i>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="adminux-personalization.html" class="btn btn-sm btn-outline-theme">More options <i class="bi bi-arrow-right-short"></i></a>
+        </div>
+    </div>
+</div>
+
+                            <!-- footer -->
+                            <!-- large footer -->
+<div class="adminuiux-footer has-adminuiux-sidebar mt-auto py-0">
+    <div class="container py-4 py-lg-5">
+        <div class="row mb-3">
+            <div class="col-12 col-xxl-4 mb-3 mb-xxl-0">
+                <a class="style-none d-block mb-3 mb-lg-4" href="#">
+                    <div class="row gx-3 gx-lg-4">
+                        <div class="col-auto"><span class="logo-icon"><img src="assets/img/logo.svg" class="width-50" alt=""></span></div>
+                        <div class="col ps-0 align-self-center">
+                            <h4 class="text-gradient mb-0">AdminUX</h4>
+                            <p class="text-secondary small">Best HTML Template</p>
+                        </div>
+                    </div>
+                </a>
+
+                <h3 class="mb-3"><span class="text-gradient">#1 Creative</span> &amp; <span class="text-gradient">Multipurpose</span> HTML Template</h3>
+                <p class="text-secondary">AdminUX is creative and multipurpose template. You can use it for CRM, Business application, Intranet Application, Portal service and Many more.
+                    It comes with unlimited possibilities and 10+ predefined styles which you can also mix up and create new style. Do support and spread a word for us. </p>
+            </div>
+            <div class="col-6 col-sm-6 col-md-4 col-xxl offset-xl-1 mb-3 mb-md-0">
+                <h5 class="mb-3">The <span class="text-gradient">Dashboards</span></h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/finance-dashboard.html">Finance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/network-dashboard.html">Network</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/inventory-dashboard.html">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/social-dashboard.html">Social</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/project-dashboard.html">Project</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/learning-dashboard.html">Learning</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6 col-sm-6 col-md-4 col-xxl mb-3 mb-md-0">
+                <h5 class="mb-3">Creative <span class="text-gradient">Pages</span></h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="adminux-calendar.html">Calendar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="adminux-email.html">Email</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="adminux-explorer.html">Explorer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="adminux-company-help-center.html">Need Support <i class="bi bi-heart-fill text-theme-1 theme-red"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-0" href="https://1.envato.market/7N7Br" target="_blank">Buy Now <i class="bi bi-arrow-up-right-square"></i></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-4 col-xxl-3">
+                <p class="mb-2"><b>Main office:</b></p>
+                <p class="mb-1"><a href="https://adminuiux.com/" target="_blank">www.adminuiux.com</a></p>
+                <p class="text-secondary mb-4">Test data 103909 Witamer CR, Niagara Falls, NY 14305, United States</p>
+
+                <div class="row gx-3 align-items-center mb-3">
+                    <div class="col-auto"><i class="bi bi-clock text-theme-1 h4"></i></div>
+                    <div class="col text-secondary">0441-215-518625<br><span>Mon - Sat, 9:00 am - 10:00pm</span></div>
+                </div>
+                <div class="row gx-3 align-items-center mb-3">
+                    <div class="col-auto"><i class="bi bi-telephone text-theme-1 h4"></i></div>
+                    <div class="col text-secondary">+1-000 000 100000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-3 gx-lg-4 align-items-center">
+            <div class="col-12 col-md-auto mb-4 mb-md-0">
+                <ul class="nav justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.facebook.com/adminuiux1/" target="_blank">
+                            <i class="bi bi-facebook h5"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://twitter.com/admiinuiux" target="_blank">
+                            <i class="bi bi-twitter h5"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://linkedin.com/company/adminuiux" target="_blank">
+                            <i class="bi bi-linkedin h5"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.instagram.com/adminuiux/" target="_blank">
+                            <i class="bi bi-instagram h5"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-auto ms-auto">
+                <ul class="nav justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <div class="row gx-3 gx-lg-4 align-items-center">
+                                <div class="col-auto">
+                                    <i class="bi bi-play-fill h3"></i>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0 fs-12 opacity-50">Get this on</p>
+                                    <p>Google Play</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <div class="row gx-3 gx-lg-4 align-items-center">
+                                <div class="col-auto">
+                                    <i class="bi bi-apple h4"></i>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0 fs-12 opacity-50">Get this on</p>
+                                    <p>App Store</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- standard footer -->
+<footer class="adminuiux-footer has-adminuiux-sidebar mt-auto bg-theme-1">
+    <div class="container-fluid">
+        <div class="row gx-3 gx-lg-4">
+            <div class="col-10 col-md col-lg py-2">
+                <span class="small">Copyright @2025, Designed by
+                    <a href="https://adminuiux.com/" target="_blank" class="text-white">Adminuiux</a> on Earth ❤️
+                </span>
+            </div>
+            <div class="col-12 col-md-auto col-lg-auto align-self-center">
+                <ul class="nav small">
+                    <li class="nav-item"><a class="nav-link text-white px-2" href="adminux-company-help-center.html">Help</a></li>
+                    <li class="nav-item opacity-50">|</li>
+                    <li class="nav-item"><a class="nav-link text-white px-2" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/terms-of-use.html">Terms of Use</a></li>
+                    <li class="nav-item opacity-50">|</li>
+                    <li class="nav-item"><a class="nav-link text-white px-2" href="https://www.adminuiux.com/adminuiux/adminux-mobile/html/privacy-policy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- theming action-->
+<div class="position-fixed bottom-0 end-0 m-3 z-index-5" id="fixedbuttons">
+    <button class="btn btn-square btn-theme shadow rounded-circle" type="button" data-bs-toggle="offcanvas" data-bs-target="#theming" aria-controls="theming"><i class="bi bi-palette"></i></button>
+    <br>
+    <button class="btn btn-theme btn-square shadow mt-2 d-none rounded-circle theme-black" id="backtotop"><i class="bi bi-arrow-up"></i></button>
+</div>
+
+                                <!-- Page Level js -->
+                                <script src="assets/js/adminux/adminux-social-dashboard.js"></script>
+    </body>
+
+
+<!-- Mirrored from adminuiux.com/adminuiux/adminux-mobile/html/adminux-social-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Feb 2026 11:04:52 GMT -->
+</html>

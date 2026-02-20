@@ -1,724 +1,130 @@
-{% extends 'blog/boshlash.html' %}
+{% extends 'blog/base.html' %}
 {% load static %}
 
 {% block title %}Biz haqimizda - Cloudstore{% endblock %}
 
 {% block content %}
-<style>
-    :root {
-        --amz-orange: #ff9900;
-        --amz-orange-hover: #ffad33;
-        --amz-dark: #131921;
-        --amz-light-dark: #232f3e;
-        --amz-text: #0f1111;
-        --amz-link: #007185;
-        --amz-link-hover: #c7511f;
-        --amz-border: #ddd;
-        --amz-bg: #eaeded;
-        --amz-card: #fff;
-        --amz-green: #067d62;
-    }
-
-    body.dark-mode {
-        --amz-text: #e0e0e0;
-        --amz-bg: #0f1111;
-        --amz-card: #1a1a1a;
-        --amz-border: #333;
-        --amz-link: #4fc3f7;
-    }
-
-    .amz-about-wrapper {
-        background: var(--amz-bg);
-        min-height: 100vh;
-    }
-
-    /* Hero Banner */
-    .amz-hero-banner {
-        background: linear-gradient(135deg, var(--amz-dark) 0%, var(--amz-light-dark) 100%);
-        padding: 60px 20px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .amz-hero-banner::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff9900' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.5;
-    }
-
-    .amz-hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .amz-hero-logo {
-        width: 100px;
-        height: 100px;
-        background: var(--amz-orange);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 25px;
-        font-size: 3rem;
-        box-shadow: 0 10px 40px rgba(255, 153, 0, 0.3);
-    }
-
-    .amz-hero-title {
-        color: #fff;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-    }
-
-    .amz-hero-title span {
-        color: var(--amz-orange);
-    }
-
-    .amz-hero-subtitle {
-        color: rgba(255,255,255,0.9);
-        font-size: 1.2rem;
-        line-height: 1.6;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    /* Main Container */
-    .amz-about-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 30px 20px;
-    }
-
-    /* Section Card */
-    .amz-section-card {
-        background: var(--amz-card);
-        border: 1px solid var(--amz-border);
-        border-radius: 8px;
-        margin-bottom: 20px;
-        overflow: hidden;
-    }
-
-    .amz-section-header {
-        background: var(--amz-light-dark);
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .amz-section-header i {
-        color: var(--amz-orange);
-        font-size: 1.1rem;
-    }
-
-    .amz-section-header h2 {
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .amz-section-body {
-        padding: 25px;
-    }
-
-    .amz-section-text {
-        color: var(--amz-text);
-        font-size: 1rem;
-        line-height: 1.8;
-    }
-
-    /* Stats Grid */
-    .amz-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-
-    .amz-stat-box {
-        text-align: center;
-        padding: 25px 15px;
-        background: #fef8e8;
-        border: 1px solid var(--amz-border);
-        border-radius: 8px;
-        transition: all 0.2s;
-    }
-
-    body.dark-mode .amz-stat-box {
-        background: #2a2510;
-    }
-
-    .amz-stat-box:hover {
-        border-color: var(--amz-orange);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .amz-stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--amz-orange);
-        margin-bottom: 5px;
-    }
-
-    .amz-stat-label {
-        color: var(--amz-text);
-        font-size: 0.9rem;
-    }
-
-    /* Features Grid */
-    .amz-features-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-    }
-
-    .amz-feature-card {
-        background: var(--amz-card);
-        border: 1px solid var(--amz-border);
-        border-radius: 8px;
-        padding: 25px;
-        text-align: center;
-        transition: all 0.2s;
-    }
-
-    .amz-feature-card:hover {
-        border-color: var(--amz-orange);
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-
-    .amz-feature-icon {
-        width: 60px;
-        height: 60px;
-        background: var(--amz-light-dark);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 15px;
-    }
-
-    .amz-feature-icon i {
-        font-size: 1.5rem;
-        color: var(--amz-orange);
-    }
-
-    .amz-feature-title {
-        color: var(--amz-text);
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-    }
-
-    .amz-feature-desc {
-        color: var(--amz-text);
-        opacity: 0.8;
-        font-size: 0.9rem;
-        line-height: 1.6;
-    }
-
-    /* Team */
-    .amz-team-member {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        padding: 20px;
-        background: #f7f8fa;
-        border-radius: 8px;
-        border: 1px solid var(--amz-border);
-    }
-
-    body.dark-mode .amz-team-member {
-        background: #1a1a1a;
-    }
-
-    .amz-team-avatar {
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, var(--amz-orange), #c77600);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 1.5rem;
-        font-weight: 700;
-        flex-shrink: 0;
-    }
-
-    .amz-team-info h4 {
-        color: var(--amz-text);
-        font-size: 1.1rem;
-        margin-bottom: 5px;
-    }
-
-    .amz-team-info span {
-        color: var(--amz-link);
-        font-size: 0.9rem;
-    }
-
-    /* Tech Tags */
-    .amz-tech-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .amz-tech-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        background: #f7f8fa;
-        border: 1px solid var(--amz-border);
-        border-radius: 20px;
-        color: var(--amz-text);
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    body.dark-mode .amz-tech-tag {
-        background: #1a1a1a;
-    }
-
-    .amz-tech-tag:hover {
-        border-color: var(--amz-orange);
-        background: #fef8e8;
-    }
-
-    body.dark-mode .amz-tech-tag:hover {
-        background: #2a2510;
-    }
-
-    .amz-tech-tag i {
-        color: var(--amz-orange);
-    }
-
-    /* Contact Grid */
-    .amz-contact-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-    }
-
-    .amz-contact-card {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 20px;
-        background: var(--amz-light-dark);
-        border-radius: 8px;
-        text-decoration: none;
-        color: #fff;
-        transition: all 0.2s;
-    }
-
-    .amz-contact-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    }
-
-    .amz-contact-icon {
-        width: 45px;
-        height: 45px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .amz-contact-icon i {
-        font-size: 1.2rem;
-        color: var(--amz-orange);
-    }
-
-    .amz-contact-label {
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .amz-contact-value {
-        font-size: 0.85rem;
-        opacity: 0.8;
-        margin-top: 2px;
-    }
-
-    /* Feedback Form */
-    .amz-feedback-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .amz-form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .amz-form-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--amz-text);
-    }
-
-    .amz-form-input,
-    .amz-form-textarea {
-        padding: 12px 15px;
-        border: 1px solid var(--amz-border);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        color: var(--amz-text);
-        background: var(--amz-card);
-        transition: all 0.2s;
-        font-family: inherit;
-    }
-
-    .amz-form-input:focus,
-    .amz-form-textarea:focus {
-        outline: none;
-        border-color: var(--amz-orange);
-        box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1);
-    }
-
-    .amz-form-textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-
-    .amz-submit-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 14px 28px;
-        background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
-        border: 1px solid #a88734;
-        border-radius: 8px;
-        color: #111;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        align-self: flex-start;
-    }
-
-    .amz-submit-btn:hover {
-        background: linear-gradient(to bottom, #f5d78e, #eeb933);
-    }
-
-    .amz-submit-btn:active {
-        background: linear-gradient(to bottom, #e8c445, #ddaa20);
-    }
-
-    .amz-success-msg {
-        background: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-        padding: 15px 20px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    body.dark-mode .amz-success-msg {
-        background: #0d2117;
-        border-color: #0d4b22;
-        color: #4caf50;
-    }
-
-    /* Back Link */
-    .amz-back-section {
-        text-align: center;
-        padding: 30px 0;
-    }
-
-    .amz-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--amz-link);
-        text-decoration: none;
-        font-size: 0.95rem;
-        padding: 10px 25px;
-        border: 1px solid var(--amz-link);
-        border-radius: 20px;
-        transition: all 0.2s;
-    }
-
-    .amz-back-link:hover {
-        background: var(--amz-link);
-        color: #fff;
-    }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-        .amz-stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .amz-features-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .amz-contact-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .amz-hero-title {
-            font-size: 1.8rem;
-        }
-        .amz-stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .amz-features-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<div class="amz-about-wrapper">
-    <!-- Hero Banner -->
-    <div class="amz-hero-banner">
-        <div class="amz-hero-content">
-            <div class="amz-hero-logo">☁️</div>
-            <h1 class="amz-hero-title">Cloud<span>store</span></h1>
-            <p class="amz-hero-subtitle">
-                Mahsulotlar ma'lumotlarini olish haqidagi mini ilova. Sog'liq va ovqatlanish bo'yicha bilim olishni oson va qiziqarli qilamiz!
-            </p>
+<div class="container py-4">
+    <div class="row gx-3 gx-lg-4">
+        <!-- Sidebar navigation -->
+        <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+            <div class="position-sticky" style="top: 5.8rem;">
+                <div id="list-example" class="list-group adminuiux-list-group bg-none">
+                    <a class="list-group-item list-group-item-action" href="#list-item-1">Xush kelibsiz</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-2">Biz haqimizda</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-3">Xizmatlarimiz</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-4">Bog'lanish</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="col-12 col-sm-8 col-md-9 col-lg-10">
+            <!-- Welcome section -->
+            <div class="row" id="list-item-1">
+                <div class="col-12">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h1 text-theme-1">Xush kelibsiz!</p>
+                            <p class="h4 mb-4">Cloudstore platformasiga xush kelibsiz!</p>
+                            <p class="text-secondary">
+                                Cloudstore - bu zamonaviy elektron kutubxona platformasi bo'lib, sizga minglab kitoblarni 
+                                onlayn o'qish imkoniyatini beradi. Bizning maqsadimiz - bilimni hamma uchun ochiq va 
+                                qulay qilish.
+                            </p>
+                            <p class="text-secondary">
+                                Platformamizda siz turli mavzulardagi kitoblarni topishingiz, o'qishingiz va 
+                                sevimli kitoblaringizni saqlashingiz mumkin.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About us section -->
+            <div class="row pt-5" id="list-item-2">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1">Biz haqimizda</p>
+                            <p class="h5 mb-4">Cloudstore jamoasi</p>
+                            <p class="text-secondary">
+                                Cloudstore 2024-yilda tashkil etilgan bo'lib, O'zbekistonda raqamli ta'limni 
+                                rivojlantirishga hissa qo'shish maqsadida yaratilgan.
+                            </p>
+                            <p class="text-secondary">
+                                Bizning jamoamiz tajribali dasturchilar va ta'lim mutaxassislaridan iborat. 
+                                Biz doimiy ravishda platformani yaxshilash va yangi imkoniyatlar qo'shish 
+                                ustida ishlaymiz.
+                            </p>
+                            <div class="alert alert-info mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Cloudstore - bu bepul va ochiq platforma!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services section -->
+            <div class="row pt-5" id="list-item-3">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1">Xizmatlarimiz</p>
+                            <p class="h5 mb-4">Biz taklif qiladigan xizmatlar</p>
+                            <ul class="list ms-2 text-secondary">
+                                <li><i class="bi bi-book me-2"></i>Minglab kitoblarni onlayn o'qish</li>
+                                <li><i class="bi bi-download me-2"></i>Kitoblarni yuklab olish</li>
+                                <li><i class="bi bi-bookmark me-2"></i>Sevimli kitoblarni saqlash</li>
+                                <li><i class="bi bi-search me-2"></i>Qulay qidiruv tizimi</li>
+                                <li><i class="bi bi-phone me-2"></i>Mobil ilovalar</li>
+                                <li><i class="bi bi-people me-2"></i>Jamiyat va muhokamalar</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact section -->
+            <div class="row pt-5" id="list-item-4">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1">Bog'lanish</p>
+                            <p class="h5 mb-4">Biz bilan bog'laning</p>
+                            <p class="text-secondary">
+                                Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'lanishingiz mumkin:
+                            </p>
+                            <ul class="list-unstyled text-secondary">
+                                <li class="mb-2">
+                                    <i class="bi bi-envelope me-2 text-theme-1"></i>
+                                    <a href="mailto:info@cloudstore.uz">info@cloudstore.uz</a>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-telegram me-2 text-theme-1"></i>
+                                    <a href="https://t.me/cloudstore_uz" target="_blank">@cloudstore_uz</a>
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-instagram me-2 text-theme-1"></i>
+                                    <a href="https://instagram.com/cloudstore_uz" target="_blank">@cloudstore_uz</a>
+                                </li>
+                            </ul>
+                            <br>
+                            <p class="h2 text-theme-1">Rahmat!</p>
+                            <p class="h5 text-theme-accent-1 mb-4">Bizni tanlaganingiz uchun tashakkur!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="amz-about-container">
-        <!-- Stats -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-chart-bar"></i>
-                <h2>Bizning yutuqlarimiz</h2>
-            </div>
-            <div class="amz-section-body">
-                <div class="amz-stats-grid">
-                    <div class="amz-stat-box">
-                        <div class="amz-stat-number">1000+</div>
-                        <div class="amz-stat-label">Mahsulot ma'lumotlari</div>
-                    </div>
-                    <div class="amz-stat-box">
-                        <div class="amz-stat-number">500+</div>
-                        <div class="amz-stat-label">Foydalanuvchilar</div>
-                    </div>
-                    <div class="amz-stat-box">
-                        <div class="amz-stat-number">50+</div>
-                        <div class="amz-stat-label">Kategoriyalar</div>
-                    </div>
-                    <div class="amz-stat-box">
-                        <div class="amz-stat-number">24/7</div>
-                        <div class="amz-stat-label">Xizmat</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mission -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-bullseye"></i>
-                <h2>Bizning maqsadimiz</h2>
-            </div>
-            <div class="amz-section-body">
-                <p class="amz-section-text">
-                    Cloudstore platformasi O'zbekiston aholisiga sifatli mahsulot ma'lumotlarini bepul yetkazib berish 
-                    maqsadida yaratilgan. Biz sog'liq va ovqatlanish haqidagi bilimlarni hamma uchun oson, qulay va qiziqarli qilishga intilamiz.
-                    Sun'iy intellekt texnologiyalari yordamida oziq-ovqat mahsulotlarini tahlil qilish, vitaminlar va foydali moddalar haqida 
-                    ma'lumot olish imkoniyatini yaratdik.
-                </p>
-            </div>
-        </div>
-
-        <!-- Features -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-star"></i>
-                <h2>Bizning xususiyatlarimiz</h2>
-            </div>
-            <div class="amz-section-body">
-                <div class="amz-features-grid">
-                    <div class="amz-feature-card">
-                        <div class="amz-feature-icon">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                        <div class="amz-feature-title">Sog'liq kutubxonasi</div>
-                        <div class="amz-feature-desc">
-                            Sog'liq, ovqatlanish, dietologiya va jismoniy salomatlik bo'yicha kitoblar to'plami.
-                        </div>
-                    </div>
-                    <div class="amz-feature-card">
-                        <div class="amz-feature-icon">
-                            <i class="fas fa-qrcode"></i>
-                        </div>
-                        <div class="amz-feature-title">Food Scanner</div>
-                        <div class="amz-feature-desc">
-                            QR kod orqali mahsulotlarni skanerlang va oziq-ovqat tarkibini tahlil qiling.
-                        </div>
-                    </div>
-                    <div class="amz-feature-card">
-                        <div class="amz-feature-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <div class="amz-feature-title">Ijtimoiy tarmoq</div>
-                        <div class="amz-feature-desc">
-                            Foydalanuvchilar bilan bog'laning, sog'lom turmush haqida fikr almashing.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Team -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-users"></i>
-                <h2>Bizning jamoa</h2>
-            </div>
-            <div class="amz-section-body">
-                <p class="amz-section-text" style="margin-bottom: 20px;">
-                    Cloudstore O'zbekistonlik dasturchilar jamoasi tomonidan yaratilgan. Bizning maqsadimiz - 
-                    zamonaviy texnologiyalar yordamida sog'lom turmush tarzini targ'ib qilish.
-                </p>
-                <div class="amz-team-member">
-                    <div class="amz-team-avatar">AS</div>
-                    <div class="amz-team-info">
-                        <h4>Akobir Sadiloyev</h4>
-                        <span>Asoschi & Full Stack Dasturchi</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technologies -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-code"></i>
-                <h2>Texnologiyalar</h2>
-            </div>
-            <div class="amz-section-body">
-                <div class="amz-tech-tags">
-                    <span class="amz-tech-tag"><i class="fab fa-python"></i> Python</span>
-                    <span class="amz-tech-tag"><i class="fas fa-leaf"></i> Django</span>
-                    <span class="amz-tech-tag"><i class="fab fa-js"></i> JavaScript</span>
-                    <span class="amz-tech-tag"><i class="fas fa-database"></i> PostgreSQL</span>
-                    <span class="amz-tech-tag"><i class="fas fa-cloud"></i> Render</span>
-                    <span class="amz-tech-tag"><i class="fas fa-brain"></i> OpenAI</span>
-                    <span class="amz-tech-tag"><i class="fab fa-html5"></i> HTML5</span>
-                    <span class="amz-tech-tag"><i class="fab fa-css3-alt"></i> CSS3</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Contact -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-envelope"></i>
-                <h2>Biz bilan bog'laning</h2>
-            </div>
-            <div class="amz-section-body">
-                <p class="amz-section-text" style="margin-bottom: 20px;">
-                    Savollaringiz, takliflaringiz yoki shikoyatlaringiz bo'lsa, biz bilan bog'lanishingiz mumkin:
-                </p>
-                <div class="amz-contact-grid">
-                    <a href="mailto:akobirsadiloyev8@gmail.com" class="amz-contact-card">
-                        <div class="amz-contact-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div>
-                            <div class="amz-contact-label">Email</div>
-                            <div class="amz-contact-value">akobirsadiloyev8@gmail.com</div>
-                        </div>
-                    </a>
-                    <a href="tel:+998976080115" class="amz-contact-card">
-                        <div class="amz-contact-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div>
-                            <div class="amz-contact-label">Telefon</div>
-                            <div class="amz-contact-value">+998 97 608 01 15</div>
-                        </div>
-                    </a>
-                    <a href="https://github.com/akobirsadiloyev8-lab/cloudstore" target="_blank" class="amz-contact-card">
-                        <div class="amz-contact-icon">
-                            <i class="fab fa-github"></i>
-                        </div>
-                        <div>
-                            <div class="amz-contact-label">GitHub</div>
-                            <div class="amz-contact-value">Open Source</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feedback Form -->
-        <div class="amz-section-card">
-            <div class="amz-section-header">
-                <i class="fas fa-comment-alt"></i>
-                <h2>Fikr qoldiring</h2>
-            </div>
-            <div class="amz-section-body">
-                <p class="amz-section-text" style="margin-bottom: 20px;">
-                    Bizning xizmatimiz haqida fikringizni bildiring. Sizning takliflaringiz biz uchun muhim!
-                </p>
-                
-                {% if messages %}
-                {% for message in messages %}
-                <div class="amz-success-msg" style="margin-bottom: 20px;">
-                    <i class="fas fa-check-circle"></i>
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-                
-                <form action="{% url 'submit_feedback' %}" method="POST" class="amz-feedback-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="redirect_to" value="about">
-                    
-                    <div class="amz-form-group">
-                        <label class="amz-form-label">Ismingiz</label>
-                        <input type="text" name="name" class="amz-form-input" 
-                               placeholder="{% if user.is_authenticated %}{{ user.username }}{% else %}Ismingizni kiriting{% endif %}"
-                               value="{% if user.is_authenticated %}{{ user.username }}{% endif %}">
-                    </div>
-                    
-                    <div class="amz-form-group">
-                        <label class="amz-form-label">Fikringiz <span style="color: #c00;">*</span></label>
-                        <textarea name="message" class="amz-form-textarea" 
-                                  placeholder="Fikr, taklif yoki shikoyatingizni yozing..." required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="amz-submit-btn">
-                        <i class="fas fa-paper-plane"></i> Yuborish
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Back Link -->
-        <div class="amz-back-section">
-            <a href="{% url 'boshlash' %}" class="amz-back-link">
-                <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
-            </a>
-        </div>
-    </div>
+<!-- Scroll to top button -->
+<div class="position-fixed bottom-0 end-0 m-3 z-index-5">
+    <button class="btn btn-theme btn-square rounded-circle shadow" onclick="scrollToTop()">
+        <i class="bi bi-arrow-up"></i>
+    </button>
 </div>
 {% endblock %}

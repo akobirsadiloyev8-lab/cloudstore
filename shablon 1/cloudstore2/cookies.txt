@@ -1,0 +1,6 @@
+# HTTrack Website Copier Cookie File
+# This file format is compatible with Netscape cookies
+adminuiux.com	TRUE	/	FALSE	1999999999	PHPSESSID	dof7pt2ffu3cbfe44dbnvh19er
+.npmjs.com	TRUE	/	FALSE	1999999999	__cf_bm	JP7ozbwCHL1JJbGgi3iqaOXzc22mzKuPWcILOqumhVg-1771499403-1.0.1.1-rttCPXo4KlZ025hDsYSx.DVq5ytypr4HAPoL9Sa7W8EvgHmoc2G_yqm3QxBJeNpObdFJnWc9t8z_j7lvnW.RUDYYCVY9R6HbkPTPL.5q6pQ
+www.npmjs.com	TRUE	/	FALSE	1999999999	SameSite	None
+

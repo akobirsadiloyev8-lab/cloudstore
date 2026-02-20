@@ -1,0 +1,19 @@
+HTTrack3.49-2+htsswf+htsjava launched on Thu, 19 Feb 2026 16:00:59 at https://adminuiux.com/adminuiux/adminux-mobile/html/adminux-dashboard.html +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "en, *" https://adminuiux.com/adminuiux/adminux-mobile/html/adminux-dashboard.html -O1 "D:\5\cloudstore2" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+16:01:04	Warning: 	Moved Permanently for https://adminuiux.com/robots.txt
+16:01:04	Warning: 	Redirected link is identical because of 'URL Hack' option: https://adminuiux.com/robots.txt and https://www.adminuiux.com/robots.txt
+16:01:04	Warning: 	Warning moved treated for https://adminuiux.com/robots.txt (real one is https://www.adminuiux.com/robots.txt)
+16:07:01	Error: 	"Not Found" (404) at link https://www.adminuiux.com/adminuiux/adminux-mobile/html/%22assets/img/modern-ai-image/user-5.jpg (from https://adminuiux.com/adminuiux/adminux-mobile/html/adminux-learning-courses.html)
+16:07:01	Error: 	"Not Found" (404) at link https://www.adminuiux.com/adminuiux/adminux-mobile/html/%22assets/img/modern-ai-image/bus-3.jpg (from https://adminuiux.com/adminuiux/adminux-mobile/html/adminux-learning-courses.html)
+16:10:05	Error: 	"Not Found" (404) at link https://www.adminuiux.com/adminuiux/adminux-mobile/html/%22assets/img/modern-ai-image/flamingo-4.jpg (from https://adminuiux.com/adminuiux/adminux-mobile/html/adminux-subscription.html)
+16:10:05	Error: 	"Not Found" (404) at link https://www.adminuiux.com/adminuiux/adminux-mobile/html/%22assets/img/modern-ai-image/flamingo-2.jpg (from https://adminuiux.com/adminuiux/adminux-mobile/html/component-pricing.html)
+16:10:05	Error: 	"Forbidden" (403) at link https://www.npmjs.com/package/choices.js (from https://adminuiux.com/adminuiux/adminux-mobile/html/component-choicejs.html)
+
+HTTrack Website Copier/3.49-2 mirror complete in 9 minutes 6 seconds : 305 links scanned, 299 files written (57450736 bytes overall) [44132974 bytes received at 80829 bytes/sec], 18113038 bytes transferred using HTTP compression in 158 files, ratio 21%, 8.6 requests per connection
+(5 errors, 3 warnings, 0 messages)
