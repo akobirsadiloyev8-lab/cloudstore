@@ -605,7 +605,7 @@
                 <a class="nav-link" href="{% url 'boshlash' %}">
                     <span>
                         <i class="nav-icon bi bi-house"></i>
-                        <span class="nav-text">Home</span>
+                        <span class="nav-text">Bosh</span>
                     </span>
                 </a>
             </li>
@@ -628,8 +628,8 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'all_books' %}">
                     <span>
-                        <i class="nav-icon bi bi-folder"></i>
-                        <span class="nav-text">Food</span>
+                        <i class="nav-icon bi bi-grid"></i>
+                        <span class="nav-text">Ovqatlar</span>
                     </span>
                 </a>
             </li>
@@ -637,7 +637,7 @@
                 <a class="nav-link" href="{% url 'edit_profile' %}">
                     <span>
                         <i class="menu-icon bi bi-person-circle"></i>
-                        <span class="nav-text">Profile</span>
+                        <span class="nav-text">Profil</span>
                     </span>
                 </a>
             </li>
@@ -673,25 +673,25 @@
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'boshlash' %}active{% endif %}" href="{% url 'boshlash' %}">
                 <i class="bi bi-house"></i>
-                <span>Home</span>
+                <span>Bosh</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="bi bi-wallet2"></i>
-                <span>Wallet</span>
+            <a class="nav-link {% if request.resolver_match.url_name == 'food_diary' %}active{% endif %}" href="{% url 'food_diary' %}">
+                <i class="bi bi-calendar-week"></i>
+                <span>Kunlik</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
-                <i class="bi bi-people"></i>
-                <span>Social</span>
+            <a class="nav-link {% if request.resolver_match.url_name == 'food_scanner' %}active{% endif %}" href="{% url 'food_scanner' %}">
+                <i class="bi bi-upc-scan"></i>
+                <span>Skaner</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'all_books' %}active{% endif %}" href="{% url 'all_books' %}">
-                <i class="bi bi-folder"></i>
-                <span>Files</span>
+                <i class="bi bi-grid"></i>
+                <span>Ovqatlar</span>
             </a>
         </li>
         <li class="nav-item">
@@ -701,7 +701,7 @@
                 {% else %}
                 <i class="bi bi-person-circle"></i>
                 {% endif %}
-                <span>Profile</span>
+                <span>Profil</span>
             </a>
         </li>
     </ul>
