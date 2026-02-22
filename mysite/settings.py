@@ -214,6 +214,7 @@ os.makedirs(FONTS_ROOT, exist_ok=True)
 
 LOGIN_REDIRECT_URL = 'boshlash'
 LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
 
 # Session'larni database'da saqlash (RAM tejash uchun)
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

@@ -1,7 +1,7 @@
 {% extends 'blog/base.html' %}
 {% load static %}
 
-{% block title %}Biz haqimizda - Cloudstore{% endblock %}
+{% block title %}Dastur haqida - Cloudstore{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -10,109 +10,333 @@
         <div class="col-12 col-sm-4 col-md-3 col-lg-2">
             <div class="position-sticky" style="top: 5.8rem;">
                 <div id="list-example" class="list-group adminuiux-list-group bg-none">
-                    <a class="list-group-item list-group-item-action" href="#list-item-1">Xush kelibsiz</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-2">Biz haqimizda</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-3">Xizmatlarimiz</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-4">Bog'lanish</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-1">Umumiy ma'lumot</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-2">Asosiy funksiyalar</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-3">AI imkoniyatlari</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-4">Food Scanner</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-5">Texnologiyalar</a>
+                    <a class="list-group-item list-group-item-action" href="#list-item-6">Bog'lanish</a>
                 </div>
             </div>
         </div>
         
         <!-- Main content -->
         <div class="col-12 col-sm-8 col-md-9 col-lg-10">
-            <!-- Welcome section -->
+            <!-- Overview section -->
             <div class="row" id="list-item-1">
                 <div class="col-12">
                     <div class="card adminuiux-card mb-4">
                         <div class="card-body">
-                            <p class="h1 text-theme-1">Xush kelibsiz!</p>
-                            <p class="h4 mb-4">Cloudstore platformasiga xush kelibsiz!</p>
+                            <p class="h1 text-theme-1"><i class="bi bi-cloud me-2"></i>Cloudstore</p>
+                            <p class="h4 mb-4">Ko'p funksiyali zamonaviy platforma</p>
                             <p class="text-secondary">
-                                Cloudstore - bu zamonaviy elektron kutubxona platformasi bo'lib, sizga minglab kitoblarni 
-                                onlayn o'qish imkoniyatini beradi. Bizning maqsadimiz - bilimni hamma uchun ochiq va 
-                                qulay qilish.
+                                Cloudstore - bu elektron kutubxona, sun'iy intellekt yordamchisi va sog'lom ovqatlanish 
+                                tahlilchisini birlashtirgan innovatsion platforma. Bizning maqsadimiz - zamonaviy 
+                                texnologiyalar orqali kundalik hayotingizni osonlashtirish.
                             </p>
-                            <p class="text-secondary">
-                                Platformamizda siz turli mavzulardagi kitoblarni topishingiz, o'qishingiz va 
-                                sevimli kitoblaringizni saqlashingiz mumkin.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- About us section -->
-            <div class="row pt-5" id="list-item-2">
-                <div class="col-12 pt-5">
-                    <div class="card adminuiux-card mb-4">
-                        <div class="card-body">
-                            <p class="h4 text-theme-1">Biz haqimizda</p>
-                            <p class="h5 mb-4">Cloudstore jamoasi</p>
-                            <p class="text-secondary">
-                                Cloudstore 2024-yilda tashkil etilgan bo'lib, O'zbekistonda raqamli ta'limni 
-                                rivojlantirishga hissa qo'shish maqsadida yaratilgan.
-                            </p>
-                            <p class="text-secondary">
-                                Bizning jamoamiz tajribali dasturchilar va ta'lim mutaxassislaridan iborat. 
-                                Biz doimiy ravishda platformani yaxshilash va yangi imkoniyatlar qo'shish 
-                                ustida ishlaymiz.
-                            </p>
-                            <div class="alert alert-info mb-3">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Cloudstore - bu bepul va ochiq platforma!
+                            <div class="row gx-3 mt-4">
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card bg-theme-1-subtle text-center p-3">
+                                        <i class="bi bi-book h2 text-theme-1"></i>
+                                        <p class="small mb-0">1000+ Kitob</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card bg-success-subtle text-center p-3">
+                                        <i class="bi bi-robot h2 text-success"></i>
+                                        <p class="small mb-0">AI Chat</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card bg-warning-subtle text-center p-3">
+                                        <i class="bi bi-camera h2 text-warning"></i>
+                                        <p class="small mb-0">Food Scanner</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3">
+                                    <div class="card bg-info-subtle text-center p-3">
+                                        <i class="bi bi-file-earmark-arrow-up h2 text-info"></i>
+                                        <p class="small mb-0">File Converter</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Services section -->
+            <!-- Main features section -->
+            <div class="row pt-5" id="list-item-2">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1"><i class="bi bi-stars me-2"></i>Asosiy funksiyalar</p>
+                            <p class="h5 mb-4">Platformaning asosiy imkoniyatlari</p>
+                            
+                            <div class="row gx-3">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-book-half text-theme-1 me-2"></i>Elektron kutubxona</h6>
+                                            <ul class="small text-secondary mb-0">
+                                                <li>Minglab kitoblarni onlayn o'qish</li>
+                                                <li>PDF, EPUB, DOCX formatlarini qo'llab-quvvatlash</li>
+                                                <li>Kitoblarni yuklab olish</li>
+                                                <li>Sevimli kitoblar ro'yxati</li>
+                                                <li>Kitoblar bo'yicha qidiruv</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-file-earmark-pdf text-danger me-2"></i>Fayl konvertori</h6>
+                                            <ul class="small text-secondary mb-0">
+                                                <li>Word ↔ PDF konvertatsiya</li>
+                                                <li>Excel, PowerPoint qo'llab-quvvatlash</li>
+                                                <li>Rasmlarni PDF ga aylantirish</li>
+                                                <li>ZIP fayllarni qayta ishlash</li>
+                                                <li>Batch konvertatsiya</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI features section -->
             <div class="row pt-5" id="list-item-3">
                 <div class="col-12 pt-5">
                     <div class="card adminuiux-card mb-4">
                         <div class="card-body">
-                            <p class="h4 text-theme-1">Xizmatlarimiz</p>
-                            <p class="h5 mb-4">Biz taklif qiladigan xizmatlar</p>
-                            <ul class="list ms-2 text-secondary">
-                                <li><i class="bi bi-book me-2"></i>Minglab kitoblarni onlayn o'qish</li>
-                                <li><i class="bi bi-download me-2"></i>Kitoblarni yuklab olish</li>
-                                <li><i class="bi bi-bookmark me-2"></i>Sevimli kitoblarni saqlash</li>
-                                <li><i class="bi bi-search me-2"></i>Qulay qidiruv tizimi</li>
-                                <li><i class="bi bi-phone me-2"></i>Mobil ilovalar</li>
-                                <li><i class="bi bi-people me-2"></i>Jamiyat va muhokamalar</li>
-                            </ul>
+                            <p class="h4 text-theme-1"><i class="bi bi-robot me-2"></i>AI imkoniyatlari</p>
+                            <p class="h5 mb-4">Sun'iy intellekt asosidagi xizmatlar</p>
+                            
+                            <div class="alert alert-success mb-4">
+                                <i class="bi bi-cpu me-2"></i>
+                                <strong>Groq AI</strong> - Tezkor va aqlli sun'iy intellekt modellari
+                            </div>
+                            
+                            <div class="row gx-3">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-theme-1-subtle h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-chat-dots h1 text-theme-1"></i>
+                                            <h6>AI Chat</h6>
+                                            <p class="small text-secondary mb-0">
+                                                Savollaringizga javob beruvchi aqlli chat. Har qanday mavzuda 
+                                                yordam olishingiz mumkin.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-success-subtle h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-search h1 text-success"></i>
+                                            <h6>Kitoblardan qidirish</h6>
+                                            <p class="small text-secondary mb-0">
+                                                AI yordamida kitoblar ichidan kerakli ma'lumotlarni 
+                                                topish va tahlil qilish.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-warning-subtle h-100">
+                                        <div class="card-body text-center">
+                                            <i class="bi bi-image h1 text-warning"></i>
+                                            <h6>Rasm tahlili</h6>
+                                            <p class="small text-secondary mb-0">
+                                                Rasmlarni yuklang va AI ularni tahlil qilib, 
+                                                ma'lumot beradi.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h6><i class="bi bi-lightning-charge text-warning me-2"></i>Kunlik limitlar:</h6>
+                                <ul class="text-secondary small">
+                                    <li><strong>Bepul foydalanuvchilar:</strong> Kuniga 20 ta so'rov</li>
+                                    <li><strong>Premium foydalanuvchilar:</strong> Cheksiz so'rovlar</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Food Scanner section -->
+            <div class="row pt-5" id="list-item-4">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1"><i class="bi bi-qr-code-scan me-2"></i>Food Scanner</p>
+                            <p class="h5 mb-4">Ovqat va mahsulotlar tahlili</p>
+                            
+                            <div class="row gx-3 align-items-center">
+                                <div class="col-md-6 mb-3">
+                                    <p class="text-secondary">
+                                        Food Scanner - bu sun'iy intellekt yordamida ovqat va oziq-ovqat 
+                                        mahsulotlarini tahlil qiluvchi qulay vosita. Mahsulot rasmini yoki 
+                                        shtrix-kodni skanerlang va to'liq ozuqaviy ma'lumotlarni oling.
+                                    </p>
+                                    
+                                    <h6 class="mt-4"><i class="bi bi-clipboard-data me-2"></i>Tahlil ma'lumotlari:</h6>
+                                    <div class="row gx-2">
+                                        <div class="col-6">
+                                            <ul class="small text-secondary">
+                                                <li>Kaloriya (kcal)</li>
+                                                <li>Oqsil (protein)</li>
+                                                <li>Yog'lar</li>
+                                                <li>Uglevodlar</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-6">
+                                            <ul class="small text-secondary">
+                                                <li>Vitaminlar</li>
+                                                <li>Minerallar</li>
+                                                <li>GI indeks</li>
+                                                <li>Foydali/Zararli nisbati</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="text-center mb-3"><i class="bi bi-check-circle text-success me-2"></i>Xususiyatlar</h6>
+                                            <ul class="small mb-0">
+                                                <li class="mb-2"><i class="bi bi-camera text-theme-1 me-2"></i>Rasm orqali skanerlash</li>
+                                                <li class="mb-2"><i class="bi bi-upc-scan text-theme-1 me-2"></i>Shtrix-kod qidirish</li>
+                                                <li class="mb-2"><i class="bi bi-calculator text-theme-1 me-2"></i>Massa bo'yicha qayta hisoblash</li>
+                                                <li class="mb-2"><i class="bi bi-pie-chart text-theme-1 me-2"></i>Foydali/Zararli nisbati diagrammasi</li>
+                                                <li class="mb-2"><i class="bi bi-lightbulb text-theme-1 me-2"></i>AI tavsiyalari</li>
+                                                <li class="mb-0"><i class="bi bi-journal-plus text-theme-1 me-2"></i>Kunlik ovqatlanish ro'yxati</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technologies section -->
+            <div class="row pt-5" id="list-item-5">
+                <div class="col-12 pt-5">
+                    <div class="card adminuiux-card mb-4">
+                        <div class="card-body">
+                            <p class="h4 text-theme-1"><i class="bi bi-code-slash me-2"></i>Texnologiyalar</p>
+                            <p class="h5 mb-4">Dasturda ishlatilgan texnologiyalar</p>
+                            
+                            <div class="row gx-3">
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-filetype-py h2 text-primary"></i>
+                                        <small>Python</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-box h2 text-success"></i>
+                                        <small>Django</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-bootstrap h2 text-purple"></i>
+                                        <small>Bootstrap</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-filetype-js h2 text-warning"></i>
+                                        <small>JavaScript</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-database h2 text-info"></i>
+                                        <small>PostgreSQL</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4 col-lg-2 mb-3">
+                                    <div class="card text-center p-2">
+                                        <i class="bi bi-cpu h2 text-danger"></i>
+                                        <small>Groq AI</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Versiya:</strong> 2.0 | <strong>Yangilangan:</strong> Fevral 2026
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- Contact section -->
-            <div class="row pt-5" id="list-item-4">
+            <div class="row pt-5" id="list-item-6">
                 <div class="col-12 pt-5">
                     <div class="card adminuiux-card mb-4">
                         <div class="card-body">
-                            <p class="h4 text-theme-1">Bog'lanish</p>
-                            <p class="h5 mb-4">Biz bilan bog'laning</p>
+                            <p class="h4 text-theme-1"><i class="bi bi-envelope me-2"></i>Bog'lanish</p>
+                            <p class="h5 mb-4">Biz bilan aloqaga chiqing</p>
                             <p class="text-secondary">
-                                Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'lanishingiz mumkin:
+                                Savollaringiz, takliflaringiz yoki xatolar haqida xabar bermoqchi bo'lsangiz:
                             </p>
-                            <ul class="list-unstyled text-secondary">
-                                <li class="mb-2">
-                                    <i class="bi bi-envelope me-2 text-theme-1"></i>
-                                    <a href="mailto:info@cloudstore.uz">info@cloudstore.uz</a>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-telegram me-2 text-theme-1"></i>
-                                    <a href="https://t.me/cloudstore_uz" target="_blank">@cloudstore_uz</a>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="bi bi-instagram me-2 text-theme-1"></i>
-                                    <a href="https://instagram.com/cloudstore_uz" target="_blank">@cloudstore_uz</a>
-                                </li>
-                            </ul>
-                            <br>
-                            <p class="h2 text-theme-1">Rahmat!</p>
-                            <p class="h5 text-theme-accent-1 mb-4">Bizni tanlaganingiz uchun tashakkur!</p>
+                            <div class="row gx-3">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <div class="card p-3">
+                                                <i class="bi bi-envelope-fill text-theme-1 me-2"></i>
+                                                <a href="mailto:support@cloudstore.uz">support@cloudstore.uz</a>
+                                            </div>
+                                        </li>
+                                        <li class="mb-3">
+                                            <div class="card p-3">
+                                                <i class="bi bi-telegram text-info me-2"></i>
+                                                <a href="https://t.me/cloudstore_support" target="_blank">@cloudstore_support</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3">
+                                            <div class="card p-3">
+                                                <i class="bi bi-github text-dark me-2"></i>
+                                                <a href="https://github.com/cloudstore" target="_blank">GitHub</a>
+                                            </div>
+                                        </li>
+                                        <li class="mb-3">
+                                            <div class="card p-3">
+                                                <i class="bi bi-instagram text-danger me-2"></i>
+                                                <a href="https://instagram.com/cloudstore_uz" target="_blank">@cloudstore_uz</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="text-center">
+                                <p class="h3 text-theme-1"><i class="bi bi-heart-fill text-danger me-2"></i>Rahmat!</p>
+                                <p class="text-secondary">Cloudstore platformasidan foydalanganingiz uchun tashakkur!</p>
+                                <a href="{% url 'boshlash' %}" class="btn btn-theme">
+                                    <i class="bi bi-house me-2"></i>Bosh sahifaga qaytish
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,7 +347,7 @@
 
 <!-- Scroll to top button -->
 <div class="position-fixed bottom-0 end-0 m-3 z-index-5">
-    <button class="btn btn-theme btn-square rounded-circle shadow" onclick="scrollToTop()">
+    <button class="btn btn-theme btn-square rounded-circle shadow" onclick="scrollToTop()" title="Yuqoriga">
         <i class="bi bi-arrow-up"></i>
     </button>
 </div>

@@ -102,7 +102,7 @@
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <button class="btn btn-theme w-100" data-bs-toggle="modal" data-bs-target="#addFoodModal">
-                                            <i class="bi bi-plus-circle me-2"></i>Ovqat qo'shish
+                                            <i class="bi bi-plus-circle me-2"></i>Mahsulot qo'shish
                                         </button>
                                     </div>
                                 </div>
@@ -129,14 +129,17 @@
                                     <div class="card-body">
                                         {% if meals.breakfast %}
                                             {% for food in meals.breakfast %}
-                                            <div class="row align-items-center py-2 border-bottom">
+                                            <div class="row align-items-center py-2 border-bottom" id="food-item-{{ food.id }}">
                                                 <div class="col">
-                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
-                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                    <h6 class="mb-0">{{ food.name }}</h6>
+                                                    <small class="text-secondary">{{ food.mass|floatformat:0 }}g | O: {{ food.proteins|floatformat:1 }}g | U: {{ food.carbohydrates|floatformat:1 }}g | Y: {{ food.fat|floatformat:1 }}g</small>
                                                 </div>
                                                 <div class="col-auto text-end">
-                                                    <span class="badge bg-warning">{{ food.calories }} kcal</span>
-                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                    <span class="badge bg-warning">{{ food.calories|floatformat:0 }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-primary" onclick="editFood({{ food.id }}, '{{ food.name|escapejs }}', {{ food.mass }}, {{ food.calories }}, {{ food.proteins }}, {{ food.carbohydrates }}, {{ food.fat }}, '{{ food.meal_type }}')" title="Tahrirlash">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})" title="O'chirish">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -172,14 +175,17 @@
                                     <div class="card-body">
                                         {% if meals.lunch %}
                                             {% for food in meals.lunch %}
-                                            <div class="row align-items-center py-2 border-bottom">
+                                            <div class="row align-items-center py-2 border-bottom" id="food-item-{{ food.id }}">
                                                 <div class="col">
-                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
-                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                    <h6 class="mb-0">{{ food.name }}</h6>
+                                                    <small class="text-secondary">{{ food.mass|floatformat:0 }}g | O: {{ food.proteins|floatformat:1 }}g | U: {{ food.carbohydrates|floatformat:1 }}g | Y: {{ food.fat|floatformat:1 }}g</small>
                                                 </div>
                                                 <div class="col-auto text-end">
-                                                    <span class="badge bg-success">{{ food.calories }} kcal</span>
-                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                    <span class="badge bg-success">{{ food.calories|floatformat:0 }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-primary" onclick="editFood({{ food.id }}, '{{ food.name|escapejs }}', {{ food.mass }}, {{ food.calories }}, {{ food.proteins }}, {{ food.carbohydrates }}, {{ food.fat }}, '{{ food.meal_type }}')" title="Tahrirlash">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})" title="O'chirish">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -215,14 +221,17 @@
                                     <div class="card-body">
                                         {% if meals.dinner %}
                                             {% for food in meals.dinner %}
-                                            <div class="row align-items-center py-2 border-bottom">
+                                            <div class="row align-items-center py-2 border-bottom" id="food-item-{{ food.id }}">
                                                 <div class="col">
-                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
-                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                    <h6 class="mb-0">{{ food.name }}</h6>
+                                                    <small class="text-secondary">{{ food.mass|floatformat:0 }}g | O: {{ food.proteins|floatformat:1 }}g | U: {{ food.carbohydrates|floatformat:1 }}g | Y: {{ food.fat|floatformat:1 }}g</small>
                                                 </div>
                                                 <div class="col-auto text-end">
-                                                    <span class="badge bg-primary">{{ food.calories }} kcal</span>
-                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                    <span class="badge bg-primary">{{ food.calories|floatformat:0 }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-primary" onclick="editFood({{ food.id }}, '{{ food.name|escapejs }}', {{ food.mass }}, {{ food.calories }}, {{ food.proteins }}, {{ food.carbohydrates }}, {{ food.fat }}, '{{ food.meal_type }}')" title="Tahrirlash">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})" title="O'chirish">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -258,14 +267,17 @@
                                     <div class="card-body">
                                         {% if meals.snack %}
                                             {% for food in meals.snack %}
-                                            <div class="row align-items-center py-2 border-bottom">
+                                            <div class="row align-items-center py-2 border-bottom" id="food-item-{{ food.id }}">
                                                 <div class="col">
-                                                    <h6 class="mb-0">{{ food.food_name }}</h6>
-                                                    <small class="text-secondary">{{ food.quantity }}g</small>
+                                                    <h6 class="mb-0">{{ food.name }}</h6>
+                                                    <small class="text-secondary">{{ food.mass|floatformat:0 }}g | O: {{ food.proteins|floatformat:1 }}g | U: {{ food.carbohydrates|floatformat:1 }}g | Y: {{ food.fat|floatformat:1 }}g</small>
                                                 </div>
                                                 <div class="col-auto text-end">
-                                                    <span class="badge bg-danger">{{ food.calories }} kcal</span>
-                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})">
+                                                    <span class="badge bg-danger">{{ food.calories|floatformat:0 }} kcal</span>
+                                                    <button class="btn btn-sm btn-link text-primary" onclick="editFood({{ food.id }}, '{{ food.name|escapejs }}', {{ food.mass }}, {{ food.calories }}, {{ food.proteins }}, {{ food.carbohydrates }}, {{ food.fat }}, '{{ food.meal_type }}')" title="Tahrirlash">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-danger" onclick="deleteFood({{ food.id }})" title="O'chirish">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </div>
@@ -538,6 +550,66 @@
     </div>
 </div>
 
+<!-- Ovqat tahrirlash modali -->
+<div class="modal fade" id="editFoodModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Ovqatni tahrirlash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFoodForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="food_id" id="editFoodId">
+                    <div class="mb-3">
+                        <label class="form-label">Taom nomi</label>
+                        <input type="text" class="form-control" id="editFoodName" readonly disabled style="background-color: #f8f9fa;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ovqat turi</label>
+                        <select class="form-select" name="meal_type" id="editMealType" required>
+                            <option value="breakfast">Nonushta</option>
+                            <option value="lunch">Tushlik</option>
+                            <option value="dinner">Kechki ovqat</option>
+                            <option value="snack">Yengil taom</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Miqdori (gramm)</label>
+                        <input type="number" class="form-control" name="mass" id="editFoodMass" min="1" required>
+                        <small class="text-secondary">Miqdorni o'zgartirsangiz, kaloriya va ozuqaviy qiymatlar avtomatik qayta hisoblanadi</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Kaloriya (kcal)</label>
+                            <input type="text" class="form-control" id="editFoodCalories" readonly disabled style="background-color: #f8f9fa;">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Oqsil (g)</label>
+                            <input type="text" class="form-control" id="editFoodProteins" readonly disabled style="background-color: #f8f9fa;">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Uglevod (g)</label>
+                            <input type="text" class="form-control" id="editFoodCarbs" readonly disabled style="background-color: #f8f9fa;">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Yog' (g)</label>
+                            <input type="text" class="form-control" id="editFoodFat" readonly disabled style="background-color: #f8f9fa;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-theme" onclick="submitEditFood()">Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function openAddFood(mealType) {
     document.getElementById('mealType').value = mealType;
@@ -588,6 +660,56 @@ function deleteFood(id) {
             }
         });
     }
+}
+
+// Tahrirlash funksiyalari
+function editFood(id, name, mass, calories, proteins, carbs, fat, mealType) {
+    document.getElementById('editFoodId').value = id;
+    document.getElementById('editFoodName').value = name;
+    document.getElementById('editFoodMass').value = Math.round(mass);
+    document.getElementById('editFoodCalories').value = Math.round(calories) + ' kcal';
+    document.getElementById('editFoodProteins').value = proteins.toFixed(1) + ' g';
+    document.getElementById('editFoodCarbs').value = carbs.toFixed(1) + ' g';
+    document.getElementById('editFoodFat').value = fat.toFixed(1) + ' g';
+    document.getElementById('editMealType').value = mealType;
+    
+    var modal = new bootstrap.Modal(document.getElementById('editFoodModal'));
+    modal.show();
+}
+
+function submitEditFood() {
+    const foodId = document.getElementById('editFoodId').value;
+    const mass = document.getElementById('editFoodMass').value;
+    const mealType = document.getElementById('editMealType').value;
+    
+    if (!mass || mass <= 0) {
+        alert('Miqdor 0 dan katta bo\'lishi kerak');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('mass', mass);
+    formData.append('meal_type', mealType);
+    
+    fetch('/api/food-intake/' + foodId + '/update/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Xatolik yuz berdi');
+        }
+    })
+    .catch(error => {
+        console.error('Xatolik:', error);
+        alert('Xatolik yuz berdi');
+    });
 }
 </script>
 

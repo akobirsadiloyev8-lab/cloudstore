@@ -12,7 +12,7 @@
 
     </div>
 </div>
-                        <main class="adminuiux-content has-sidebar" onclick="contentClick()">
+                        
 
                             <!-- page title -->
                             <div class="container-fluid py-1 py-lg-3">
@@ -55,38 +55,235 @@
                                     </div>
 
                                     <!-- rank and progress -->
-                                    <div class="col-12 col-md-auto ms-auto align-self-center">
-                                        <div class="row gx-3 gx-lg-4">
-                                            <div class="col col-md col-lg-auto mnw-100 text-center">
-                                                <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
-                                                    <div class="card-body">
-                                                        <i class="bi bi-trophy h5 avatar avatar-60 bg-theme-1-subtle text-theme-1 theme-orange rounded-circle mb-3"></i>
-                                                        <h4 class="increamentcount mb-0">258</h4>
-                                                        <p class="small text-secondary">Mahsulot</p>
+
+                                    <!-- Food Image Card - Taom rasmi -->
+                                    <div class="col-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
+                                        <div class="card adminuiux-card shadow-sm h-100" id="food-image-card">
+                                            <div class="card-body p-0">
+                                                {% if food_data %}
+                                                <div class="position-relative">
+                                                    <div class="coverimg w-100 height-250" style="border-radius: 0.5rem;">
+                                                        <img src="{% static '' %}{{ food_data.image }}" alt="{{ food_data.name }}" id="food-display-image" class="w-100 h-100" style="object-fit: cover; border-radius: 0.5rem;">
+                                                    </div>
+                                                    <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7)); border-radius: 0 0 0.5rem 0.5rem;">
+                                                        <h5 class="text-white mb-1" id="food-display-name">{{ food_data.name }}</h5>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> <span id="food-positive">{{ food_data.positive_percent }}</span>%</span>
+                                                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> <span id="food-negative">{{ food_data.negative_percent }}</span>%</span>
+                                                            <span class="badge bg-warning text-dark">~<span id="food-kcal-badge">{{ food_data.calories }}</span> kcal</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% else %}
+                                                <!-- Default: Tips swiper when no food -->
+                                                <div class="swiper swipernav h-100 text-center p-3">
+                                                    <div class="swiper-wrapper">
+                                                        <div class="swiper-slide">
+                                                            <i class="bi bi-search h4 text-theme-1 mb-3 d-block"></i>
+                                                            <h6>Taom qidiring</h6>
+                                                            <p class="small text-secondary">Qidiruv maydoniga taom, salat yoki desert nomini yozing.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                    <div class="container mt-3" id="main-content">
+                                <!-- statistics summary -->
+                                <div class="row gx-3 gx-lg-4">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-fire h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-orange rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Kaloriya</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green">100g</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="calories-value">0</span> <small class="fs-14 text-secondary fw-normal">kcal</small></h6>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col col-md col-lg-auto mnw-100 text-center">
-                                                <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
-                                                    <div class="card-body">
-                                                        <i class="bi bi-award h4 avatar avatar-60 bg-theme-1-subtle text-theme-1 theme-green rounded-circle mb-3"></i>
-                                                        <h4 class="increamentcount mb-0">133</h4>
-                                                        <p class="small text-secondary">Eng yaxshilar</p>
-                                                    </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchartpink"></canvas>
                                                 </div>
-                                            </div>
-                                            <div class="col col-md col-lg-auto mnw-100 text-center">
-                                                <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
-                                                    <div class="card-body">
-                                                        <i class="bi bi-clipboard-check h5 avatar avatar-60 bg-theme-1-subtle text-theme-1 rounded-circle mb-3"></i>
-                                                        <h4 class="increamentcount mb-0">124</h4>
-                                                        <p class="small text-secondary">Yakunlangan vazifalar</p>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Oqsil</p>
+                                                        <h6><span id="protein-mini">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Yog'</p>
+                                                        <h6><span id="fat-mini">0</span>g</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Uglevod</p>
+                                                        <h6><span id="carbs-mini">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Tola</p>
+                                                        <h6><span id="fiber-mini">0</span>g</h6>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-2">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-egg-fried h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-blue rounded"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Oqsillar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green" id="protein-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="protein-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="height-90 mb-3">
+                                                    <canvas id="barchart"></canvas>
+                                                </div>
+                                                <div class="row gx-2">
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Hayvon oqsili</p>
+                                                        <h6 id="animal-protein">0g</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">O'simlik oqsili</p>
+                                                        <h6 id="plant-protein">0g</h6>
+                                                    </div>
+
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Aminokislotalar</p>
+                                                        <h6 id="amino-acids">-</h6>
+                                                    </div>
+                                                    <div class="col col-md-6 mb-3">
+                                                        <p class="text-secondary small mb-0">Sifati</p>
+                                                        <h6 id="protein-quality">-</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-4">
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-droplet h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-yellow rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Yog'lar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-yellow" id="fat-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="fat-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartpink2"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">To'yingan</p>
+                                                        <h6><span id="saturated-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">To'yinmagan</p>
+                                                        <h6><span id="unsaturated-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Trans yog'</p>
+                                                        <h6><span id="trans-fat">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Xolesterin</p>
+                                                        <h6><span id="cholesterol">0</span>mg</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                            <div class="card-header">
+                                                <div class="row gx-3">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-cup-hot h5 avatar avatar-40 bg-theme-1-subtle text-theme-1 theme-red rounded"></i>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row gx-0">
+                                                            <div class="col">
+                                                                <p class="small text-secondary">Uglevodlar</p>
+                                                            </div>
+                                                            <div class="col-auto">
+                                                                <p class="small text-theme-1 theme-green" id="carbs-status">-</p>
+                                                            </div>
+                                                        </div>
+                                                        <h6><span id="carbs-value">0</span> <small class="fs-14 text-secondary fw-normal">gramm</small></h6>
+                                                    </div>
+                                                    <div class="col-4 ms-auto">
+                                                        <div class="height-40">
+                                                            <canvas id="barchartred"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-0">
+                                                <div class="row gx-2">
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Shakar</p>
+                                                        <h6><span id="sugar-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Kraxmal</p>
+                                                        <h6><span id="starch-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">Tola</p>
+                                                        <h6><span id="fiber-value">0</span>g</h6>
+                                                    </div>
+                                                    <div class="col mb-3">
+                                                        <p class="text-secondary small mb-0">GI indeks</p>
+                                                        <h6><span id="gi-value">0</span></h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                <!-- Big chart traffic flow-->
+                                
+                                
+                                    <!--charts category summary-->
+                                    
+                                
 
                                 <div class="row gx-3 gx-lg-4">
                                     <!-- summary blocks -->
@@ -219,11 +416,11 @@
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/pet-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/acchiq_chuchuk.jpg' %}" alt="">
                                                 </div>
-                                                <div class="card-body bg-none ">
+                                                <div class="card-body bg-none">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~50 kcal</p>
                                                             <h6>Achchiq-chuchuk</h6>
@@ -231,17 +428,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-youtubelogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 80% <i class="bi bi-x-circle text-danger ms-2"></i> 20%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/taxi-1.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/olivier_salad.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~190 kcal</p>
                                                             <h6>Olivye</h6>
@@ -249,17 +445,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-netflixlogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 50% <i class="bi bi-x-circle text-danger ms-2"></i> 50%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/user-1-kid.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/sezar.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~180 kcal</p>
                                                             <h6>Sezar</h6>
@@ -267,17 +462,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-paypal.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 60% <i class="bi bi-x-circle text-danger ms-2"></i> 40%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/tree-2.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/yunoncha salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~120 kcal</p>
                                                             <h6>Yunoncha salat</h6>
@@ -285,17 +479,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-swiggy.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 75% <i class="bi bi-x-circle text-danger ms-2"></i> 25%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/bus-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/mimoza.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~200 kcal</p>
                                                             <h6>Mimoza</h6>
@@ -303,35 +496,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-amazon_Prime.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 55% <i class="bi bi-x-circle text-danger ms-2"></i> 45%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/pet-3.jpg" alt="">
-                                                </div>
-                                                <div class="card-body bg-none ">
-                                                    <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
-                                                        <div class="col-12 align-self-end">
-                                                            <p class="opacity-75 small mb-1">~210 kcal</p>
-                                                            <h6>Mo'ynali kiyim ostida</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <img src="assets/img/adminux/services-youtubelogo.png" class="mw-100 mb-3" alt=""><br />
-                                            <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 50% <i class="bi bi-x-circle text-danger ms-2"></i> 50%</button>
-                                        </div>
-                                        <div class="swiper-slide w-auto">
-                                            <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
-                                                <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/taxi-1.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/sabzavotli salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~70 kcal</p>
                                                             <h6>Sabzavotli salat</h6>
@@ -339,17 +513,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-netflixlogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 85% <i class="bi bi-x-circle text-danger ms-2"></i> 15%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/user-1-kid.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/bodring-pomidor.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~60 kcal</p>
                                                             <h6>Bodring-pomidor</h6>
@@ -357,17 +530,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-paypal.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 85% <i class="bi bi-x-circle text-danger ms-2"></i> 15%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/tree-2.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/kartoshkali.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~150 kcal</p>
                                                             <h6>Kartoshka salati</h6>
@@ -375,17 +547,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-swiggy.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 55% <i class="bi bi-x-circle text-danger ms-2"></i> 45%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/bus-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/tovuq salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~160 kcal</p>
                                                             <h6>Tovuq salati</h6>
@@ -393,17 +564,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-amazon_Prime.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 65% <i class="bi bi-x-circle text-danger ms-2"></i> 35%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/pet-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/baliqli salat.jpg' %}" alt="">
                                                 </div>
-                                                <div class="card-body bg-none ">
+                                                <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~170 kcal</p>
                                                             <h6>Baliqli salat</h6>
@@ -411,17 +581,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-youtubelogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 65% <i class="bi bi-x-circle text-danger ms-2"></i> 35%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/taxi-1.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/qovoq.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~80 kcal</p>
                                                             <h6>Qovoq salati</h6>
@@ -429,17 +598,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-netflixlogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 75% <i class="bi bi-x-circle text-danger ms-2"></i> 25%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/user-1-kid.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/lavlagi.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~90 kcal</p>
                                                             <h6>Lavlagi salati</h6>
@@ -447,17 +615,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-paypal.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 80% <i class="bi bi-x-circle text-danger ms-2"></i> 20%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/tree-2.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/kokatli salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~40 kcal</p>
                                                             <h6>Ko'katli salat</h6>
@@ -465,17 +632,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-swiggy.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 85% <i class="bi bi-x-circle text-danger ms-2"></i> 15%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/bus-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/tuxumli salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~140 kcal</p>
                                                             <h6>Tuxum salati</h6>
@@ -483,17 +649,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-amazon_Prime.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 60% <i class="bi bi-x-circle text-danger ms-2"></i> 40%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/pet-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/qatti sabzavot salat.jpg' %}" alt="">
                                                 </div>
-                                                <div class="card-body bg-none ">
+                                                <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~100 kcal</p>
                                                             <h6>Qatiqli sabzavot salati</h6>
@@ -501,17 +666,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-youtubelogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 70% <i class="bi bi-x-circle text-danger ms-2"></i> 30%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/taxi-1.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/guruchli.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~160 kcal</p>
                                                             <h6>Guruchli salat</h6>
@@ -519,17 +683,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-netflixlogo.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 55% <i class="bi bi-x-circle text-danger ms-2"></i> 45%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/user-1-kid.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/mevali salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~90 kcal</p>
                                                             <h6>Mevali salat</h6>
@@ -537,17 +700,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-paypal.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 80% <i class="bi bi-x-circle text-danger ms-2"></i> 20%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/tree-2.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/pishloqli salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~150 kcal</p>
                                                             <h6>Pishloqli salat</h6>
@@ -555,17 +717,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-swiggy.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 65% <i class="bi bi-x-circle text-danger ms-2"></i> 35%</button>
                                         </div>
                                         <div class="swiper-slide w-auto">
                                             <div class="card border-0 text-white height-300 width-200 overflow-hidden mb-3">
                                                 <div class="coverimg position-absolute end-0 top-0 w-100 h-100 overlay-gradiant">
-                                                    <img src="assets/img/modern-ai-image/bus-3.jpg" alt="">
+                                                    <img src="{% static 'assets/img/salatlar/vitaminli salat.jpg' %}" alt="">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="overlay"></div>
-                                                    <div class="row h-100 z-index-1 position-relative ">
+                                                    <div class="row h-100 z-index-1 position-relative">
                                                         <div class="col-12 align-self-end">
                                                             <p class="opacity-75 small mb-1">~70 kcal</p>
                                                             <h6>Vitaminli sabzavot salati</h6>
@@ -573,7 +734,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <img src="assets/img/adminux/services-amazon_Prime.png" class="mw-100 mb-3" alt=""><br />
                                             <button type="button" class="btn btn-outline-theme btn-sm"><i class="bi bi-check-circle text-success"></i> 85% <i class="bi bi-x-circle text-danger ms-2"></i> 15%</button>
                                         </div>
                                     </div>
@@ -599,7 +759,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/chak chak.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~420 kcal</p>
                                                     <h6 class="mb-3">Chak-chak</h6>
@@ -611,7 +771,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/halva.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~500 kcal</p>
                                                     <h6 class="mb-3">Halva</h6>
@@ -623,7 +783,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/pahlava.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~460 kcal</p>
                                                     <h6 class="mb-3">Pahlava</h6>
@@ -635,7 +795,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/medovik.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~400 kcal</p>
                                                     <h6 class="mb-3">Medovik</h6>
@@ -647,7 +807,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-5.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/napaleon.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~380 kcal</p>
                                                     <h6 class="mb-3">Napoleon</h6>
@@ -659,7 +819,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-6.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/shokoladli tort.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~420 kcal</p>
                                                     <h6 class="mb-3">Shokoladli tort</h6>
@@ -671,7 +831,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-8.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/tiramisu.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~350 kcal</p>
                                                     <h6 class="mb-3">Tiramisu</h6>
@@ -683,7 +843,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-9.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/chizkeyk.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~360 kcal</p>
                                                     <h6 class="mb-3">Chizkeyk</h6>
@@ -695,7 +855,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/brauni.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~410 kcal</p>
                                                     <h6 class="mb-3">Brauni</h6>
@@ -707,7 +867,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/limonli tort.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~330 kcal</p>
                                                     <h6 class="mb-3">Limonli tart</h6>
@@ -719,7 +879,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/merenga ruleti.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~370 kcal</p>
                                                     <h6 class="mb-3">Merenga ruleti</h6>
@@ -731,7 +891,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/matcha ruleti.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~340 kcal</p>
                                                     <h6 class="mb-3">Matcha ruleti</h6>
@@ -743,7 +903,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-5.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/olchali brauni.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~390 kcal</p>
                                                     <h6 class="mb-3">Olchali brauni</h6>
@@ -755,7 +915,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-6.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/nokli brauni.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~380 kcal</p>
                                                     <h6 class="mb-3">Nokli brauni</h6>
@@ -767,7 +927,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-8.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/qush suti.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~360 kcal</p>
                                                     <h6 class="mb-3">Qush suti</h6>
@@ -779,7 +939,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-9.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/bananli keks.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~350 kcal</p>
                                                     <h6 class="mb-3">Bananli keks</h6>
@@ -791,7 +951,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/chia puddingi.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~180 kcal</p>
                                                     <h6 class="mb-3">Chia pudingi</h6>
@@ -803,7 +963,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/qahvali desert.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~300 kcal</p>
                                                     <h6 class="mb-3">Qahvali desert</h6>
@@ -815,7 +975,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/murabbo.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~250 kcal</p>
                                                     <h6 class="mb-3">Murabbo</h6>
@@ -827,7 +987,7 @@
                                             <div class="card adminuiux-card shadow-sm width-200">
                                                 <div class="card-body">
                                                     <div class="coverimg w-100 height-180 rounded mb-3">
-                                                        <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                        <img src="{% static 'assets/img/desertlar/quritilgan mevalar.jpg' %}" alt="" />
                                                     </div>
                                                     <p class="text-secondary small mb-1">~220 kcal</p>
                                                     <h6 class="mb-3">Quritilgan mevalar</h6>
@@ -862,7 +1022,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-green text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/osh palov.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~200 kcal</p>
                                                             <h6 class="mb-3">Osh (palov)</h6>
@@ -874,7 +1034,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-red text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/shashlik.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~220 kcal</p>
                                                             <h6 class="mb-3">Shashlik (kabob)</h6>
@@ -886,7 +1046,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-yellow text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/manti.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~250 kcal</p>
                                                             <h6 class="mb-3">Manti</h6>
@@ -898,7 +1058,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-black text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/lagmon.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~180 kcal</p>
                                                             <h6 class="mb-3">Lag'mon</h6>
@@ -910,7 +1070,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-pink text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-5.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/somsa.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~270 kcal</p>
                                                             <h6 class="mb-3">Somsa</h6>
@@ -922,7 +1082,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-purple text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-6.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/chuchvara.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~210 kcal</p>
                                                             <h6 class="mb-3">Chuchvara</h6>
@@ -934,7 +1094,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-blue text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-8.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/sumlak.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~160 kcal</p>
                                                             <h6 class="mb-3">Sumalak</h6>
@@ -946,7 +1106,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-cyan text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-9.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/norin.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~230 kcal</p>
                                                             <h6 class="mb-3">Norin</h6>
@@ -958,7 +1118,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-orange text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/qovurma gosht.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~250 kcal</p>
                                                             <h6 class="mb-3">Qovurma go'sht</h6>
@@ -970,7 +1130,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-green text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/tandir gosht.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~220 kcal</p>
                                                             <h6 class="mb-3">Tandir go'sht</h6>
@@ -982,7 +1142,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-red text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/qozon kabob.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~240 kcal</p>
                                                             <h6 class="mb-3">Qozon kabob</h6>
@@ -994,7 +1154,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-yellow text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/dolma.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~180 kcal</p>
                                                             <h6 class="mb-3">Dolma</h6>
@@ -1006,7 +1166,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-black text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-5.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/mastava.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~120 kcal</p>
                                                             <h6 class="mb-3">Mastava</h6>
@@ -1018,7 +1178,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-pink text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-6.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/shorva.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~100 kcal</p>
                                                             <h6 class="mb-3">Sho'rva</h6>
@@ -1030,7 +1190,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-purple text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-8.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/beshbarmoq.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~230 kcal</p>
                                                             <h6 class="mb-3">Beshbarmoq</h6>
@@ -1042,7 +1202,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-blue text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-9.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/qazi.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~300 kcal</p>
                                                             <h6 class="mb-3">Qazi</h6>
@@ -1054,7 +1214,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-cyan text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-1.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/tandir somsa.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~280 kcal</p>
                                                             <h6 class="mb-3">Tandir somsa</h6>
@@ -1066,7 +1226,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-green text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-2.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/baliq kabob.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~190 kcal</p>
                                                             <h6 class="mb-3">Balik kabob</h6>
@@ -1078,7 +1238,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-red text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-3.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/qovun.png' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~40 kcal</p>
                                                             <h6 class="mb-3">Qovun</h6>
@@ -1090,7 +1250,7 @@
                                                     <div class="card border-0 width-200 bg-theme-r-gradient theme-yellow text-white">
                                                         <div class="card-body">
                                                             <div class="coverimg w-100 height-180 rounded mb-3">
-                                                                <img src="assets/img/adminux/product-4.jpg" alt="" />
+                                                                <img src="{% static 'assets/img/taomlar/non.jpg' %}" alt="" />
                                                             </div>
                                                             <p class="opacity-75 small mb-1">~250 kcal</p>
                                                             <h6 class="mb-3">Non (tandir non)</h6>
@@ -1610,4 +1770,206 @@
                             <!-- footer -->
                             <!-- large footer -->
 
+{% endblock %}
+
+{% block extra_js %}
+<!-- Food Data JSON -->
+{% if food_data %}
+<script id="food-data-json" type="application/json">
+{
+    "name": "{{ food_data.name|escapejs }}",
+    "category": "{{ food_data.category|escapejs }}",
+    "image": "{{ food_data.image|escapejs }}",
+    "calories": {{ food_data.calories|default:0 }},
+    "protein": {{ food_data.protein|default:0 }},
+    "fat": {{ food_data.fat|default:0 }},
+    "carbs": {{ food_data.carbs|default:0 }},
+    "fiber": {{ food_data.fiber|default:0 }},
+    "sugar": {{ food_data.sugar|default:0 }},
+    "saturated_fat": {{ food_data.saturated_fat|default:0 }},
+    "unsaturated_fat": {{ food_data.unsaturated_fat|default:0 }},
+    "trans_fat": {{ food_data.trans_fat|default:0 }},
+    "cholesterol": {{ food_data.cholesterol|default:0 }},
+    "gi_index": {{ food_data.gi_index|default:0 }},
+    "positive_percent": {{ food_data.positive_percent|default:50 }},
+    "negative_percent": {{ food_data.negative_percent|default:50 }},
+    "animal_protein": {{ food_data.animal_protein|default:0 }},
+    "plant_protein": {{ food_data.plant_protein|default:0 }},
+    "amino_acids": "{{ food_data.amino_acids|default:'-'|escapejs }}",
+    "protein_quality": "{{ food_data.protein_quality|default:'-'|escapejs }}"
+}
+</script>
+{% endif %}
+
+<script>
+// Get food data from JSON script tag
+const foodDataElement = document.getElementById('food-data-json');
+const foodData = foodDataElement ? JSON.parse(foodDataElement.textContent) : null;
+
+// Initialize food display
+document.addEventListener('DOMContentLoaded', function() {
+    if (foodData) {
+        updateFoodDisplay(foodData);
+    }
+    
+    // Search functionality from base.html search input
+    const searchInput = document.getElementById('searchglobal');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            searchTimeout = setTimeout(() => {
+                if (query.length >= 2) {
+                    searchFood(query);
+                }
+            }, 500);
+        });
+        
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = e.target.value.trim();
+                if (query) {
+                    // Redirect to same page with food query
+                    window.location.href = '/kitoblar/?food=' + encodeURIComponent(query);
+                }
+            }
+        });
+    }
+});
+
+// Search food via API
+function searchFood(query) {
+    fetch('/api/search-food/?q=' + encodeURIComponent(query))
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.found && data.food) {
+                updateFoodDisplay(data.food);
+            }
+        })
+        .catch(error => console.error('Search error:', error));
+}
+
+// Update food display with data
+function updateFoodDisplay(food) {
+    // Update image card
+    const foodImage = document.getElementById('food-display-image');
+    const foodName = document.getElementById('food-display-name');
+    const foodPositive = document.getElementById('food-positive');
+    const foodNegative = document.getElementById('food-negative');
+    const foodKcalBadge = document.getElementById('food-kcal-badge');
+    
+    if (foodImage && food.image) {
+        foodImage.src = '/static/' + food.image;
+        foodImage.alt = food.name;
+    }
+    if (foodName) foodName.textContent = food.name;
+    if (foodPositive) foodPositive.textContent = food.positive_percent;
+    if (foodNegative) foodNegative.textContent = food.negative_percent;
+    if (foodKcalBadge) foodKcalBadge.textContent = food.calories;
+    
+    // Update calories card
+    const caloriesValue = document.getElementById('calories-value');
+    const proteinMini = document.getElementById('protein-mini');
+    const fatMini = document.getElementById('fat-mini');
+    const carbsMini = document.getElementById('carbs-mini');
+    const fiberMini = document.getElementById('fiber-mini');
+    
+    if (caloriesValue) caloriesValue.textContent = food.calories || 0;
+    if (proteinMini) proteinMini.textContent = food.protein || 0;
+    if (fatMini) fatMini.textContent = food.fat || 0;
+    if (carbsMini) carbsMini.textContent = food.carbs || 0;
+    if (fiberMini) fiberMini.textContent = food.fiber || 0;
+    
+    // Update protein card
+    const proteinValue = document.getElementById('protein-value');
+    const animalProtein = document.getElementById('animal-protein');
+    const plantProtein = document.getElementById('plant-protein');
+    const aminoAcids = document.getElementById('amino-acids');
+    const proteinQuality = document.getElementById('protein-quality');
+    
+    if (proteinValue) proteinValue.textContent = food.protein || 0;
+    if (animalProtein) animalProtein.textContent = (food.animal_protein || 0) + 'g';
+    if (plantProtein) plantProtein.textContent = (food.plant_protein || 0) + 'g';
+    if (aminoAcids) aminoAcids.textContent = food.amino_acids || '-';
+    if (proteinQuality) proteinQuality.textContent = food.protein_quality || '-';
+    
+    // Update fat card
+    const fatValue = document.getElementById('fat-value');
+    const saturatedFat = document.getElementById('saturated-fat');
+    const unsaturatedFat = document.getElementById('unsaturated-fat');
+    const transFat = document.getElementById('trans-fat');
+    const cholesterol = document.getElementById('cholesterol');
+    
+    if (fatValue) fatValue.textContent = food.fat || 0;
+    if (saturatedFat) saturatedFat.textContent = food.saturated_fat || 0;
+    if (unsaturatedFat) unsaturatedFat.textContent = food.unsaturated_fat || 0;
+    if (transFat) transFat.textContent = food.trans_fat || 0;
+    if (cholesterol) cholesterol.textContent = food.cholesterol || 0;
+    
+    // Update carbs card
+    const carbsValue = document.getElementById('carbs-value');
+    const sugarValue = document.getElementById('sugar-value');
+    const fiberValue = document.getElementById('fiber-value');
+    const giValue = document.getElementById('gi-value');
+    const starchValue = document.getElementById('starch-value');
+    
+    if (carbsValue) carbsValue.textContent = food.carbs || 0;
+    if (sugarValue) sugarValue.textContent = food.sugar || 0;
+    if (fiberValue) fiberValue.textContent = food.fiber || 0;
+    if (giValue) giValue.textContent = food.gi_index || 0;
+    
+    // Starch is calculated as carbs - sugar - fiber (approximate)
+    if (starchValue) {
+        const starch = Math.max(0, (food.carbs || 0) - (food.sugar || 0) - (food.fiber || 0));
+        starchValue.textContent = Math.round(starch);
+    }
+    
+    // Update status indicators
+    const proteinStatus = document.getElementById('protein-status');
+    const fatStatus = document.getElementById('fat-status');
+    const carbsStatus = document.getElementById('carbs-status');
+    
+    if (proteinStatus) {
+        if (food.protein >= 15) {
+            proteinStatus.textContent = 'Yuqori';
+            proteinStatus.className = 'small text-theme-1 theme-green';
+        } else if (food.protein >= 5) {
+            proteinStatus.textContent = "O'rta";
+            proteinStatus.className = 'small text-theme-1 theme-yellow';
+        } else {
+            proteinStatus.textContent = 'Past';
+            proteinStatus.className = 'small text-theme-1 theme-red';
+        }
+    }
+    
+    if (fatStatus) {
+        if (food.fat <= 5) {
+            fatStatus.textContent = 'Kam';
+            fatStatus.className = 'small text-theme-1 theme-green';
+        } else if (food.fat <= 15) {
+            fatStatus.textContent = "O'rta";
+            fatStatus.className = 'small text-theme-1 theme-yellow';
+        } else {
+            fatStatus.textContent = "Ko'p";
+            fatStatus.className = 'small text-theme-1 theme-red';
+        }
+    }
+    
+    if (carbsStatus) {
+        if (food.gi_index <= 40) {
+            carbsStatus.textContent = 'Past GI';
+            carbsStatus.className = 'small text-theme-1 theme-green';
+        } else if (food.gi_index <= 55) {
+            carbsStatus.textContent = "O'rta GI";
+            carbsStatus.className = 'small text-theme-1 theme-yellow';
+        } else {
+            carbsStatus.textContent = 'Yuqori GI';
+            carbsStatus.className = 'small text-theme-1 theme-red';
+        }
+    }
+}
+</script>
 {% endblock %}

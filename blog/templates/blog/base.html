@@ -5,9 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- PWA iOS Status Bar -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#22c55e">
 
-    <title>{% block title %}Cloudstore {% endblock %}</title>
-    <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+    <title>{% block title %}FoodScan {% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'icons/icon-32x32.png' %}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">
@@ -75,6 +79,24 @@
         body {
             padding-bottom: 70px;
         }
+        /* PWA Safe Area - notch va status bar uchun */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+            }
+            .navbar.fixed-top {
+                padding-top: env(safe-area-inset-top);
+            }
+            .adminuiux-sidebar {
+                padding-top: env(safe-area-inset-top);
+            }
+        }
+        /* PWA standalone mode uchun */
+        @media all and (display-mode: standalone) {
+            .navbar.fixed-top {
+                padding-top: max(env(safe-area-inset-top), 20px);
+            }
+        }
         /* Hide bottom tab bar on large screens */
         @media (min-width: 992px) {
             .bottom-tab-bar {
@@ -106,7 +128,7 @@
         <div class="row justify-content-center align-items-center text-center h-100">
             <div class="col-12 mb-auto pt-4"></div>
             <div class="col-auto">
-                <p class="h3 mb-0"><span class="text-gradient">Cloudstore</span></p>
+                <img src="{% static 'assets/img/logo.png' %}" alt="FoodScan" height="50" class="mb-3">
                 
                 <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
             </div>
@@ -128,12 +150,8 @@
             </button>
 
             <!-- logo -->
-            <!-- logo -->
             <a class="navbar-brand" href="{% url 'boshlash' %}">
-                <div class="d-block ps-2">
-                    <span class="h4 text-gradient">Cloud<span class="fw-bold">store</span></span>
-                
-                </div>
+                <img src="{% static 'assets/img/logo.png' %}" alt="FoodScan" height="36" class="d-inline-block">
             </a>
 
             <!-- search -->
@@ -471,13 +489,13 @@
             <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="{% url 'all_books' %}">
                     <i class="menu-icon bi bi-egg-fried"></i>
-                    <div class="col menu-name">Ovqat ma'lumotlari</div>
+                    <div class="col menu-name">Mahsulot ma'lumotlari</div>
                 </a>
             </li>
              <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="{% url 'food_scanner' %}">
                     <i class="menu-icon bi bi-bar-chart"></i>
-                    <div class="col menu-name">Ovqat tahlili</div>
+                    <div class="col menu-name">Mahsulot tahlili</div>
                 </a>
             </li>
              <li class="nav-item">
@@ -529,10 +547,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="{% url 'logout' %}">
-                    <i class="menu-icon bi bi-box-arrow-right"></i>
-                    <div class="col menu-name">Sign Out</div>
-                </a>
+                <form method="post" action="{% url 'logout' %}" style="margin: 0; padding: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link" style="width: 100%; border: none; background: none; cursor: pointer; text-align: left; display: flex; align-items: center;">
+                        <i class="menu-icon bi bi-box-arrow-right"></i>
+                        <div class="col menu-name">Sign Out</div>
+                    </button>
+                </form>
             </li>
             
         {% else %}
@@ -547,38 +568,37 @@
 
         <div class=" mt-auto "></div>
 
-        <div class="px-3 not-iconic">
-            <div class="card adminuiux-card bg-theme-l-gradient mb-3">
-                <div class="card-body">
-                    <div class="row gx-3 mb-2">
-                        <div class="col">
-                            <p class="mb-0"><i class="bi bi-basket me-1 "></i> Limitlaringiz</p>
-                        </div>
-                        <div class="col-auto">
-                            <p class="small opacity-75">kunlik</p>
-                        </div>
-                    </div>
-                    <div class="progress height-dynamic bg-white-opacity mb-2" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--h-dynamic:5px">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 45%"></div>
-                    </div>
-                    <a href="{% url 'boshlash' %}" class="btn btn-sm btn-accent">Yangilash <i class="bi bi-arrow-right"></i></a>
-                </div>
-            </div>
+        <div class="card adminuiux-card shadow-sm">
+                                            <div class="card-body">
+                                                <div class="row gx-3 gx-lg-4 align-items-center">
+                                                    <div class="col-auto">
+                                                        <i class="bi bi-star h5 avatar avatar-50 bg-theme-1 text-white theme-yellow rounded-circle"></i>
+                                                    </div>
+                                                    <div class="col">
+                                                        <p class="mb-2">Kunlik {{ daily_limit|default:20 }} ta skanerlash</p>
+                                                        <div class="progress height-dynamic mb-1 bg-theme-1-subtle" style="--h-dynamic:5px">
+                                                            <div class="progress-bar bg-theme-1" role="progressbar" style="width: {{ progress_percent|default:0 }}%" aria-valuenow="{{ progress_percent|default:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <p class="text-secondary small"><i class="bi bi-lightning me-1"></i>Qolgan: <strong>{{ remaining_count|default:20 }}</strong> ta ({{ used_count|default:0 }}/{{ daily_limit|default:20 }} ishlatildi)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
         </div>
 
         <!-- quick links -->
         
 
     </div>
-</div>
+    </div>
 
     <!-- Main Content Area -->
-<main class="adminuiux-content has-sidebar" onclick="contentClick()">
-    {% block content %}
-    {% endblock %}
-</main>
-<!-- Bottom Tab Bar / Fixed Bottom Navigation -->
-<footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
+    <main class="adminuiux-content has-sidebar" onclick="contentClick()">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <!-- Bottom Tab Bar / Fixed Bottom Navigation -->
+    <footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
     <div class="container">
         <ul class="nav nav-pills nav-justified">
             <li class="nav-item">
@@ -631,7 +651,7 @@
         <div class="row gx-3 gx-lg-4">
             <div class="col-10 col-md col-lg py-2">
                 <span class="small">© {% now "Y" %} 
-                    <a href="{% url 'boshlash' %}" class="text-white">Cloudstore</a> 
+                    <a href="{% url 'boshlash' %}" class="text-white">FoodScan</a> 
                 </span>
             </div>
             <div class="col-12 col-md-auto col-lg-auto align-self-center">
@@ -702,19 +722,137 @@ window.addEventListener('beforeinstallprompt', (e) => {
     deferredPrompt = e;
 });
 
-function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('Ilova o\'rnatildi');
-            }
-            deferredPrompt = null;
-            window.location.href = "{% url 'boshlash' %}";
-        });
+// Platforma aniqlash
+function detectPlatform() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // iOS aniqlash
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return 'ios';
+    }
+    
+    // Android aniqlash
+    if (/android/i.test(userAgent)) {
+        return 'android';
+    }
+    
+    return 'desktop';
+}
+
+// iOS uchun bosh ekranga qo'shish ko'rsatmasi
+function showIOSInstallModal() {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:white;border-radius:16px;padding:24px;max-width:340px;text-align:center;">
+                <div style="font-size:48px;margin-bottom:16px;">📱</div>
+                <h3 style="margin:0 0 12px;color:#1f2937;font-size:20px;">FoodScan AI ni o'rnating</h3>
+                <p style="color:#6b7280;font-size:14px;margin-bottom:20px;">Bosh ekranga qo'shish uchun quyidagi qadamlarni bajaring:</p>
+                <div style="text-align:left;background:#f3f4f6;padding:16px;border-radius:12px;margin-bottom:20px;">
+                    <p style="margin:0 0 12px;font-size:14px;color:#374151;"><strong>1.</strong> Pastdagi <span style="display:inline-flex;align-items:center;background:#007AFF;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l.001 14.5M7 12l5-5 5 5M4 20h16"/></svg>
+                        Share
+                    </span> tugmasini bosing</p>
+                    <p style="margin:0 0 12px;font-size:14px;color:#374151;"><strong>2.</strong> "Add to Home Screen" ni tanlang</p>
+                    <p style="margin:0;font-size:14px;color:#374151;"><strong>3.</strong> "Add" tugmasini bosing</p>
+                </div>
+                <button onclick="this.closest('div[style*=position]').remove()" style="background:#22c55e;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;cursor:pointer;width:100%;">Tushundim</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Android uchun APK yuklab olish
+function downloadAndroidAPK() {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:white;border-radius:16px;padding:24px;max-width:340px;text-align:center;">
+                <div style="font-size:48px;margin-bottom:16px;">📥</div>
+                <h3 style="margin:0 0 12px;color:#1f2937;font-size:20px;">FoodScan AI yuklab olish</h3>
+                <p style="color:#6b7280;font-size:14px;margin-bottom:20px;">Android ilovani yuklab oling va o'rnating</p>
+                <div style="text-align:left;background:#f3f4f6;padding:16px;border-radius:12px;margin-bottom:20px;">
+                    <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>1.</strong> APK faylni yuklab oling</p>
+                    <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>2.</strong> "Noma'lum manbalar"ga ruxsat bering</p>
+                    <p style="margin:0;font-size:14px;color:#374151;"><strong>3.</strong> APK ni ochib, o'rnating</p>
+                </div>
+                <a href="{% static 'downloads/FoodScan-AI.apk' %}" download="FoodScan-AI-v1.0.2.apk" style="display:block;background:#22c55e;color:white;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:16px;margin-bottom:12px;">
+                    📥 APK yuklab olish (2.5 MB)
+                </a>
+                <button onclick="this.closest('div[style*=position]').remove()" style="background:#e5e7eb;color:#374151;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">Yopish</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Desktop uchun PWA o'rnatish ko'rsatmasi
+function showDesktopInstallModal() {
+    const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge|Edg/.test(navigator.userAgent);
+    const isEdge = /Edge|Edg/.test(navigator.userAgent);
+    const isFirefox = /Firefox/.test(navigator.userAgent);
+    
+    let instructions = '';
+    if (isChrome) {
+        instructions = `
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>1.</strong> Manzil satrining o'ng tomonidagi <span style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">⊕</span> belgisini bosing</p>
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>2.</strong> "Install" tugmasini bosing</p>
+            <p style="margin:0;font-size:14px;color:#374151;"><strong>3.</strong> Ilova Desktop da paydo bo'ladi</p>
+        `;
+    } else if (isEdge) {
+        instructions = `
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>1.</strong> Manzil satrining o'ng tomonidagi <span style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">⊕</span> belgisini bosing</p>
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>2.</strong> "Install" tugmasini bosing</p>
+            <p style="margin:0;font-size:14px;color:#374151;"><strong>3.</strong> Ilova Desktop da paydo bo'ladi</p>
+        `;
     } else {
-        alert('Ilovani o\'rnatish uchun brauzer menyusidan "Bosh sahifaga qo\'shish" ni tanlang');
-        window.location.href = "{% url 'boshlash' %}";
+        instructions = `
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>1.</strong> Brauzer menyusini oching (⋮ yoki ☰)</p>
+            <p style="margin:0 0 8px;font-size:14px;color:#374151;"><strong>2.</strong> "Ilovalarni o'rnatish" yoki "Saytni qo'shish" ni tanlang</p>
+            <p style="margin:0;font-size:14px;color:#374151;"><strong>3.</strong> Ilova Desktop da paydo bo'ladi</p>
+        `;
+    }
+    
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+            <div style="background:white;border-radius:16px;padding:24px;max-width:380px;text-align:center;">
+                <div style="font-size:48px;margin-bottom:16px;">🖥️</div>
+                <h3 style="margin:0 0 12px;color:#1f2937;font-size:20px;">FoodScan AI ni o'rnating</h3>
+                <p style="color:#6b7280;font-size:14px;margin-bottom:20px;">Bosh ekranga qo'shish uchun quyidagi qadamlarni bajaring:</p>
+                <div style="text-align:left;background:#f3f4f6;padding:16px;border-radius:12px;margin-bottom:20px;">
+                    ${instructions}
+                </div>
+                <button onclick="this.closest('div[style*=position]').remove()" style="background:#22c55e;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:16px;cursor:pointer;width:100%;">Tushundim</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function installApp() {
+    const platform = detectPlatform();
+    
+    if (platform === 'ios') {
+        // iOS - bosh ekranga qo'shish ko'rsatmasini ko'rsat
+        showIOSInstallModal();
+    } else if (platform === 'android') {
+        // Android - APK yuklab olish
+        downloadAndroidAPK();
+    } else {
+        // Desktop - PWA prompt
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Ilova o\'rnatildi');
+                }
+                deferredPrompt = null;
+            });
+        } else {
+            showDesktopInstallModal();
+        }
     }
 }
 </script>

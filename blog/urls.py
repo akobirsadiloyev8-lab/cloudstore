@@ -113,6 +113,10 @@ urlpatterns = [
     path('api/food-intake/daily-stats/', views.get_daily_stats, name='get_daily_stats'),
     path('api/delete-daily-stats/', views.delete_daily_stats, name='delete_daily_stats'),
     
+    # ===== TAOMLAR QIDIRUV API =====
+    path('api/search-food/', views.search_food_api, name='search_food_api'),
+    path('api/food-list/', views.get_food_list_api, name='get_food_list_api'),
+    
     # ===== HUQUQIY SAHIFALAR =====
     path('maxfiylik-siyosati/', views.privacy_policy, name='privacy_policy'),
     path('foydalanish-shartlari/', views.terms_of_service, name='terms_of_service'),

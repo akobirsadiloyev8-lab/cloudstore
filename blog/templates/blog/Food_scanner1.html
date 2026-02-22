@@ -5,7 +5,9 @@
 
 {% block content %}
                         
-
+                            <figure class="coverimg w-100 height-180 mb-0 position-relative rounded z-index-0 overlay-gradiant overflow-hidden">
+        <img src="{% static 'assets/img/background-image/images.png' %}" class="mw-100" alt="Mahsulot rasmi" id="product-image" />
+    </figure>
                             <!-- page title -->
                             <div class="container-fluid py-1 py-lg-3">
                                 <div class="row gx-3 align-items-center page-title">
@@ -291,10 +293,10 @@
                                                                 <p class="text-secondary small">Vitaminlar</p>
                                                             </div>
                                                             <div class="col-auto">
-                                                                <p class="small text-theme-1 theme-green">yaxshi</p>
+                                                                <p class="small text-theme-1 theme-green" id="vitamin-status">-</p>
                                                             </div>
                                                         </div>
-                                                        <h6>6 <small>xil vitamin</small></h6>
+                                                        <h6><span id="vitamin-count">0</span> <small>xil vitamin</small></h6>
                                                     </div>
                                                 </div>
                                             </div>
@@ -309,19 +311,19 @@
                                                         <div class="row gx-2">
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Vitamin A</p>
-                                                                <h6>15%</h6>
+                                                                <h6><span id="vitamin-a">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Vitamin C</p>
-                                                                <h6>25%</h6>
+                                                                <h6><span id="vitamin-c">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Vitamin D</p>
-                                                                <h6>10%</h6>
+                                                                <h6><span id="vitamin-d">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Vitamin E</p>
-                                                                <h6>8%</h6>
+                                                                <h6><span id="vitamin-e">0</span>%</h6>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -340,10 +342,10 @@
                                                                 <p class="text-secondary small">Minerallar</p>
                                                             </div>
                                                             <div class="col-auto">
-                                                                <p class="small text-theme-1 theme-green">yaxshi</p>
+                                                                <p class="small text-theme-1 theme-green" id="mineral-status">-</p>
                                                             </div>
                                                         </div>
-                                                        <h6>5 <small>xil mineral</small></h6>
+                                                        <h6><span id="mineral-count">0</span> <small>xil mineral</small></h6>
                                                     </div>
                                                 </div>
                                             </div>
@@ -359,19 +361,19 @@
                                                         <div class="row gx-2">
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Temir</p>
-                                                                <h6>12%</h6>
+                                                                <h6><span id="iron-value">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Kaltsiy</p>
-                                                                <h6>8%</h6>
+                                                                <h6><span id="calcium-value">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Kaliy</p>
-                                                                <h6>15%</h6>
+                                                                <h6><span id="potassium-value">0</span>%</h6>
                                                             </div>
                                                             <div class="col-6 mb-3">
                                                                 <p class="text-secondary small mb-0">Magniy</p>
-                                                                <h6>10%</h6>
+                                                                <h6><span id="magnesium-value">0</span>%</h6>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -403,7 +405,7 @@
                                                     <canvas id="doughnutchart" class="avatar avatar-200 mx-auto"></canvas>
                                                     <div class="avatar avatar-140 position-absolute top-50 start-50 translate-middle shadow bg-white rounded-circle ">
                                                         <div class="w-100 lh-20">
-                                                            <h5 class="mb-1">75%</h5>
+                                                            <h5 class="mb-1" id="positive-percent-main">0%</h5>
                                                             <p class="text-success small">Foydali</p>
                                                         </div>
                                                     </div>
@@ -412,7 +414,7 @@
                                                     <div class="col-6 text-end">
                                                         <div class="row gx-3">
                                                             <div class="col">
-                                                                <h6 class="text-dark mb-0">75%</h6>
+                                                                <h6 class="text-dark mb-0" id="positive-percent">0%</h6>
                                                                 <p class="text-secondary small">Foydali moddalar</p>
                                                             </div>
                                                             <div class="col-auto">
@@ -426,7 +428,7 @@
                                                                         <p class="text-secondary small">Vitaminlar</p>
                                                                     </div>
                                                                     <div class="col-auto">
-                                                                        <p class="text-green small">40%</p>
+                                                                        <p class="text-green small" id="vitamin-ratio">0%</p>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row gx-3">
@@ -434,7 +436,7 @@
                                                                         <p class="text-secondary small">Minerallar</p>
                                                                     </div>
                                                                     <div class="col-auto">
-                                                                        <p class="text-green small">35%</p>
+                                                                        <p class="text-green small" id="mineral-ratio">0%</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -448,13 +450,13 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col">
-                                                                <h6 class="text-dark mb-0">25%</h6>
+                                                                <h6 class="text-dark mb-0" id="negative-percent">0%</h6>
                                                                 <p class="text-secondary small">Zararli moddalar</p>
                                                             </div>
                                                             <div class="col-12 mt-3">
                                                                 <div class="row gx-3">
                                                                     <div class="col-auto">
-                                                                        <p class="text-danger small">15%</p>
+                                                                        <p class="text-danger small" id="additives-ratio">0%</p>
                                                                     </div>
                                                                     <div class="col">
                                                                         <p class="text-secondary small">Qo'shimchalar</p>
@@ -462,7 +464,7 @@
                                                                 </div>
                                                                 <div class="row gx-3">
                                                                     <div class="col-auto">
-                                                                        <p class="text-danger small">10%</p>
+                                                                        <p class="text-danger small" id="trans-fat-ratio">0%</p>
                                                                     </div>
                                                                     <div class="col">
                                                                         <p class="text-secondary small">Trans yog'</p>
@@ -486,39 +488,19 @@
                                                     </div>
                                                     <div class="col">
                                                         <h6 class="mb-0">Tavsiyalar</h6>
-                                                        <p class="text-secondary small">Sog'lom ovqatlanish uchun</p>
+                                                        <p class="text-secondary small" id="recommendation-subtitle">Ma'lumot yuklanmagan</p>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="card-body p-0">
-                                                <ul class="list-group list-group-flush border-0 bg-none">
+                                                <ul class="list-group list-group-flush border-0 bg-none" id="recommendations-list">
                                                     <li class="list-group-item text-secondary">
                                                         <div class="row gx-3">
                                                             <div class="col-auto">
-                                                                <i class="bi bi-check-circle text-success"></i>
+                                                                <i class="bi bi-info-circle text-muted"></i>
                                                             </div>
-                                                            <div class="col-auto">
-                                                                Kunlik iste'mol me'yorida foydalaning
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-group-item text-secondary">
-                                                        <div class="row gx-3">
-                                                            <div class="col-auto">
-                                                                <i class="bi bi-check-circle text-success"></i>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                Sabzavotlar bilan birga iste'mol qiling
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-group-item text-secondary">
-                                                        <div class="row gx-3">
-                                                            <div class="col-auto">
-                                                                <i class="bi bi-exclamation-circle text-warning"></i>
-                                                            </div>
-                                                            <div class="col-auto">
-                                                                Ko'p iste'mol qilmang (shakar miqdori)
+                                                            <div class="col">
+                                                                Mahsulotni skanerlang yoki shtrix-kod kiriting
                                                             </div>
                                                         </div>
                                                     </li>
@@ -527,15 +509,15 @@
                                             <div class="card-body">
                                                 <div class="row gx-3">
                                                     <div class="col-6">
-                                                        <div class="text-center p-2 bg-success-subtle rounded">
-                                                            <i class="bi bi-hand-thumbs-up h3 text-success"></i>
-                                                            <p class="small mb-0">Foydali mahsulot</p>
+                                                        <div class="text-center p-2 rounded" id="product-rating-positive" style="background-color: #e9ecef;">
+                                                            <i class="bi bi-question-circle h3 text-muted" id="rating-icon-positive"></i>
+                                                            <p class="small mb-0" id="rating-text-positive">Baholanmagan</p>
                                                         </div>
                                                     </div>
                                                     <div class="col-6">
-                                                        <div class="text-center p-2 bg-warning-subtle rounded">
-                                                            <i class="bi bi-exclamation-diamond h3 text-warning"></i>
-                                                            <p class="small mb-0">Me'yorda iste'mol qiling</p>
+                                                        <div class="text-center p-2 rounded" id="product-rating-negative" style="background-color: #e9ecef;">
+                                                            <i class="bi bi-question-circle h3 text-muted" id="rating-icon-negative"></i>
+                                                            <p class="small mb-0" id="rating-text-negative">Baholanmagan</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -543,7 +525,7 @@
                                             <div class="card-footer">
                                                 <div class="row gx-3">
                                                     <div class="col">
-                                                        <p class="small text-secondary mb-0"><i class="bi bi-info-circle me-1"></i>Mutaxassis bilan maslahatlashing</p>
+                                                        <p class="small text-secondary mb-0"><i class="bi bi-info-circle me-1"></i><span id="recommendation-footer">Mahsulotni tahlil qiling</span></p>
                                                     </div>
                                                     <div class="col-auto">
                                                         <a class="btn btn-theme" href="{% url 'all_books' %}">Batafsil</a>
@@ -553,6 +535,31 @@
                                         </div>
                                     </div>
                             </div>
+                            
+                            <!-- Amallar tugmalari (pastda) -->
+                            <div class="container mt-4 mb-4">
+                                <div class="card adminuiux-card shadow-sm">
+                                    <div class="card-body">
+                                        <div class="row gx-3 align-items-center">
+                                            <div class="col">
+                                                <h6 class="mb-1">Tahlil yakunlandi</h6>
+                                                <p class="text-secondary small mb-0" id="action-status">Mahsulotni ro'yxatga qo'shish yoki bekor qilish</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-success" id="save-btn-bottom" disabled>
+                                                        <i class="bi bi-plus-circle me-1"></i>Ro'yxatga qo'shish
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" id="reset-btn-bottom">
+                                                        <i class="bi bi-x-circle me-1"></i>Bekor qilish
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- mobile footer -->
                             <footer class="adminuiux-mobile-footer hide-on-scrolldown style-2">
     <div class="container">
@@ -1079,6 +1086,11 @@ document.addEventListener('DOMContentLoaded', function() {
             baseNutritionPer100g = data.nutrition_per_100g || {};
             currentProductName = data.name || 'Noma\'lum mahsulot';
             
+            // Mahsulot rasmini yangilash
+            if (data.image_url) {
+                document.getElementById('product-image').src = data.image_url;
+            }
+            
             // Agar food_id bo'lsa, o'chirish tugmasini ko'rsatish
             if (data.food_id) {
                 currentFoodId = data.food_id;
@@ -1088,8 +1100,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // UI yangilash
             displayNutritionData(data.name, data.description, baseNutritionPer100g, 100);
             
-            // Ro'yxatga qo'shish tugmasini faollashtirish
+            // Ro'yxatga qo'shish tugmalarini faollashtirish
             document.getElementById('save-to-list-btn').disabled = false;
+            document.getElementById('save-btn-bottom').disabled = false;
+            document.getElementById('action-status').textContent = 'Ma\'lumotlar tayyor - saqlash yoki bekor qilishni tanlang';
             
             console.log('Tahlil natijalari yuklandi:', data.name);
             
@@ -1115,6 +1129,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // O'chirish tugmasi
     document.getElementById('delete-food-btn').addEventListener('click', deleteFood);
+    
+    // Pastdagi tugmalar
+    document.getElementById('save-btn-bottom').addEventListener('click', saveToList);
+    document.getElementById('reset-btn-bottom').addEventListener('click', resetPageToInitialState);
+    
+    // Boshlang'ich doughnut chartni yaratish (0 qiymatlar bilan)
+    updateDoughnutChart(0, 0);
 });
 
 // Ma'lumotlarni ekranga chiqarish
@@ -1167,13 +1188,102 @@ function displayNutritionData(name, description, nutrition, mass) {
     document.getElementById('saturated-fat').textContent = saturatedFat.toFixed(1);
     
     // To'yinmagan yog'
-    const unsaturatedFat = Math.max(0, fat - saturatedFat);
+    const unsaturatedFat = (nutrition.unsaturated_fat || Math.max(0, fat - saturatedFat)) * ratio;
     document.getElementById('unsaturated-fat').textContent = unsaturatedFat.toFixed(1);
+    
+    // Trans yog'
+    const transFat = (nutrition.trans_fat || 0) * ratio;
+    document.getElementById('trans-fat').textContent = transFat.toFixed(1);
+    
+    // Xolesterin
+    const cholesterol = (nutrition.cholesterol || 0) * ratio;
+    document.getElementById('cholesterol').textContent = Math.round(cholesterol);
+    
+    // GI indeks (massaga bog'liq emas)
+    const giIndex = nutrition.gi_index || 0;
+    document.getElementById('gi-value').textContent = giIndex;
+    
+    // Vitaminlar
+    const vitaminA = nutrition.vitamin_a || 0;
+    const vitaminC = nutrition.vitamin_c || 0;
+    const vitaminD = nutrition.vitamin_d || 0;
+    const vitaminE = nutrition.vitamin_e || 0;
+    const vitaminK = nutrition.vitamin_k || 0;
+    const vitaminB6 = nutrition.vitamin_b6 || 0;
+    
+    document.getElementById('vitamin-a').textContent = Math.round(vitaminA);
+    document.getElementById('vitamin-c').textContent = Math.round(vitaminC);
+    document.getElementById('vitamin-d').textContent = Math.round(vitaminD);
+    document.getElementById('vitamin-e').textContent = Math.round(vitaminE);
+    
+    // Vitamin sonini hisoblash
+    let vitaminCount = 0;
+    if (vitaminA > 0) vitaminCount++;
+    if (vitaminC > 0) vitaminCount++;
+    if (vitaminD > 0) vitaminCount++;
+    if (vitaminE > 0) vitaminCount++;
+    if (vitaminK > 0) vitaminCount++;
+    if (vitaminB6 > 0) vitaminCount++;
+    document.getElementById('vitamin-count').textContent = vitaminCount;
+    
+    // Minerallar
+    const iron = nutrition.iron || 0;
+    const calcium = nutrition.calcium || 0;
+    const potassium = nutrition.potassium || 0;
+    const magnesium = nutrition.magnesium || 0;
+    const sodium = nutrition.sodium || 0;
+    
+    document.getElementById('iron-value').textContent = Math.round(iron);
+    document.getElementById('calcium-value').textContent = Math.round(calcium);
+    document.getElementById('potassium-value').textContent = Math.round(potassium);
+    document.getElementById('magnesium-value').textContent = Math.round(magnesium);
+    
+    // Mineral sonini hisoblash
+    let mineralCount = 0;
+    if (iron > 0) mineralCount++;
+    if (calcium > 0) mineralCount++;
+    if (potassium > 0) mineralCount++;
+    if (magnesium > 0) mineralCount++;
+    if (sodium > 0) mineralCount++;
+    document.getElementById('mineral-count').textContent = mineralCount;
     
     // Status ranglarini yangilash
     updateStatus('protein-status', proteins, 10, 20);
     updateStatus('fat-status', fat, 15, 30);
     updateStatus('carbs-status', carbs, 20, 40);
+    
+    // Vitamin va mineral statuslari
+    const totalVitamins = vitaminA + vitaminC + vitaminD + vitaminE;
+    updateVitaminStatus('vitamin-status', totalVitamins / 4, 10, 30);
+    
+    const totalMinerals = iron + calcium + potassium + magnesium;
+    updateVitaminStatus('mineral-status', totalMinerals / 4, 5, 15);
+    
+    // Foydali/Zararli nisbati
+    const positivePercent = nutrition.positive_percent || 0;
+    const negativePercent = nutrition.negative_percent || 0;
+    
+    document.getElementById('positive-percent-main').textContent = positivePercent + '%';
+    document.getElementById('positive-percent').textContent = positivePercent + '%';
+    document.getElementById('negative-percent').textContent = negativePercent + '%';
+    
+    // Vitamin va mineral nisbatlari (foydali ichida)
+    const vitaminRatio = Math.round((totalVitamins / 4) * 0.5);
+    const mineralRatio = Math.round((totalMinerals / 4) * 0.4);
+    document.getElementById('vitamin-ratio').textContent = vitaminRatio + '%';
+    document.getElementById('mineral-ratio').textContent = mineralRatio + '%';
+    
+    // Qo'shimchalar va trans yog' (zararli ichida)
+    const additivesRatio = nutrition.additives_percent || Math.round(negativePercent * 0.6);
+    const transRatio = transFat > 0 ? Math.round(negativePercent * 0.4) : 0;
+    document.getElementById('additives-ratio').textContent = additivesRatio + '%';
+    document.getElementById('trans-fat-ratio').textContent = transRatio + '%';
+    
+    // Doughnut chartni yangilash
+    updateDoughnutChart(positivePercent, negativePercent);
+    
+    // Tavsiyalar bo'limini yangilash
+    updateRecommendations(nutrition, positivePercent, negativePercent, proteins, carbs, fat, sugars);
 }
 
 // Shtrix-kod qidirish
@@ -1204,6 +1314,11 @@ async function lookupBarcode() {
         if (data.success) {
             baseNutritionPer100g = data.nutrition_per_100g;
             currentProductName = data.name;
+            
+            // Mahsulot rasmini yangilash
+            if (data.image_url) {
+                document.getElementById('product-image').src = data.image_url;
+            }
             
             // UI yangilash
             displayNutritionData(data.name, data.description || '', baseNutritionPer100g, 100);
@@ -1254,10 +1369,16 @@ async function saveToList() {
     const mass = parseFloat(document.getElementById('mass-input').value) || 100;
     const ratio = mass / 100;
     
-    const btn = document.getElementById('save-to-list-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saqlanmoqda...';
-    btn.disabled = true;
+    // Ikkala tugmani ham bloklash
+    const btnTop = document.getElementById('save-to-list-btn');
+    const btnBottom = document.getElementById('save-btn-bottom');
+    const originalTextTop = btnTop.innerHTML;
+    const originalTextBottom = btnBottom.innerHTML;
+    
+    btnTop.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saqlanmoqda...';
+    btnTop.disabled = true;
+    btnBottom.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saqlanmoqda...';
+    btnBottom.disabled = true;
     
     try {
         const response = await fetch('/api/save-food/', {
@@ -1271,7 +1392,7 @@ async function saveToList() {
                 mass: mass,
                 calories: (baseNutritionPer100g.calories || 0) * ratio,
                 proteins: (baseNutritionPer100g.proteins || 0) * ratio,
-                carbs: (baseNutritionPer100g.carbohydrates || 0) * ratio,
+                carbohydrates: (baseNutritionPer100g.carbohydrates || 0) * ratio,
                 fat: (baseNutritionPer100g.fat || 0) * ratio,
                 fiber: (baseNutritionPer100g.fiber || 0) * ratio,
                 sugars: (baseNutritionPer100g.sugars || 0) * ratio,
@@ -1289,16 +1410,33 @@ async function saveToList() {
         if (data.success) {
             currentFoodId = data.food_id;
             document.getElementById('delete-food-btn').style.display = 'inline-block';
+            
+            // Tugmalarni yangilash
+            btnTop.disabled = true;
+            btnTop.innerHTML = '<i class="bi bi-check-circle"></i> Saqlandi';
+            btnBottom.disabled = true;
+            btnBottom.innerHTML = '<i class="bi bi-check-circle me-1"></i>Saqlandi';
+            btnBottom.classList.remove('btn-success');
+            btnBottom.classList.add('btn-secondary');
+            document.getElementById('action-status').textContent = 'Mahsulot muvaffaqiyatli saqlandi!';
+            
             alert('Mahsulot ro\'yxatga qo\'shildi!');
         } else {
+            // Xato bo'lsa tugmalarni qaytarish
+            btnTop.innerHTML = originalTextTop;
+            btnTop.disabled = false;
+            btnBottom.innerHTML = originalTextBottom;
+            btnBottom.disabled = false;
             alert(data.error || 'Saqlashda xato');
         }
     } catch (e) {
         console.error('Saqlashda xato:', e);
+        // Xato bo'lsa tugmalarni qaytarish
+        btnTop.innerHTML = originalTextTop;
+        btnTop.disabled = false;
+        btnBottom.innerHTML = originalTextBottom;
+        btnBottom.disabled = false;
         alert('Tarmoq xatosi yuz berdi');
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
     }
 }
 
@@ -1344,6 +1482,120 @@ async function deleteFood() {
     }
 }
 
+// Sahifani boshlang'ich holatga qaytarish
+function resetPageToInitialState() {
+    // Ma'lumotlarni tozalash
+    baseNutritionPer100g = null;
+    currentFoodId = null;
+    currentProductName = '';
+    
+    // SessionStorage ni tozalash
+    sessionStorage.removeItem('food_analysis_result');
+    
+    // Barcha qiymatlarni 0 ga qaytarish
+    document.getElementById('product-name').textContent = 'Mahsulot tahlili';
+    document.getElementById('product-description').textContent = 'Ma\'lumotlarni yuklash uchun skanerlang yoki shtrix-kodni kiriting';
+    document.getElementById('product-image').src = '{% static "assets/img/background-image/images.png" %}';
+    
+    // Kaloriya va asosiy moddalar
+    document.getElementById('calories-value').textContent = '0';
+    document.getElementById('protein-value').textContent = '0';
+    document.getElementById('protein-mini').textContent = '0';
+    document.getElementById('fat-value').textContent = '0';
+    document.getElementById('fat-mini').textContent = '0';
+    document.getElementById('carbs-value').textContent = '0';
+    document.getElementById('carbs-mini').textContent = '0';
+    document.getElementById('fiber-value').textContent = '0';
+    document.getElementById('fiber-mini').textContent = '0';
+    document.getElementById('sugar-value').textContent = '0';
+    document.getElementById('starch-value').textContent = '0';
+    
+    // Yog'lar
+    document.getElementById('saturated-fat').textContent = '0';
+    document.getElementById('unsaturated-fat').textContent = '0';
+    document.getElementById('trans-fat').textContent = '0';
+    document.getElementById('cholesterol').textContent = '0';
+    document.getElementById('gi-value').textContent = '0';
+    
+    // Vitaminlar
+    document.getElementById('vitamin-count').textContent = '0';
+    document.getElementById('vitamin-a').textContent = '0';
+    document.getElementById('vitamin-c').textContent = '0';
+    document.getElementById('vitamin-d').textContent = '0';
+    document.getElementById('vitamin-e').textContent = '0';
+    
+    // Minerallar
+    document.getElementById('mineral-count').textContent = '0';
+    document.getElementById('iron-value').textContent = '0';
+    document.getElementById('calcium-value').textContent = '0';
+    document.getElementById('potassium-value').textContent = '0';
+    document.getElementById('magnesium-value').textContent = '0';
+    
+    // Foydali/zararli nisbati
+    document.getElementById('positive-percent-main').textContent = '0%';
+    document.getElementById('positive-percent').textContent = '0%';
+    document.getElementById('negative-percent').textContent = '0%';
+    document.getElementById('vitamin-ratio').textContent = '0%';
+    document.getElementById('mineral-ratio').textContent = '0%';
+    document.getElementById('additives-ratio').textContent = '0%';
+    document.getElementById('trans-fat-ratio').textContent = '0%';
+    
+    // Status elementlarini tozalash
+    ['protein-status', 'fat-status', 'carbs-status', 'vitamin-status', 'mineral-status'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = '-';
+            el.classList.remove('theme-green', 'theme-yellow', 'theme-red', 'theme-orange');
+        }
+    });
+    
+    // Tavsiyalar bo'limini tozalash
+    document.getElementById('recommendations-list').innerHTML = `
+        <li class="list-group-item text-secondary">
+            <div class="row gx-3">
+                <div class="col-auto">
+                    <i class="bi bi-info-circle text-muted"></i>
+                </div>
+                <div class="col">
+                    Mahsulotni skanerlang yoki shtrix-kod kiriting
+                </div>
+            </div>
+        </li>
+    `;
+    document.getElementById('recommendation-subtitle').textContent = 'Ma\'lumot yuklanmagan';
+    document.getElementById('recommendation-footer').textContent = 'Mahsulotni tahlil qiling';
+    
+    // Rating kartalarini tozalash
+    const ratingPositive = document.getElementById('product-rating-positive');
+    const ratingNegative = document.getElementById('product-rating-negative');
+    
+    ratingPositive.style.backgroundColor = '#e9ecef';
+    ratingPositive.classList.remove('bg-success-subtle', 'bg-warning-subtle', 'bg-danger-subtle');
+    document.getElementById('rating-icon-positive').className = 'bi bi-question-circle h3 text-muted';
+    document.getElementById('rating-text-positive').textContent = 'Baholanmagan';
+    
+    ratingNegative.style.backgroundColor = '#e9ecef';
+    ratingNegative.classList.remove('bg-success-subtle', 'bg-warning-subtle', 'bg-danger-subtle');
+    document.getElementById('rating-icon-negative').className = 'bi bi-question-circle h3 text-muted';
+    document.getElementById('rating-text-negative').textContent = 'Baholanmagan';
+    
+    // Doughnut chartni yangilash
+    updateDoughnutChart(0, 0);
+    
+    // Tugmalarni o'chirish
+    document.getElementById('save-to-list-btn').disabled = true;
+    document.getElementById('save-btn-bottom').disabled = true;
+    document.getElementById('delete-food-btn').style.display = 'none';
+    document.getElementById('action-status').textContent = 'Mahsulotni ro\'yxatga qo\'shish yoki bekor qilish';
+    
+    // Massa inputini tozalash
+    document.getElementById('mass-input').value = '100';
+    document.getElementById('barcode-input').value = '';
+    
+    // Xabar ko'rsatish
+    alert('Ma\'lumotlar tozalandi!');
+}
+
 // Status rangini yangilash funksiyasi
 function updateStatus(elementId, value, lowThreshold, highThreshold) {
     const element = document.getElementById(elementId);
@@ -1366,6 +1618,237 @@ function updateStatus(elementId, value, lowThreshold, highThreshold) {
         element.classList.remove('theme-red', 'theme-orange', 'theme-yellow');
         element.classList.add('theme-green');
     }
+}
+
+// Vitamin/mineral status rangini yangilash funksiyasi
+function updateVitaminStatus(elementId, value, lowThreshold, highThreshold) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const numValue = parseFloat(value) || 0;
+    if (numValue === 0) {
+        element.textContent = '-';
+        element.classList.remove('theme-green', 'theme-yellow', 'theme-red', 'theme-orange');
+    } else if (numValue < lowThreshold) {
+        element.textContent = 'kam';
+        element.classList.remove('theme-green', 'theme-yellow', 'theme-orange');
+        element.classList.add('theme-red');
+    } else if (numValue > highThreshold) {
+        element.textContent = 'ko\'p';
+        element.classList.remove('theme-green', 'theme-red', 'theme-orange');
+        element.classList.add('theme-yellow');
+    } else {
+        element.textContent = 'yaxshi';
+        element.classList.remove('theme-red', 'theme-orange', 'theme-yellow');
+        element.classList.add('theme-green');
+    }
+}
+
+// Doughnut chartni yangilash funksiyasi
+let doughnutChartInstance = null;
+
+function updateDoughnutChart(positivePercent, negativePercent) {
+    const canvas = document.getElementById('doughnutchart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Eski chartni yo'q qilish
+    if (doughnutChartInstance) {
+        doughnutChartInstance.destroy();
+    }
+    
+    // Agar qiymatlar 0 bo'lsa, bo'sh chart ko'rsatish
+    if (positivePercent === 0 && negativePercent === 0) {
+        doughnutChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Ma\'lumot yo\'q'],
+                datasets: [{
+                    data: [100],
+                    backgroundColor: ['#e9ecef'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+        return;
+    }
+    
+    // Yangi chartni yaratish
+    doughnutChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Foydali', 'Zararli'],
+            datasets: [{
+                data: [positivePercent, negativePercent],
+                backgroundColor: ['#198754', '#dc3545'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Tavsiyalarni yangilash funksiyasi
+function updateRecommendations(nutrition, positivePercent, negativePercent, proteins, carbs, fat, sugars) {
+    const recommendationsList = document.getElementById('recommendations-list');
+    const recommendationSubtitle = document.getElementById('recommendation-subtitle');
+    const recommendationFooter = document.getElementById('recommendation-footer');
+    
+    // Rating elementlari
+    const ratingPositive = document.getElementById('product-rating-positive');
+    const ratingNegative = document.getElementById('product-rating-negative');
+    const ratingIconPositive = document.getElementById('rating-icon-positive');
+    const ratingIconNegative = document.getElementById('rating-icon-negative');
+    const ratingTextPositive = document.getElementById('rating-text-positive');
+    const ratingTextNegative = document.getElementById('rating-text-negative');
+    
+    // Tavsiyalar ro'yxatini tozalash
+    recommendationsList.innerHTML = '';
+    
+    // AI dan kelgan tavsiyalar yoki avtomatik generatsiya
+    const recommendations = nutrition.recommendations || generateRecommendations(positivePercent, negativePercent, proteins, carbs, fat, sugars);
+    
+    // Tavsiyalarni qo'shish
+    recommendations.forEach(rec => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item text-secondary';
+        
+        let iconClass = 'bi-check-circle text-success';
+        if (rec.type === 'warning') {
+            iconClass = 'bi-exclamation-circle text-warning';
+        } else if (rec.type === 'danger') {
+            iconClass = 'bi-x-circle text-danger';
+        } else if (rec.type === 'info') {
+            iconClass = 'bi-info-circle text-info';
+        }
+        
+        li.innerHTML = `
+            <div class="row gx-3">
+                <div class="col-auto">
+                    <i class="bi ${iconClass}"></i>
+                </div>
+                <div class="col">
+                    ${rec.text}
+                </div>
+            </div>
+        `;
+        recommendationsList.appendChild(li);
+    });
+    
+    // Subtitle yangilash
+    recommendationSubtitle.textContent = 'Sog\'lom ovqatlanish uchun';
+    
+    // Footer yangilash
+    recommendationFooter.textContent = 'Mutaxassis bilan maslahatlashing';
+    
+    // Rating kartalarini yangilash
+    if (positivePercent >= 60) {
+        ratingPositive.style.backgroundColor = '';
+        ratingPositive.classList.add('bg-success-subtle');
+        ratingIconPositive.className = 'bi bi-hand-thumbs-up h3 text-success';
+        ratingTextPositive.textContent = 'Foydali mahsulot';
+    } else if (positivePercent >= 40) {
+        ratingPositive.style.backgroundColor = '';
+        ratingPositive.classList.add('bg-warning-subtle');
+        ratingIconPositive.className = 'bi bi-hand-thumbs-up h3 text-warning';
+        ratingTextPositive.textContent = 'O\'rtacha foydali';
+    } else if (positivePercent > 0) {
+        ratingPositive.style.backgroundColor = '';
+        ratingPositive.classList.add('bg-danger-subtle');
+        ratingIconPositive.className = 'bi bi-hand-thumbs-down h3 text-danger';
+        ratingTextPositive.textContent = 'Kam foydali';
+    }
+    
+    if (negativePercent <= 20) {
+        ratingNegative.style.backgroundColor = '';
+        ratingNegative.classList.add('bg-success-subtle');
+        ratingIconNegative.className = 'bi bi-shield-check h3 text-success';
+        ratingTextNegative.textContent = 'Xavfsiz iste\'mol';
+    } else if (negativePercent <= 40) {
+        ratingNegative.style.backgroundColor = '';
+        ratingNegative.classList.add('bg-warning-subtle');
+        ratingIconNegative.className = 'bi bi-exclamation-diamond h3 text-warning';
+        ratingTextNegative.textContent = 'Me\'yorda iste\'mol qiling';
+    } else if (negativePercent > 0) {
+        ratingNegative.style.backgroundColor = '';
+        ratingNegative.classList.add('bg-danger-subtle');
+        ratingIconNegative.className = 'bi bi-exclamation-triangle h3 text-danger';
+        ratingTextNegative.textContent = 'Ehtiyot bo\'ling';
+    }
+}
+
+// Avtomatik tavsiyalar generatsiyasi
+function generateRecommendations(positivePercent, negativePercent, proteins, carbs, fat, sugars) {
+    const recommendations = [];
+    
+    // Foydali foiz bo'yicha
+    if (positivePercent >= 70) {
+        recommendations.push({ type: 'success', text: 'Bu mahsulot juda foydali, kundalik ratsioningizga qo\'shing' });
+    } else if (positivePercent >= 50) {
+        recommendations.push({ type: 'success', text: 'Kunlik iste\'mol me\'yorida foydalaning' });
+    } else if (positivePercent < 30 && positivePercent > 0) {
+        recommendations.push({ type: 'warning', text: 'Bu mahsulotni kam iste\'mol qilish tavsiya etiladi' });
+    }
+    
+    // Oqsil bo'yicha
+    if (proteins >= 20) {
+        recommendations.push({ type: 'success', text: 'Yuqori oqsilli mahsulot - mushaklar uchun foydali' });
+    } else if (proteins >= 10) {
+        recommendations.push({ type: 'info', text: 'O\'rtacha oqsil miqdori - boshqa oqsilli mahsulotlar bilan birga iste\'mol qiling' });
+    }
+    
+    // Yog' bo'yicha
+    if (fat > 30) {
+        recommendations.push({ type: 'warning', text: 'Yuqori yog\'li - me\'yorda iste\'mol qiling' });
+    }
+    
+    // Shakar bo'yicha
+    if (sugars > 15) {
+        recommendations.push({ type: 'warning', text: 'Shakar miqdori yuqori - diabet bemorlari ehtiyot bo\'lsin' });
+    } else if (sugars < 5 && sugars > 0) {
+        recommendations.push({ type: 'success', text: 'Kam shakarli mahsulot' });
+    }
+    
+    // Uglevod bo'yicha
+    if (carbs > 50) {
+        recommendations.push({ type: 'info', text: 'Uglevod miqdori yuqori - jismoniy faoliyat oldidan iste\'mol qiling' });
+    }
+    
+    // Zararli foiz bo'yicha
+    if (negativePercent > 40) {
+        recommendations.push({ type: 'danger', text: 'Zararli moddalar ko\'p - kamroq iste\'mol qiling' });
+    }
+    
+    // Agar hech qanday tavsiya bo'lmasa
+    if (recommendations.length === 0) {
+        recommendations.push({ type: 'info', text: 'Umumiy tavsiyalar uchun mutaxassisga murojaat qiling' });
+    }
+    
+    return recommendations;
 }
 
 // CSRF token olish

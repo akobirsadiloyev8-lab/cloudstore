@@ -1,17 +1,17 @@
 {
-    "name": "Cloudstore AI - Kutubxona",
-    "short_name": "Cloudstore",
-    "description": "AI yordamida ishlaydigan bepul elektron kitoblar kutubxonasi. O'zbek tilidagi eng yaxshi kitoblarni o'qing!",
+    "name": "FoodScan - AI Ovqat Tahlili",
+    "short_name": "FoodScan",
+    "description": "AI yordamida ovqat va mahsulotlarni skanerlang, kaloriya va ozuqaviy qiymatlarni aniqlang. Kunlik ovqatlanish ro'yxatingizni boshqaring!",
     "start_url": "/?utm_source=pwa",
     "display": "standalone",
     "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-    "background_color": "#667eea",
-    "theme_color": "#667eea",
+    "background_color": "#22c55e",
+    "theme_color": "#22c55e",
     "orientation": "portrait-primary",
     "scope": "/",
     "lang": "uz",
     "dir": "ltr",
-    "id": "cloudstore-pwa",
+    "id": "foodscan-pwa",
     "icons": [
         {
             "src": "/static/icons/icon-72x72.png",
