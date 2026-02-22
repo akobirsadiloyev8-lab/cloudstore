@@ -25,60 +25,6 @@
             --adminuiux-title-font-weight: 600;
         }
         
-        /* Bottom Tab Bar Styles */
-        .bottom-tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-top: 1px solid #e9ecef;
-            z-index: 1030;
-            padding: 8px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-        .bottom-tab-bar .nav {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-        }
-        .bottom-tab-bar .nav-item {
-            flex: 1;
-            text-align: center;
-        }
-        .bottom-tab-bar .nav-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 4px 8px;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 11px;
-            transition: color 0.2s;
-        }
-        .bottom-tab-bar .nav-link i {
-            font-size: 20px;
-            margin-bottom: 2px;
-        }
-        .bottom-tab-bar .nav-link.active {
-            color: #0d6efd;
-        }
-        .bottom-tab-bar .nav-link:hover {
-            color: #0d6efd;
-        }
-        .bottom-tab-bar .nav-link .profile-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 2px;
-        }
-        /* Add padding to body for bottom tab bar */
-        body {
-            padding-bottom: 70px;
-        }
         /* PWA Safe Area - notch va status bar uchun */
         @supports (padding-top: env(safe-area-inset-top)) {
             body {
@@ -95,21 +41,6 @@
         @media all and (display-mode: standalone) {
             .navbar.fixed-top {
                 padding-top: max(env(safe-area-inset-top), 20px);
-            }
-        }
-        /* Hide bottom tab bar on large screens */
-        @media (min-width: 992px) {
-            .bottom-tab-bar {
-                display: none;
-            }
-            body {
-                padding-bottom: 0;
-            }
-        }
-        /* Move theming buttons up on mobile to avoid overlap with tab bar */
-        @media (max-width: 991.98px) {
-            #fixedbuttons {
-                bottom: 70px !important;
             }
         }
     </style>
@@ -666,46 +597,6 @@
 </footer>
 
 </div><!-- /.adminuiux-wrap -->
-
-<!-- Bottom Tab Bar -->
-<nav class="bottom-tab-bar d-lg-none">
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'boshlash' %}active{% endif %}" href="{% url 'boshlash' %}">
-                <i class="bi bi-house"></i>
-                <span>Bosh</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'food_diary' %}active{% endif %}" href="{% url 'food_diary' %}">
-                <i class="bi bi-calendar-week"></i>
-                <span>Kunlik</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'food_scanner' %}active{% endif %}" href="{% url 'food_scanner' %}">
-                <i class="bi bi-upc-scan"></i>
-                <span>Skaner</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'all_books' %}active{% endif %}" href="{% url 'all_books' %}">
-                <i class="bi bi-grid"></i>
-                <span>Ovqatlar</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">
-                {% if user.is_authenticated and user.image %}
-                <img src="{{ user.image.url }}" alt="" class="profile-avatar">
-                {% else %}
-                <i class="bi bi-person-circle"></i>
-                {% endif %}
-                <span>Profil</span>
-            </a>
-        </li>
-    </ul>
-</nav>
 
 <!-- theming action-->
 

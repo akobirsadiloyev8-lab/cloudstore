@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>Kirish | Cloudstore</title>
+    <title>Ro'yxatdan o'tish | FoodScan AI</title>
     <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
 
     <!-- Fonts -->
@@ -25,15 +25,37 @@
         body.main-bg::before {
             display: none !important;
         }
+        .error-message {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .error-message ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .password-match {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .password-match.success {
+            color: #22c55e;
+        }
+        .password-match.error {
+            color: #ef4444;
+        }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100 main-bg main-bg-opac adminuiux-header-standard theme-blue adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard scrollup" data-theme="theme-blue" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-headerfill="adminuiux-header-transparent">
+<body class="d-flex flex-column min-vh-100 main-bg main-bg-opac adminuiux-header-standard theme-green adminuiux-header-transparent adminuiux-sidebar-fill-white adminuiux-sidebar-standard scrollup" data-theme="theme-green" data-sidebarfill="adminuiux-sidebar-fill-white" data-sidebarlayout="adminuiux-sidebar-standard" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" tabindex="0" data-headerlayout="adminuiux-header-standard" data-headerfill="adminuiux-header-transparent">
     <div class="pageloader">
         <div class="container h-100">
             <div class="row justify-content-center align-items-center text-center h-100">
                 <div class="col-12 mb-auto pt-4"></div>
                 <div class="col-auto">
-                    <p class="h3 mb-0"><span class="text-gradient">Cloudstore</span></p>
+                    <p class="h3 mb-0"><span class="text-gradient">FoodScan AI</span></p>
                     <div class="loader6 mb-2 mx-auto" style="border-color: var(--adminuiux-theme-2);"></div>
                 </div>
                 <div class="col-12 mt-auto pb-4">
@@ -47,133 +69,143 @@
             <div class="container-fluid">
                 <a class="navbar-brand text-white" href="{% url 'boshlash' %}">
                     <div class="d-inline-block">
-                        <span class="h4 text-white">Cloud<span class="fw-bold text-white">store</span></span>
+                        <span class="h4 text-white">Food<span class="fw-bold text-white">Scan</span> AI</span>
                     </div>
                 </a>
                 <div class="ms-auto"></div>
             </div>
         </nav>
     </header>
-        <main class="flex-shrink-0 pt-0 h-100">
-          <div class="container-fluid">
+    <main class="flex-shrink-0 pt-0 h-100">
+        <div class="container-fluid">
             <div class="auth-wrapper">
-              <!--Page body-->
-              <div class="coverimg h-100 w-100 top-0 start-0 position-absolute z-index-0">
-                <img src="{% static 'assets/img/background-image/backgorund-image-14.png' %}" alt="" />
-              </div>
-              <!-- login wrap -->
-              <div class="row justify-content-center minheight-dynamic position-relative z-index-1" style="--mih-dynamic: calc(100vh - 135px)">
-                <div class="col-12 col-md-8 col-xl-6">
-                  <div class="h-100 py-3 px-md-3">
-                    <div class="row h-100 align-items-center justify-content-center mt-md-3">
-                      <div class="col-12 col-sm-8 col-md-11 col-xl-11 col-xxl-10 login-box">
-                        <div class="text-center text-white mb-3 mb-lg-4">
-                          <h1 class="mb-1">Let's get started&#128077;</h1>
-                          <p class="opacity-75">Provide your few details</p>
-                        </div>
-                        <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
-                          <div class="card-body">
-                            <div class="row gx-3 gx-lg-4">
-                              <div class="col">
-                                <div class="form-floating mb-3">
-                                  <input type="text" class="form-control" id="namef" placeholder="Enter first name" value="Max" autofocus="">
-                                  <label for="namef">First Name</label>
-                                </div>
-                              </div>
-                              <div class="col">
-                                <div class="form-floating mb-3">
-                                  <input type="text" class="form-control" id="namel" placeholder="Enter last name" value="Doe">
-                                  <label for="namel">Last Name</label>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="form-floating mb-3">
-                              <input type="email" class="form-control" id="emailadd" placeholder="Enter email address" value="info@adminuiux">
-                              <label for="emailadd">Email Address</label>
-                            </div>
-
-                            <div class="input-group mb-3">
-                              <div class="form-floating maxwidth-70">
-                                <select class="form-control" id="code" aria-label="Country code">
-                                  <option value="1">+1</option>
-                                  <option selected>+44</option>
-                                  <option value="3">+66</option>
-                                  <option value="2">+91</option>
-                                </select>
-                                <label for="code">Code</label>
-                              </div>
-                              <div class="form-floating">
-                                <input type="text" class="form-control" id="phonen" placeholder="Enter your phone number">
-                                <label for="phonen">Phone Number</label>
-                              </div>
-                            </div>
-
-                            <div class="position-relative">
-                              <div class="form-floating mb-2 mb-lg-3">
-                                <button class="btn btn-square btn-link text-theme-1 position-absolute end-0 top-0 mt-2 me-2 " onclick=" if (this.nextElementSibling.type === 'password') {this.nextElementSibling.type = 'text';} else {this.nextElementSibling.type = 'password';}">
-                                  <i class="bi bi-eye"></i>
-                                </button>
-                                <input type="password" class="form-control" id="checkstrength" placeholder="Enter your password">
-                                <label for="checkstrength">Password</label>
-                              </div>
-                            </div>
-                            <div class="feedback mb-2 mb-lg-3">
-                              <div class="row gx-3 gx-lg-4">
-                                <div class="col">
-                                  <div class="check-strength" id="checksterngthdisplay">
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                    <div></div>
-                                  </div>
-                                </div>
-                                <div class="col-auto">
-                                  <span class="small" id="textpassword"></span>
-                                  <i class="bi bi-info-circle text-theme-1 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Password should contain atleast 1 capital, 1 alphanumeric & min. 8 characters"></i>
-                                </div>
-                              </div>
-                            </div>
-
-                            <!-- <div class="position-relative">
-                              <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="passwd" placeholder="Confirm your password">
-                                <label for="passwd">Confirm Password</label>
-                              </div>
-                              <button class="btn btn-square btn-link text-theme-1 position-absolute end-0 top-0 mt-2 me-2 ">
-                                <i class="bi bi-eye"></i>
-                              </button>
-                            </div> -->
-
-                             <a href="{% url 'boshlash' %}" class="btn btn-lg btn-theme w-100">Sign up</a>
-                          </div>
-                        </div> 
-
-                        <div class="text-center text-white mb-0 mb-lg-0">
-                          Already have account? <a href="{% url 'login' %}" class="text-white">Login</a> here.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <!--Page body-->
+                <div class="coverimg h-100 w-100 top-0 start-0 position-absolute z-index-0">
+                    <img src="{% static 'assets/img/background-image/backgorund-image-14.png' %}" alt="" />
                 </div>
-              </div>
+                <!-- login wrap -->
+                <div class="row justify-content-center minheight-dynamic position-relative z-index-1" style="--mih-dynamic: calc(100vh - 135px)">
+                    <div class="col-12 col-md-8 col-xl-6">
+                        <div class="h-100 py-3 px-md-3">
+                            <div class="row h-100 align-items-center justify-content-center mt-md-3">
+                                <div class="col-12 col-sm-10 col-md-11 col-xl-11 col-xxl-10 login-box">
+                                    <div class="text-center text-white mb-3 mb-lg-4">
+                                        <h1 class="mb-1">Ro'yxatdan o'tish</h1>
+                                        <p class="opacity-75">FoodScan AI'ga xush kelibsiz!</p>
+                                    </div>
+                                    
+                                    <!-- Error messages -->
+                                    {% if errors %}
+                                    <div class="error-message">
+                                        <ul>
+                                            {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="card adminuiux-card shadow-sm mb-3 mb-lg-4">
+                                        <div class="card-body">
+                                            <form method="POST" action="{% url 'register' %}" id="registerForm">
+                                                {% csrf_token %}
+                                                
+                                                <div class="row gx-3 gx-lg-4">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Ismingiz" value="{{ first_name|default:'' }}" required autofocus>
+                                                            <label for="first_name">Ism</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Familiyangiz" value="{{ last_name|default:'' }}" required>
+                                                            <label for="last_name">Familiya</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="username" name="username" placeholder="Foydalanuvchi nomi" value="{{ username|default:'' }}" required>
+                                                    <label for="username">Foydalanuvchi nomi</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email manzilingiz" value="{{ email|default:'' }}" required>
+                                                    <label for="email">Email manzil</label>
+                                                </div>
+
+                                                <div class="form-floating mb-3 position-relative">
+                                                    <input type="password" class="form-control" id="password1" name="password1" placeholder="Parolingiz" required minlength="4">
+                                                    <label for="password1">Parol</label>
+                                                    <button type="button" class="btn btn-square btn-link text-theme-1 position-absolute end-0 top-50 translate-middle-y me-2" onclick="togglePassword('password1', this)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <div class="form-floating mb-2 position-relative">
+                                                    <input type="password" class="form-control" id="password2" name="password2" placeholder="Parolni tasdiqlang" required minlength="4">
+                                                    <label for="password2">Parolni tasdiqlang</label>
+                                                    <button type="button" class="btn btn-square btn-link text-theme-1 position-absolute end-0 top-50 translate-middle-y me-2" onclick="togglePassword('password2', this)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <div class="password-match mb-3" id="passwordMatch"></div>
+                                                
+                                                <div class="feedback mb-3">
+                                                    <div class="row gx-3 gx-lg-4">
+                                                        <div class="col">
+                                                            <div class="check-strength" id="checksterngthdisplay">
+                                                                <div></div>
+                                                                <div></div>
+                                                                <div></div>
+                                                                <div></div>
+                                                                <div></div>
+                                                                <div></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <span class="small" id="textpassword"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button type="submit" class="btn btn-lg btn-theme w-100" id="submitBtn">
+                                                    <span id="btnText">Ro'yxatdan o'tish</span>
+                                                    <span id="btnLoader" style="display: none;">
+                                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                                        Yuborilmoqda...
+                                                    </span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div> 
+
+                                    <div class="text-center text-white mb-0 mb-lg-0">
+                                        Hisobingiz bormi? <a href="{% url 'login' %}" class="text-white fw-bold">Kirish</a> qiling.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </main>
-   <footer class="adminuiux-footer mt-auto bg-theme-1 z-index-1">
+        </div>
+    </main>
+    <footer class="adminuiux-footer mt-auto bg-theme-1 z-index-1">
         <div class="container-fluid text-center pb-ios">
             <span class="small">© {% now "Y" %} 
-                <a href="{% url 'boshlash' %}" class="text-white">Cloudstore</a>
+                <a href="{% url 'boshlash' %}" class="text-white">FoodScan AI</a>
             </span>
         </div>
     </footer>
     <script src="{% static 'assets/js/app8051.js' %}"></script>
     
     <script>
-        function togglePassword(btn) {
-            const input = btn.parentElement.querySelector('input[type="password"], input[type="text"]');
+        // Parolni ko'rsatish/yashirish
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
             const icon = btn.querySelector('i');
             
             if (input.type === 'password') {
@@ -186,7 +218,54 @@
                 icon.classList.add('bi-eye');
             }
         }
+        
+        // Parollarni tekshirish
+        const password1 = document.getElementById('password1');
+        const password2 = document.getElementById('password2');
+        const passwordMatch = document.getElementById('passwordMatch');
+        
+        function checkPasswords() {
+            if (password2.value.length > 0) {
+                if (password1.value === password2.value) {
+                    passwordMatch.textContent = '✓ Parollar mos keladi';
+                    passwordMatch.className = 'password-match mb-3 success';
+                } else {
+                    passwordMatch.textContent = '✗ Parollar mos kelmaydi';
+                    passwordMatch.className = 'password-match mb-3 error';
+                }
+            } else {
+                passwordMatch.textContent = '';
+            }
+        }
+        
+        password1.addEventListener('input', checkPasswords);
+        password2.addEventListener('input', checkPasswords);
+        
+        // Form submit qilish
+        const form = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+        
+        form.addEventListener('submit', function(e) {
+            // Parollarni tekshirish
+            if (password1.value !== password2.value) {
+                e.preventDefault();
+                alert('Parollar bir xil emas!');
+                return false;
+            }
+            
+            if (password1.value.length < 4) {
+                e.preventDefault();
+                alert('Parol kamida 4 ta belgidan iborat bo\'lishi kerak!');
+                return false;
+            }
+            
+            // Loading ko'rsatish
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
+            submitBtn.disabled = true;
+        });
     </script>
 </body>
 </html>
- 

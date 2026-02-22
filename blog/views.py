@@ -1911,10 +1911,10 @@ def register(request):
             # Email yuborish
             try:
                 send_mail(
-                    subject='Cloudstore - Email tasdiqlash kodi',
+                    subject='FoodScan AI - Email tasdiqlash kodi',
                     message=f'''Assalomu alaykum, {first_name}!
 
-Cloudstore'da ro'yxatdan o'tish uchun tasdiqlash kodingiz:
+FoodScan AI'da ro'yxatdan o'tish uchun tasdiqlash kodingiz:
 
 🔐 {verification.code}
 
@@ -1923,7 +1923,7 @@ Bu kod 15 daqiqa ichida amal qiladi.
 Agar siz ro'yxatdan o'tmagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
 
 Hurmat bilan,
-Cloudstore jamoasi
+FoodScan AI jamoasi
 ''',
                     from_email=None,  # DEFAULT_FROM_EMAIL ishlatiladi
                     recipient_list=[email],
@@ -2049,7 +2049,7 @@ def resend_verification_code(request, verification_id):
     # Email yuborish
     try:
         send_mail(
-            subject='Cloudstore - Yangi tasdiqlash kodi',
+            subject='FoodScan AI - Yangi tasdiqlash kodi',
             message=f'''Assalomu alaykum, {verification.first_name}!
 
 Yangi tasdiqlash kodingiz:
@@ -2059,7 +2059,7 @@ Yangi tasdiqlash kodingiz:
 Bu kod 15 daqiqa ichida amal qiladi.
 
 Hurmat bilan,
-Cloudstore jamoasi
+FoodScan AI jamoasi
 ''',
             from_email=None,
             recipient_list=[verification.email],
@@ -3211,13 +3211,13 @@ import json
 def pwa_manifest(request):
     """PWA manifest.json - root'dan xizmat qilish"""
     manifest = {
-        "name": "Cloudstore - Kutubxona",
-        "short_name": "Cloudstore",
-        "description": "Bepul elektron kitoblar kutubxonasi",
+        "name": "FoodScan AI - Ovqat Tahlili",
+        "short_name": "FoodScan AI",
+        "description": "AI yordamida ovqat tahlili va kaloriya hisoblagich",
         "start_url": "/",
         "display": "standalone",
-        "background_color": "#667eea",
-        "theme_color": "#667eea",
+        "background_color": "#22c55e",
+        "theme_color": "#22c55e",
         "orientation": "portrait-primary",
         "scope": "/",
         "lang": "uz",
@@ -3238,7 +3238,7 @@ def pwa_manifest(request):
 def pwa_service_worker(request):
     """PWA Service Worker - root'dan xizmat qilish"""
     sw_content = '''
-const CACHE_NAME = 'cloudstore-v2';
+const CACHE_NAME = 'foodscan-v2';
 const OFFLINE_URL = '/offline/';
 
 const STATIC_ASSETS = [
@@ -3682,7 +3682,7 @@ def fetch_from_open_food_facts(barcode):
     
     try:
         url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
-        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'FoodScan/1.0'})
         
         if response.status_code == 200:
             data = response.json()
@@ -3770,7 +3770,7 @@ def fetch_from_open_beauty_facts(barcode):
     
     try:
         url = f"https://world.openbeautyfacts.org/api/v0/product/{barcode}.json"
-        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'FoodScan/1.0'})
         
         if response.status_code == 200:
             data = response.json()
@@ -3799,7 +3799,7 @@ def fetch_from_upc_itemdb(barcode):
     
     try:
         url = f"https://api.upcitemdb.com/prod/trial/lookup?upc={barcode}"
-        response = requests.get(url, timeout=10, headers={'User-Agent': 'CloudStore/1.0'})
+        response = requests.get(url, timeout=10, headers={'User-Agent': 'FoodScan/1.0'})
         
         if response.status_code == 200:
             data = response.json()
