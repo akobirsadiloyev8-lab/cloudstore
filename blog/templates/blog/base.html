@@ -52,6 +52,18 @@
                 padding-top: max(env(safe-area-inset-top), 20px);
             }
         }
+        
+        /* Sidebar yashirilganda kontentni markazlashtirish */
+        .sidebar-close .adminuiux-content.has-sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .sidebar-close .adminuiux-content.has-sidebar > .container-fluid,
+        .sidebar-close .adminuiux-content.has-sidebar > .container {
+            width: 100%;
+            max-width: 1400px;
+        }
     </style>
 
 <link href="{% static 'assets/css/app8051.css' %}" rel="stylesheet">
