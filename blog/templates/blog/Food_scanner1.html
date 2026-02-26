@@ -5,9 +5,13 @@
 
 {% block content %}
                         
-                            <figure class="coverimg w-100 height-180 mb-0 position-relative rounded z-index-0 overlay-gradiant overflow-hidden">
-        <img src="{% static 'assets/img/background-image/images.png' %}" class="mw-100" alt="Mahsulot rasmi" id="product-image" />
-    </figure>
+                            <div class="container mt-4">
+                                <div class="card adminuiux-card shadow-sm overflow-hidden mx-auto" style="max-width: 500px;">
+                                    <figure class="mb-0 position-relative" style="height: 200px;">
+                                        <img src="{% static 'assets/img/background-image/images.png' %}" class="w-100 h-100" alt="Mahsulot rasmi" id="product-image" style="object-fit: contain; background-color: #f8f9fa;" />
+                                    </figure>
+                                </div>
+                            </div>
                             <!-- page title -->
                             <div class="container-fluid py-1 py-lg-3">
                                 <div class="row gx-3 align-items-center page-title">
@@ -72,9 +76,7 @@
                                 <div class="row gx-3 mb-3">
                                     <div class="col-12">
                                         <div class="d-flex gap-2 justify-content-end">
-                                            <button class="btn btn-outline-primary" id="save-to-list-btn" disabled>
-                                                <i class="bi bi-plus-circle"></i> Ro'yxatga qo'shish
-                                            </button>
+                                            
                                             <button class="btn btn-outline-danger" id="delete-food-btn" style="display: none;">
                                                 <i class="bi bi-trash"></i> O'chirish
                                             </button>
@@ -752,7 +754,7 @@
                 <div class="row gx-3">
                     <div class="col-auto">
                         <figure class="avatar avatar-30 coverimg rounded-circle">
-                            <img src="assets/img/modern-ai-image/user-2.jpg" alt="">
+                            <img src="{% static 'assets/img/modern-ai-image/user-2.jpg' %}" alt="">
                         </figure>
                     </div>
                     <div class="col">
@@ -819,7 +821,7 @@
                 <div class="row gx-3">
                     <div class="col-auto">
                         <figure class="avatar avatar-30 coverimg rounded-circle">
-                            <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                            <img src="{% static 'assets/img/modern-ai-image/user-4.jpg' %}" alt="">
                         </figure>
                     </div>
                     <div class="col">
@@ -851,10 +853,10 @@
                         <p class="small mb-2">Learning for better user experience on Universal app. development</p>
                         <div class="avatar-group mb-2">
                             <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Mickey">
-                                <img src="assets/img/modern-ai-image/user-3.jpg" alt="" style="display: none;">
+                                <img src="{% static 'assets/img/modern-ai-image/user-3.jpg' %}" alt="" style="display: none;">
                             </figure>
                             <figure class="avatar avatar-20 coverimg rounded-circle" data-bs-toggle="tooltip" title="Jacky">
-                                <img src="assets/img/modern-ai-image/user-4.jpg" alt="">
+                                <img src="{% static 'assets/img/modern-ai-image/user-4.jpg' %}" alt="">
                             </figure>
                             <div class="avatar avatar-20 bg-theme-1 rounded-circle">
                                 <small class="fs-10 vm">9+</small>
@@ -880,7 +882,7 @@
                 <div class="row gx-3">
                     <div class="col-auto">
                         <figure class="avatar avatar-30 coverimg rounded-circle">
-                            <img src="assets/img/modern-ai-image/user-3.jpg" alt="">
+                            <img src="{% static 'assets/img/modern-ai-image/user-3.jpg' %}" alt="">
                         </figure>
                     </div>
                     <div class="col">
@@ -1080,36 +1082,53 @@ let currentProductName = '';
 document.addEventListener('DOMContentLoaded', function() {
     const analysisData = sessionStorage.getItem('food_analysis_result');
     
-    if (analysisData) {
-        try {
-            const data = JSON.parse(analysisData);
-            baseNutritionPer100g = data.nutrition_per_100g || {};
-            currentProductName = data.name || 'Noma\'lum mahsulot';
-            
-            // Mahsulot rasmini yangilash
-            if (data.image_url) {
-                document.getElementById('product-image').src = data.image_url;
-            }
-            
-            // Agar food_id bo'lsa, o'chirish tugmasini ko'rsatish
-            if (data.food_id) {
-                currentFoodId = data.food_id;
-                document.getElementById('delete-food-btn').style.display = 'inline-block';
-            }
-            
-            // UI yangilash
-            displayNutritionData(data.name, data.description, baseNutritionPer100g, 100);
-            
-            // Ro'yxatga qo'shish tugmalarini faollashtirish
-            document.getElementById('save-to-list-btn').disabled = false;
-            document.getElementById('save-btn-bottom').disabled = false;
-            document.getElementById('action-status').textContent = 'Ma\'lumotlar tayyor - saqlash yoki bekor qilishni tanlang';
-            
-            console.log('Tahlil natijalari yuklandi:', data.name);
-            
-        } catch (e) {
-            console.error('Ma\'lumotlarni o\'qishda xato:', e);
+    console.log('📦 SessionStorage ma\'lumotlari:', analysisData ? 'Mavjud' : 'Bo\'sh');
+    
+    if (!analysisData) {
+        console.warn('⚠️ SessionStorage bo\'sh - /food-scanner/ ga yo\'naltirilmoqda');
+        alert('Avval mahsulot rasmini skanerlang!');
+        window.location.href = '/food-scanner/';
+        return;
+    }
+    
+    try {
+        const data = JSON.parse(analysisData);
+        console.log('📊 Tahlil ma\'lumotlari:', data);
+        console.log('🍎 Mahsulot nomi:', data.name);
+        console.log('📈 Nutrition data:', data.nutrition_per_100g);
+        
+        baseNutritionPer100g = data.nutrition_per_100g || {};
+        currentProductName = data.name || 'Noma\'lum mahsulot';
+        
+        // Mahsulot rasmini yangilash - sessionStorage dan base64 rasm olish
+        const savedImage = sessionStorage.getItem('food_analysis_image');
+        if (savedImage) {
+            document.getElementById('product-image').src = savedImage;
+            console.log('🖼️ Rasm sessionStorage dan yuklandi');
+        } else if (data.image_url) {
+            document.getElementById('product-image').src = data.image_url;
         }
+        
+        // Agar food_id bo'lsa, o'chirish tugmasini ko'rsatish
+        if (data.food_id) {
+            currentFoodId = data.food_id;
+            document.getElementById('delete-food-btn').style.display = 'inline-block';
+        }
+        
+        // UI yangilash
+        displayNutritionData(data.name, data.description, baseNutritionPer100g, 100);
+        
+        // Ro'yxatga qo'shish tugmalarini faollashtirish
+        document.getElementById('save-btn-bottom').disabled = false;
+        document.getElementById('action-status').textContent = 'Ma\'lumotlar tayyor - saqlash yoki bekor qilishni tanlang';
+        
+        console.log('✅ Tahlil natijalari yuklandi:', data.name);
+        
+    } catch (e) {
+        console.error('❌ Ma\'lumotlarni o\'qishda xato:', e);
+        alert('Ma\'lumotlarni o\'qishda xato yuz berdi. Qaytadan skanerlang.');
+        window.location.href = '/food-scanner/';
+        return;
     }
     
     // Barcode qidirish tugmasi
@@ -1123,9 +1142,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mass-input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') recalculateMass();
     });
-    
-    // Ro'yxatga qo'shish tugmasi
-    document.getElementById('save-to-list-btn').addEventListener('click', saveToList);
     
     // O'chirish tugmasi
     document.getElementById('delete-food-btn').addEventListener('click', deleteFood);
@@ -1327,7 +1343,7 @@ async function lookupBarcode() {
             document.getElementById('mass-input').value = 100;
             
             // Ro'yxatga qo'shish tugmasini faollashtirish
-            document.getElementById('save-to-list-btn').disabled = false;
+            document.getElementById('save-btn-bottom').disabled = false;
             
             alert('Mahsulot topildi: ' + data.name);
         } else {
@@ -1369,14 +1385,10 @@ async function saveToList() {
     const mass = parseFloat(document.getElementById('mass-input').value) || 100;
     const ratio = mass / 100;
     
-    // Ikkala tugmani ham bloklash
-    const btnTop = document.getElementById('save-to-list-btn');
+    // Tugmani bloklash
     const btnBottom = document.getElementById('save-btn-bottom');
-    const originalTextTop = btnTop.innerHTML;
     const originalTextBottom = btnBottom.innerHTML;
     
-    btnTop.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saqlanmoqda...';
-    btnTop.disabled = true;
     btnBottom.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Saqlanmoqda...';
     btnBottom.disabled = true;
     
@@ -1412,8 +1424,6 @@ async function saveToList() {
             document.getElementById('delete-food-btn').style.display = 'inline-block';
             
             // Tugmalarni yangilash
-            btnTop.disabled = true;
-            btnTop.innerHTML = '<i class="bi bi-check-circle"></i> Saqlandi';
             btnBottom.disabled = true;
             btnBottom.innerHTML = '<i class="bi bi-check-circle me-1"></i>Saqlandi';
             btnBottom.classList.remove('btn-success');
@@ -1423,8 +1433,6 @@ async function saveToList() {
             alert('Mahsulot ro\'yxatga qo\'shildi!');
         } else {
             // Xato bo'lsa tugmalarni qaytarish
-            btnTop.innerHTML = originalTextTop;
-            btnTop.disabled = false;
             btnBottom.innerHTML = originalTextBottom;
             btnBottom.disabled = false;
             alert(data.error || 'Saqlashda xato');
@@ -1432,8 +1440,6 @@ async function saveToList() {
     } catch (e) {
         console.error('Saqlashda xato:', e);
         // Xato bo'lsa tugmalarni qaytarish
-        btnTop.innerHTML = originalTextTop;
-        btnTop.disabled = false;
         btnBottom.innerHTML = originalTextBottom;
         btnBottom.disabled = false;
         alert('Tarmoq xatosi yuz berdi');
@@ -1583,7 +1589,6 @@ function resetPageToInitialState() {
     updateDoughnutChart(0, 0);
     
     // Tugmalarni o'chirish
-    document.getElementById('save-to-list-btn').disabled = true;
     document.getElementById('save-btn-bottom').disabled = true;
     document.getElementById('delete-food-btn').style.display = 'none';
     document.getElementById('action-status').textContent = 'Mahsulotni ro\'yxatga qo\'shish yoki bekor qilish';
